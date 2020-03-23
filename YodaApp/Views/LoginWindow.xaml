@@ -3,36 +3,36 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:YodaApp.Views"
+        ResizeMode="NoResize"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="450" Width="800">
+        Title="Log In" Height="250" Width="400">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <StackPanel Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibilityInverted}}" VerticalAlignment="Center" Margin="10">
+            <TextBlock>Login</TextBlock>
+            <TextBox Text="{Binding Login}" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
 
-        <Label>Login</Label>
-        <Label Grid.Row="1">Password</Label>
+            <TextBlock>Password</TextBlock>
 
-        <TextBox Text="{Binding Login}" Grid.Column="1" />
-        <PasswordBox x:Name="PasswordBox" Grid.Column="1" Grid.Row="1" />
+            <PasswordBox x:Name="PasswordBox" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
 
-        <Button
-            Grid.Row="2"
-            Grid.ColumnSpan="2"
-            Command="{Binding LogInCommand}"
-            CommandParameter="{Binding ElementName=PasswordBox}"
-            >
-            Log In
-        </Button>
+            <TextBlock Foreground="Red" Text="{Binding Error}"
+                       Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibility}}" />
+
+            <Button
+                HorizontalAlignment="Left"
+                Margin="10,10,0,0"
+                Height="25" Width="70"
+                Command="{Binding LoginCommand}"
+                CommandParameter="{Binding ElementName=PasswordBox}">
+                Log In
+            </Button>
 
 
+        </StackPanel>
+
+        <Grid Background="#a3ffffff" Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibility}}">
+            <TextBlock>TODO: Normal loader</TextBlock>
+        </Grid>
     </Grid>
 </Window>

@@ -13,7 +13,7 @@ namespace YodaApp.Utils
 
         public abstract bool CanExecute(object parameter);
         public abstract void Execute(object parameter);
-        public void RaiseCanExecuteChanged() => CanExecuteChanged.Invoke(this, EventArgs.Empty);
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
     }
 
@@ -94,7 +94,7 @@ namespace YodaApp.Utils
 
         public override bool CanExecute(object _parameter)
         {
-            return IsBusy && (canExecute == null || canExecute());
+            return !IsBusy && (canExecute == null || canExecute());
         }
 
         public override async void Execute(object _parameter)

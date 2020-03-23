@@ -1,8 +1,19 @@
 ﻿<Application x:Class="YodaApp.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:utils="clr-namespace:YodaApp.Utils"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
 
+        <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
+            <utils:BoolToAnythingConverter.TrueValue>
+                <Visibility>Hidden</Visibility>
+            </utils:BoolToAnythingConverter.TrueValue>
+
+            <utils:BoolToAnythingConverter.FalseValue>
+                <Visibility>Visible</Visibility>
+            </utils:BoolToAnythingConverter.FalseValue>
+        </utils:BoolToAnythingConverter>
     </Application.Resources>
 </Application>
