@@ -26,6 +26,8 @@ namespace YodaApiClient
     public class ChatUserLeftEventArgs : ChatEventArgs
     {
         public int UserId { get; set; }
+
+        public int? RoomId { get; set; }
     }
 
     public interface IChatApiHandler

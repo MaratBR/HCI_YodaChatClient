@@ -34,6 +34,12 @@ namespace YodaApiClient
         Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request);
     }
 
+    class CreateRoomRequest
+    {
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+    }
 
     public interface IApi
     {
@@ -41,7 +47,7 @@ namespace YodaApiClient
 
         Task<ICollection<Room>> GetRooms();
 
-        Task<Room> CreateRoom(Room room);
+        Task<Room> CreateRoom(CreateRoomRequest createRoom);
 
         Task<IChatApiHandler> Connect();
     }

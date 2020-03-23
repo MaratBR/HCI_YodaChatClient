@@ -29,7 +29,6 @@ namespace YodaApp
             var container = new UnityContainer();
 
 
-            var window =
         }
     }
 }
