@@ -21,6 +21,8 @@ namespace YodaApiClient
     public class ChatUserJoinedEventArgs : ChatEventArgs
     {
         public int UserId { get; set; }
+
+        public int RoomId { get; set; }
     }
 
     public class ChatUserLeftEventArgs : ChatEventArgs

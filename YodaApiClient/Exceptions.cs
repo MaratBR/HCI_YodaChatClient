@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes;
+using YodaApiClient.Helpers;
 
 namespace YodaApiClient
 {
@@ -35,4 +39,23 @@ namespace YodaApiClient
         {
         }
     }
+
+
+    [Serializable]
+    class BadRequestException : ApiException
+    {
+        public YODAError Error { get; private set; }
+
+        public BadRequestException(YODAError error)
+            : base(error.Description)
+        {
+            Error = error;
+        }
+
+        public BadRequestException()
+            : base("Something went wrong while handling your request: request is invalid")
+        {
+        }
+    }
+
 }

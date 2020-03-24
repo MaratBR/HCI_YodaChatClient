@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
@@ -10,7 +10,6 @@ namespace YodaApiClient
         private string accessToken;
         private ApiConfiguration configuration;
         private HubConnection connection;
-        private IHubProxy hubProxy;
 
 
         public ChatApiHandler(string accessToken, ApiConfiguration configuration)
@@ -21,23 +20,28 @@ namespace YodaApiClient
 
         public async Task Connect()
         {
-            connection = new HubConnection(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE));
-            connection.Headers.Add("Authorization", $"Bearer {accessToken}");
-            await connection.Start();
+            connection = new HubConnectionBuilder()
+                .WithAutomaticReconnect()
+                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {accessToken}"))
+                .Build();
+            await connection.StartAsync();
 
             InitHubProxy();
         }
 
         private void InitHubProxy()
         {
-            hubProxy = connection.CreateHubProxy("YODAHub");
-            hubProxy.On<int, int>("Left", YODAHub_Left);
-            hubProxy.On<string, int, int>("Text", YODAHub_Text);
+            connection.On<int, int>("Left", YODAHub_Left);
+            connection.On<int, int>("Joined", YODAHub_Joined);
+            connection.On<string, int, int>("Text", YODAHub_Text);
         }
 
-
-
         #region Handling SignalR events
+
+        private void YODAHub_Joined(int userId, int roomId)
+        {
+            UserJoined?.Invoke(this, new ChatUserJoinedEventArgs { RoomId = roomId, UserId = userId });
+        }
 
         private void YODAHub_Left(int userId, int roomId)
         {
@@ -61,20 +65,11 @@ namespace YodaApiClient
 
         #region Implementation
 
-        public Task JoinRoom(int roomId)
-        {
-            connection.Se
-        }
+        public Task JoinRoom(int roomId) => connection.InvokeAsync("JoinRoom", roomId);
 
-        public Task LeaveRoom(int roomId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task LeaveRoom(int roomId) => connection.InvokeAsync("LeaveRoom", roomId);
 
-        public Task SendToRoom(string text, int roomId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task SendToRoom(string text, int roomId) => connection.InvokeAsync("Send", text, roomId);
 
         #endregion
     }

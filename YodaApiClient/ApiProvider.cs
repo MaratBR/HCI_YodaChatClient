@@ -71,6 +71,8 @@ namespace YodaApiClient
                 request
                 );
 
+            await response.ThrowErrorIfNotSuccessful();
+
             var data = await response.GetJson<RegistrationResponse>();
 
             return await CreateApi(new AuthenticationRequest { Login = data.User.UserName, Password = request.Password });

@@ -34,7 +34,7 @@ namespace YodaApiClient
         Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request);
     }
 
-    class CreateRoomRequest
+    public class CreateRoomRequest
     {
         public string Name { get; set; }
 

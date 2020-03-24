@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Unity;
 using YodaApp.Persistence;
-using YodaApp.YODApi;
 
 namespace YodaApp
 {

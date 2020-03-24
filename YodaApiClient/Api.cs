@@ -33,6 +33,7 @@ namespace YodaApiClient
         public async Task<IChatApiHandler> Connect()
         {
             var handler = new ChatApiHandler(accessToken, configuration);
+            await handler.Connect();
 
             return handler;
         }
@@ -40,7 +41,7 @@ namespace YodaApiClient
         public async Task<Room> CreateRoom(CreateRoomRequest request)
         {
             var response = await httpClient.PostJson(configuration.AppendPathToMainUrl(ApiReference.CREATE_ROOM_ROUTE), request);
-            response.ThrowErrorIfNotSuccessful();
+            await response.ThrowErrorIfNotSuccessful();
 
             var room = await response.GetJson<Room>();
 
@@ -50,7 +51,7 @@ namespace YodaApiClient
         public async Task<ICollection<Room>> GetRooms()
         {
             var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.LIST_OF_ROOMS_ROUTE));
-            response.ThrowErrorIfNotSuccessful();
+            await response.ThrowErrorIfNotSuccessful();
 
             var roomsResponse = await response.GetJson<RoomsResponse>();
             return roomsResponse.Rooms;
@@ -61,7 +62,7 @@ namespace YodaApiClient
             if (user == null || DateTime.Now - lastUserUpdate < TimeSpan.FromHours(1))
             {
                 var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.CURRENT_USER_ROUTE));
-                response.ThrowErrorIfNotSuccessful();
+                await response.ThrowErrorIfNotSuccessful();
 
                 var user = await response.GetJson<User>();
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes;
 
 namespace YodaApiClient.Helpers
 {
@@ -25,12 +26,26 @@ namespace YodaApiClient.Helpers
         /// <exception cref="InvalidCredentialsException"></exception>
         /// <exception cref="UnexpectedHttpStatusCodeException"></exception>
         /// <param name="httpResponse"></param>
-        public static void ThrowErrorIfNotSuccessful(this HttpResponseMessage httpResponse)
+        public static async Task ThrowErrorIfNotSuccessful(this HttpResponseMessage httpResponse)
         {
             if (!httpResponse.IsSuccessStatusCode)
             {
                 if (httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     throw new InvalidCredentialsException();
+                else if (httpResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    YODAError error;
+                    try
+                    {
+                        error = await httpResponse.GetJson<YODAError>();
+
+                        throw new BadRequestException(error);
+                    }
+                    catch (JsonException)
+                    {
+                        throw new BadRequestException();
+                    }
+                }
                 else
                     throw new UnexpectedHttpStatusCodeException(httpResponse.StatusCode);
             }
