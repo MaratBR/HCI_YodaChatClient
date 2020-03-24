@@ -8,6 +8,8 @@ namespace YodaApiClient.DataTypes
 {
     public class Message
     {
+        public long Id { get; set; }
+
         public int SenderId { get; set; }
 
         public string Text { get; set; }

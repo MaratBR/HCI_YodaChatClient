@@ -24,6 +24,6 @@ namespace YodaApiClient.DataTypes
 
         public Gender? Gender { get; set; }
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

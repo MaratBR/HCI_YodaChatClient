@@ -13,32 +13,32 @@ namespace YodaApiClient
     {
         public string Text { get; set; }
 
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
 
-        public int SenderId { get; set; }
+        public Guid SenderId { get; set; }
     }
 
     public class ChatUserJoinedEventArgs : ChatEventArgs
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
     }
 
     public class ChatUserLeftEventArgs : ChatEventArgs
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
-        public int? RoomId { get; set; }
+        public Guid? RoomId { get; set; }
     }
 
     public interface IChatApiHandler
     {
-        Task SendToRoom(string text, int roomId);
+        Task SendToRoom(string text, Guid roomId);
 
-        Task JoinRoom(int roomId);
+        Task JoinRoom(Guid roomId);
 
-        Task LeaveRoom(int roomId);
+        Task LeaveRoom(Guid roomId);
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 

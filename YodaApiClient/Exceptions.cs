@@ -23,7 +23,7 @@ namespace YodaApiClient
     }
 
     [Serializable]
-    class InvalidCredentialsException : ApiException
+    public class InvalidCredentialsException : ApiException
     {
         public InvalidCredentialsException()
             : base("Invalid credentials given")
@@ -32,7 +32,7 @@ namespace YodaApiClient
     }
 
     [Serializable]
-    class UnexpectedHttpStatusCodeException : ApiException
+    public class UnexpectedHttpStatusCodeException : ApiException
     {
         public UnexpectedHttpStatusCodeException(HttpStatusCode code)
             : base($"Unexpected status code: {code}")
@@ -42,7 +42,7 @@ namespace YodaApiClient
 
 
     [Serializable]
-    class BadRequestException : ApiException
+    public class BadRequestException : ApiException
     {
         public YODAError Error { get; private set; }
 

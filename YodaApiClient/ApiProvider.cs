@@ -37,11 +37,7 @@ namespace YodaApiClient
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        /// <summary>
-        /// Authenticate a use and create instance of IApi
-        /// </summary>
-        /// <param name="request">request data sent to API</param>
-        /// <returns>Instance of IApi</returns>
+
         public async Task<IApi> CreateApi(AuthenticationRequest request)
         {
             var httpClient = new HttpClient();
@@ -58,11 +54,7 @@ namespace YodaApiClient
         }
 
 
-        /// <summary>
-        /// Registers a new user and then call CreateApi
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns>new instance of IApi</returns>
+
         public async Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request)
         {
             // PostJson -> Extensions.cs

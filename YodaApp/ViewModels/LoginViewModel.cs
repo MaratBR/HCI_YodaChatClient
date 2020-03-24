@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using YodaApiClient;
 using YodaApiClient.DataTypes;
 using YodaApp.Persistence;
 using YodaApp.Utils;
@@ -19,7 +20,11 @@ namespace YodaApp.ViewModels
 
     class LoginViewModel : ViewModelBase
     {
-		private string login;
+		private readonly IApiProvider apiProvider;
+
+        #region Properties
+
+        private string login;
 
 		public string Login
 		{
@@ -51,6 +56,8 @@ namespace YodaApp.ViewModels
 			set { Set(ref hasError, nameof(HasError), value); }
 		}
 
+		#endregion
+
 
 		public event EventHandler<UserAuthenticatedEventArgs> UserAuthenticated;
 
@@ -65,29 +72,21 @@ namespace YodaApp.ViewModels
 			Loading = true;
 			var pwd = passwordBox.Password;
 
-			var result = await Api.Instance.Authenticate(Login, pwd);
+			IApi api;
 
-			HasError = !result.IsSuccess;
-
-
-			if (result.IsSuccess)
+			try
 			{
-
-				Api.Instance.SetToken(result.Value.AccessToken);
-				var user = await Api.instance.GetCurrentUser();
-				if (user != null)
-				{
-					OpenMainView(user);
-				}
-				else
-				{
-					MessageBox.Show("Failed to load user from the server");
-				}
+				api = await apiProvider.CreateApi(new AuthenticationRequest { Login = Login, Password = pwd });
 			}
-			else
+			catch(ApiException exc)
 			{
-				Error = result.Errors.First().Message;
+				HasError = true;
+				Error = exc.Message;
+				return;
 			}
+
+			var user = await api.GetUserAsync();
+			NotifyOnUserAuthenticated(user);
 
 			Loading = false;
 		}
@@ -95,30 +94,7 @@ namespace YodaApp.ViewModels
 		#endregion
 
 
-
-		private ICommand loadConfigCommand;
-
-		public ICommand LoadConfigCommand => loadConfigCommand ?? (loadConfigCommand = new AsyncRelayCommand(LoadConfigCommandHandler));
-
-		private async Task LoadConfigCommandHandler()
-		{
-			string accessToken = Store.Instance.GetAccessToken();
-
-			if (accessToken != null)
-			{
-				Api.Instance.SetToken(accessToken);
-
-				var user = await Api.Instance.GetCurrentUser();
-
-				if (user != null)
-				{
-					OpenMainView(user);
-				}
-			}
-			Loading = false;
-		}
-
-		private void OpenMainView(User user)
+		private void NotifyOnUserAuthenticated(User user)
 		{
 			UserAuthenticated?.Invoke(this, new UserAuthenticatedEventArgs { User = user });
 		}

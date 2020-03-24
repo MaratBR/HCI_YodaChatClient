@@ -31,24 +31,24 @@ namespace YodaApiClient
 
         private void InitHubProxy()
         {
-            connection.On<int, int>("Left", YODAHub_Left);
-            connection.On<int, int>("Joined", YODAHub_Joined);
-            connection.On<string, int, int>("Text", YODAHub_Text);
+            connection.On<Guid, Guid>("Left", YODAHub_Left);
+            connection.On<Guid, Guid>("Joined", YODAHub_Joined);
+            connection.On<string, Guid, Guid>("Text", YODAHub_Text);
         }
 
         #region Handling SignalR events
 
-        private void YODAHub_Joined(int userId, int roomId)
+        private void YODAHub_Joined(Guid userId, Guid roomId)
         {
             UserJoined?.Invoke(this, new ChatUserJoinedEventArgs { RoomId = roomId, UserId = userId });
         }
 
-        private void YODAHub_Left(int userId, int roomId)
+        private void YODAHub_Left(Guid userId, Guid roomId)
         {
             UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
-        private void YODAHub_Text(string text, int roomId, int senderId)
+        private void YODAHub_Text(string text, Guid roomId, Guid senderId)
         {
             MessageReceived?.Invoke(this, new ChatMessageEventArgs { SenderId = senderId, RoomId = roomId, Text = text });
         }
@@ -65,11 +65,11 @@ namespace YodaApiClient
 
         #region Implementation
 
-        public Task JoinRoom(int roomId) => connection.InvokeAsync("JoinRoom", roomId);
+        public Task JoinRoom(Guid roomId) => connection.InvokeAsync("JoinRoom", roomId);
 
-        public Task LeaveRoom(int roomId) => connection.InvokeAsync("LeaveRoom", roomId);
+        public Task LeaveRoom(Guid roomId) => connection.InvokeAsync("LeaveRoom", roomId);
 
-        public Task SendToRoom(string text, int roomId) => connection.InvokeAsync("Send", text, roomId);
+        public Task SendToRoom(string text, Guid roomId) => connection.InvokeAsync("Send", text, roomId);
 
         #endregion
     }

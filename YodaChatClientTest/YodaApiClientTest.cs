@@ -52,7 +52,7 @@ namespace YodaChatClientTest
             var handler = await api.Connect();
 
             string messageText = "cake is a lie", receivedText = null;
-            int? senderId = null,
+            Guid? senderId = null,
                 userJoinedId = null,
                 userLeftId = null,
                 roomId = null;

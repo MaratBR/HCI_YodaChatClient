@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes
 {
-    class YODAError
+    public class YODAError
     {
         public string Description { get; set; }
         public string Details { get; set; }
