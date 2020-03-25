@@ -10,10 +10,12 @@ namespace YodaApiClient.DataTypes
     {
         public long Id { get; set; }
 
-        public int SenderId { get; set; }
+        public Guid SenderId { get; set; }
+
+        public Guid RoomId { get; set; }
 
         public string Text { get; set; }
 
-        public int? FileId { get; set; }
+        public Guid? FileId { get; set; }
     }
 }

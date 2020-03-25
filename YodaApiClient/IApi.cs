@@ -43,6 +43,8 @@ namespace YodaApiClient
         /// <param name="request"></param>
         /// <returns>new instance of IApi</returns>
         Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request);
+
+        Task<IApi> CreateApi(SessionInfo session);
     }
 
     public class CreateRoomRequest

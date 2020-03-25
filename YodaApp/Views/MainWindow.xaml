@@ -3,9 +3,50 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:YodaApp"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:utils="clr-namespace:YodaApp.Utils"
         mc:Ignorable="d"
+        DataContext="{StaticResource ParentVM}"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}"
         Title="MainWindow" Height="450" Width="800">
+
+    <Window.Resources>
+        <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
+            <utils:BoolToAnythingConverter.TrueValue>
+                <HorizontalAlignment>Right</HorizontalAlignment>
+            </utils:BoolToAnythingConverter.TrueValue>
+
+            <utils:BoolToAnythingConverter.FalseValue>
+                <HorizontalAlignment>Left</HorizontalAlignment>
+            </utils:BoolToAnythingConverter.FalseValue>
+        </utils:BoolToAnythingConverter>
+    </Window.Resources>
+
+    <!-- https://stackoverflow.com/questions/43988149/i-cant-hide-the-window-in-mvvm -->
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsWindowHidden, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsWindowHidden, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -13,29 +54,118 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <GridSplitter
-            ResizeDirection="Columns"
-            Grid.RowSpan="2" />
+        <Button Style="{StaticResource MaterialDesignFlatAccentButton}">Add new room</Button>
 
-        <Button MinWidth="100" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-            <TextBlock Text="{Binding Session.User.UserName>}" />
-        </Button>
-        <Button>Add new room</Button>
-
-        <ItemsControl ItemsSource="{Binding Session.Rooms}" Grid.Row="1">
-            <ItemsControl.ItemTemplate>
+        <ListView
+            ItemsSource="{Binding Session.Rooms}"
+            SelectedItem="{Binding Session.SelectedRoom}"
+            Grid.Row="1" Grid.Column="0">
+            <ListView.ItemTemplate>
                 <ItemContainerTemplate>
-                    <Button>
-                        <StackPanel>
-                            <TextBlock Text="{Binding Name}" />
-                        </StackPanel>
-                    </Button>
+                    <StackPanel>
+
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Id}" />
+                    </StackPanel>
                 </ItemContainerTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <GridSplitter
+            ShowsPreview="True"
+            HorizontalAlignment="Center" VerticalAlignment="Stretch"
+            Grid.Column="1" Grid.RowSpan="2"
+            Width="10"/>
+
+        <DockPanel Grid.Column="2" VerticalAlignment="Stretch">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Session.SelectedRoom.IsJoined}" />
+                <Button
+                    Command="{Binding Session.JoinRoomCommand}"
+                    CommandParameter="{Binding Session.SelectedRoom}">Join</Button>
+                <Button
+                    Command="{Binding Session.LeaveRoomCommand}"
+                    CommandParameter="{Binding Session.SelectedRoom}">Left</Button>
+            </StackPanel>
+            <Button MinWidth="100"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                    Command="{Binding SwitchSessionCommand}">
+                <TextBlock Text="{Binding Session.User.UserName}" />
+            </Button>
+        </DockPanel>
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" MinHeight="50" />
+            </Grid.RowDefinitions>
+
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                         Margin="10" Background="#22ffffff" Padding="10,0,10,10" AcceptsReturn="True" TextWrapping="Wrap"
+                         Text="{Binding Session.SelectedRoom.Draft, UpdateSourceTrigger=PropertyChanged}" />
+
+
+                <StackPanel Grid.Column="1" Width="100">
+                    <Button Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding Session.SendToRoomCommand}"
+                        CommandParameter="{Binding Session.SelectedRoom}">
+                        <Viewbox Width="24" Height="24">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
+
+
+            </Grid>
+
+
+            <ScrollViewer>
+                <ItemsControl VerticalAlignment="Bottom"
+                          ItemsSource="{Binding Session.SelectedRoom.Messages}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="5" Background="#22FFFFFF" Padding="5" Margin="5" HorizontalAlignment="Left" MinWidth="300">
+                                <StackPanel >
+                                    <TextBlock
+                                        Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                        Foreground="White"
+                                        TextWrapping="Wrap"
+                                        Background="Transparent"
+                                        Text="{Binding Text}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+
+
+
+        </Grid>
     </Grid>
 </Window>

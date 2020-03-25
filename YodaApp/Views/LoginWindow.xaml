@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         ResizeMode="NoResize"
         mc:Ignorable="d"
+        DataContext="{Binding LoginVM, Source={StaticResource ParentVM}}"
         Title="Log In" Height="250" Width="400">
     <Grid>
 

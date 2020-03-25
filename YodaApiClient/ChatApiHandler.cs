@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
+using YodaApiClient.DataTypes;
 
 namespace YodaApiClient
 {
@@ -33,7 +34,7 @@ namespace YodaApiClient
         {
             connection.On<Guid, Guid>("Left", YODAHub_Left);
             connection.On<Guid, Guid>("Joined", YODAHub_Joined);
-            connection.On<string, Guid, Guid>("Text", YODAHub_Text);
+            connection.On<Message>("Message", YODAHub_Message);
         }
 
         #region Handling SignalR events
@@ -48,9 +49,9 @@ namespace YodaApiClient
             UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
-        private void YODAHub_Text(string text, Guid roomId, Guid senderId)
+        private void YODAHub_Message(Message message)
         {
-            MessageReceived?.Invoke(this, new ChatMessageEventArgs { SenderId = senderId, RoomId = roomId, Text = text });
+            MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = message });
         }
 
         #endregion

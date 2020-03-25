@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes;
 
 namespace YodaApiClient
 {
@@ -11,11 +12,8 @@ namespace YodaApiClient
 
     public class ChatMessageEventArgs : ChatEventArgs
     {
-        public string Text { get; set; }
 
-        public Guid RoomId { get; set; }
-
-        public Guid SenderId { get; set; }
+        public Message Message { get; set; }
     }
 
     public class ChatUserJoinedEventArgs : ChatEventArgs
@@ -29,7 +27,7 @@ namespace YodaApiClient
     {
         public Guid UserId { get; set; }
 
-        public Guid? RoomId { get; set; }
+        public Guid RoomId { get; set; }
     }
 
     public interface IChatApiHandler

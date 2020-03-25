@@ -61,8 +61,8 @@ namespace YodaChatClientTest
             handler.MessageReceived +=
                 (object sender, ChatMessageEventArgs e) =>
                 {
-                    senderId = e.SenderId;
-                    receivedText = e.Text;
+                    senderId = e.Message.SenderId;
+                    receivedText = e.Message.Text;
                 };
 
             handler.UserJoined +=

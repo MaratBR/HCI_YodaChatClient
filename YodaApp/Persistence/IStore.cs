@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient;
 
 namespace YodaApp.Persistence
 {
@@ -51,8 +53,26 @@ namespace YodaApp.Persistence
             return Encoding.UTF8.GetString(data);
         }
 
-        public static string GetAccessToken(this IStore store) => store.GetEncryted("ACCESS_TOKEN");
+        public static List<SessionInfo> GetSessions(this IStore store)
+        {
+            string strValue = store.GetEncryted("SESSIONS");
 
-        public static void SetAccessToken(this IStore store, string token) => store.SetEncryted("ACCESS_TOKEN", token);
+            if (strValue == null)
+                return new List<SessionInfo>();
+
+            try
+            {
+                return JsonConvert.DeserializeObject<List<SessionInfo>>(strValue);
+            }
+            catch(JsonException)
+            {
+                return new List<SessionInfo>();
+            }
+        }
+
+        public static void SetSessions(this IStore store, List<SessionInfo> sessions)
+        {
+            store.SetEncryted("SESSIONS", JsonConvert.SerializeObject(sessions));
+        }
     }
 }

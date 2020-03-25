@@ -15,7 +15,7 @@ namespace YodaApp.ViewModels
 {
 	class UserAuthenticatedEventArgs : EventArgs
 	{
-		public User User { get; set; }
+		public IApi Api { get; set; }
 	}
 
     class LoginViewModel : ViewModelBase
@@ -59,9 +59,14 @@ namespace YodaApp.ViewModels
 		#endregion
 
 
+		public LoginViewModel(IApiProvider apiProvider)
+		{
+			this.apiProvider = apiProvider;
+		}
+
 		public event EventHandler<UserAuthenticatedEventArgs> UserAuthenticated;
 
-		#region Log in
+		#region Commands
 
 		private ICommand loginCommand;
 
@@ -69,34 +74,39 @@ namespace YodaApp.ViewModels
 
 		public async Task LoginCommandHandler(PasswordBox passwordBox)
 		{
-			Loading = true;
 			var pwd = passwordBox.Password;
+
+			await PerformLogin(Login, pwd);
+		}
+
+		#endregion
+
+		public async Task PerformLogin(string login, string password)
+		{
+			Loading = true;
 
 			IApi api;
 
 			try
 			{
-				api = await apiProvider.CreateApi(new AuthenticationRequest { Login = Login, Password = pwd });
+				api = await apiProvider.CreateApi(new AuthenticationRequest { Login = login, Password = password });
 			}
-			catch(ApiException exc)
+			catch (ApiException exc)
 			{
 				HasError = true;
 				Error = exc.Message;
+				Loading = false;
 				return;
 			}
 
-			var user = await api.GetUserAsync();
-			NotifyOnUserAuthenticated(user);
+			NotifyOnUserAuthenticated(api);
 
 			Loading = false;
 		}
 
-		#endregion
-
-
-		private void NotifyOnUserAuthenticated(User user)
+		private void NotifyOnUserAuthenticated(IApi api)
 		{
-			UserAuthenticated?.Invoke(this, new UserAuthenticatedEventArgs { User = user });
+			UserAuthenticated?.Invoke(this, new UserAuthenticatedEventArgs { Api = api });
 		}
 	}
 }

@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Unity;
 using YodaApp.Persistence;
 
 namespace YodaApp
@@ -19,15 +18,6 @@ namespace YodaApp
         public App()
         {
             Store.SetInstance(new AppConfigStore());
-        }
-
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-
-            var container = new UnityContainer();
-
-
         }
     }
 }

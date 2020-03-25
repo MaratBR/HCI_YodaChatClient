@@ -47,13 +47,17 @@ namespace YodaApiClient
                 configuration.AppendPathToMainUrl(ApiReference.AUTHENTICATION_ROUTE),
                 request
                 );
+            await response.ThrowErrorIfNotSuccessful();
 
             var data = await response.GetJson<AuthenticationResponse>();
 
              return new Api(data.AccessToken, configuration);
         }
 
-
+        public async Task<IApi> CreateApi(SessionInfo session)
+        {
+            return new Api(session.Token, configuration);
+        }
 
         public async Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request)
         {
