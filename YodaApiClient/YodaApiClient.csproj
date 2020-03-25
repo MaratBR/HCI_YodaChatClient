@@ -142,6 +142,7 @@
     <Compile Include="ApiProvider.cs" />
     <Compile Include="ChatApiHandler.cs" />
     <Compile Include="Constants\ApiReference.cs" />
+    <Compile Include="DataTypes\FileModel.cs" />
     <Compile Include="DataTypes\Message.cs" />
     <Compile Include="DataTypes\Room.cs" />
     <Compile Include="DataTypes\User.cs" />

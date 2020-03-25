@@ -21,5 +21,6 @@ namespace YodaApiClient.Constants
         public static readonly string CREATE_ROOM_ROUTE = ROOMS_CONTROLLER_ROUTE;
 
         public static readonly string SIGNALR_HUB_ROUTE = "chat";
+        public static readonly string UPLOAD_ROUTE = "upload";
     }
 }

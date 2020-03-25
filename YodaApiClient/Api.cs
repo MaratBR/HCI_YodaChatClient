@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
@@ -70,6 +71,19 @@ namespace YodaApiClient
             }
 
             return user;
+        }
+
+        public async Task<FileModel> UploadFile(string fileName, Stream fileStream)
+        {
+            using (var content = new MultipartFormDataContent())
+            {
+                content.Add(new StreamContent(fileStream), "file", fileName);
+
+                var response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
+                await response.ThrowErrorIfNotSuccessful();
+
+                return await response.GetJson<FileModel>();
+            }
         }
     }
 }

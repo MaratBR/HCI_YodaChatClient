@@ -63,5 +63,7 @@ namespace YodaApiClient
         Task<Room> CreateRoom(CreateRoomRequest createRoom);
 
         Task<IChatApiHandler> Connect();
+
+        Task<FileModel> UploadFile(string fileName, Stream fileStream);
     }
 }
