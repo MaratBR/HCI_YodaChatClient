@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,6 +100,28 @@ namespace YodaApp.ViewModels
 		private Task SendToRoom(RoomViewModel room)
 		{
 			return handler.SendToRoom(room.Draft, room.Id);
+		}
+
+
+		private AbstractCommand _addAttachmentCommand;
+
+		public AbstractCommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new AsyncRelayCommand<RoomViewModel>(AddAttachment));
+
+		private async Task AddAttachment(RoomViewModel room)
+		{
+			var dialog = new OpenFileDialog();
+
+			if (dialog.ShowDialog() == true)
+			{
+				string filePath = dialog.FileName;
+				string fileName = Path.GetFileName(filePath);
+				var stream = dialog.OpenFile();
+				var attachment = room.AddAttachment(fileName, stream);
+
+				var fileModel = await _api.UploadFile(fileName, stream);
+				attachment.FileModel = fileModel;
+				attachment.Upoaded = true;
+			}
 		}
 
 		#endregion

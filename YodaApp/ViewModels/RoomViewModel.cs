@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,7 @@ namespace YodaApp.ViewModels
             }
         }
         public bool HasMessage => !string.IsNullOrWhiteSpace(Draft);
+        public ObservableCollection<AttachmentViewModel> Attachments { get; } = new ObservableCollection<AttachmentViewModel>();
 
         #endregion
 
@@ -74,6 +76,13 @@ namespace YodaApp.ViewModels
         public RoomViewModel(Room room)
         {
             this.room = room;
+        }
+
+        public AttachmentViewModel AddAttachment(string fileName, Stream stream)
+        {
+            var attachment = new AttachmentViewModel(fileName, stream.Length);
+            Attachments.Add(attachment);
+            return attachment;
         }
     }
 }
