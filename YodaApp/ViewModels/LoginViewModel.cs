@@ -65,6 +65,7 @@ namespace YodaApp.ViewModels
 		}
 
 		public event EventHandler<UserAuthenticatedEventArgs> UserAuthenticated;
+		public event EventHandler ShowRegisterForm;
 
 		#region Commands
 
@@ -77,6 +78,15 @@ namespace YodaApp.ViewModels
 			var pwd = passwordBox.Password;
 
 			await PerformLogin(Login, pwd);
+		}
+
+		private ICommand signUpCommand;
+
+		public ICommand SignUpCommand => signUpCommand ?? (signUpCommand = new RelayCommand(SignUp));
+
+		private void SignUp()
+		{
+			ShowRegisterForm?.Invoke(this, EventArgs.Empty);
 		}
 
 		#endregion

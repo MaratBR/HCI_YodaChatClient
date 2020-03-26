@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes
 {
-    // не спрашивайте
+    // dont ask, just... dont
     public enum Gender : byte
     {
         Respect = 0, // aka male

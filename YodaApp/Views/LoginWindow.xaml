@@ -4,36 +4,45 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         ResizeMode="NoResize"
+         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}"
         mc:Ignorable="d"
         DataContext="{Binding LoginVM, Source={StaticResource ParentVM}}"
-        Title="Log In" Height="250" Width="400">
+        Title="Log In" Height="401" Width="463">
     <Grid>
 
-        <StackPanel Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibilityInverted}}" VerticalAlignment="Center" Margin="10">
-            <TextBlock>Login</TextBlock>
-            <TextBox Text="{Binding Login}" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
+        <Border VerticalAlignment="Center" Margin="10,0,10,0" Padding="5" Background="#22FFFFFF" CornerRadius="3">
+            <StackPanel IsEnabled="{Binding Loading, Converter={StaticResource InvertBoolConverter}}" VerticalAlignment="Center" Margin="10">
+                <TextBlock>Login</TextBlock>
+                <TextBox Text="{Binding Login}" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
 
-            <TextBlock>Password</TextBlock>
+                <TextBlock>Password</TextBlock>
 
-            <PasswordBox x:Name="PasswordBox" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
+                <PasswordBox x:Name="PasswordBox" Padding="5" Margin="4" Width="200" HorizontalAlignment="Left" />
 
-            <TextBlock Foreground="Red" Text="{Binding Error}"
+                <TextBlock TextWrapping="Wrap" Foreground="Red" Text="{Binding Error}"
                        Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibility}}" />
 
-            <Button
-                HorizontalAlignment="Left"
-                Margin="10,10,0,0"
-                Height="25" Width="70"
-                Command="{Binding LoginCommand}"
-                CommandParameter="{Binding ElementName=PasswordBox}">
-                Log In
-            </Button>
+                <Button
+                    Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                    Command="{Binding LoginCommand}" Margin="0,40,0,0"
+                    CommandParameter="{Binding ElementName=PasswordBox}">
+                    Log In
+                </Button>
+
+                <Button
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Command="{Binding SignUpCommand}" Margin="0,5,0,0"
+                    CommandParameter="{Binding ElementName=PasswordBox}">
+                    Sign Up
+                </Button>
 
 
-        </StackPanel>
-
-        <Grid Background="#a3ffffff" Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibility}}">
-            <TextBlock>TODO: Normal loader</TextBlock>
-        </Grid>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

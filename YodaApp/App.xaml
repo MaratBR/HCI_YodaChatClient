@@ -4,6 +4,7 @@
              xmlns:utils="clr-namespace:YodaApp.Utils"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:vm="clr-namespace:YodaApp.ViewModels"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -23,13 +24,32 @@
 
             <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
                 <utils:BoolToAnythingConverter.TrueValue>
-                    <Visibility>Hidden</Visibility>
+                    <Visibility>Collapsed</Visibility>
                 </utils:BoolToAnythingConverter.TrueValue>
 
                 <utils:BoolToAnythingConverter.FalseValue>
                     <Visibility>Visible</Visibility>
                 </utils:BoolToAnythingConverter.FalseValue>
             </utils:BoolToAnythingConverter>
+
+            <utils:BoolToAnythingConverter x:Key="InvertBoolConverter">
+                <utils:BoolToAnythingConverter.TrueValue>
+                    <System:Boolean>False</System:Boolean>
+                </utils:BoolToAnythingConverter.TrueValue>
+
+                <utils:BoolToAnythingConverter.FalseValue>
+                    <System:Boolean>True</System:Boolean>
+                </utils:BoolToAnythingConverter.FalseValue>
+            </utils:BoolToAnythingConverter>
+
+
+            <utils:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+
+
+            <!-- Images -->
+            <BitmapImage x:Key="AlienIcon" UriSource="Resources/alien.jpg" />
+            <BitmapImage x:Key="SmoochIcon" UriSource="Resources/smooch.jpg" />
+            <BitmapImage x:Key="RespectIcon" UriSource="Resources/respect.jpg" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -44,13 +44,19 @@ namespace YodaApp.ViewModels
         {
             get
             {
-                var vm = new LoginViewModel(apiProvider);
-                vm.UserAuthenticated += LoginWindowVM_UserAuthenticated;
-                return vm;
+                var loginViewModel = new LoginViewModel(apiProvider);
+                loginViewModel.UserAuthenticated += LoginWindowVM_UserAuthenticated;
+                loginViewModel.ShowRegisterForm += LoginViewModel_ShowRegisterForm;
+                return loginViewModel;
             }
         }
 
-        private bool isWindowHidden = false;
+        private void LoginViewModel_ShowRegisterForm(object sender, EventArgs e)
+        {
+
+        }
+
+        private bool isWindowHidden = true;
 
         public bool IsWindowHidden
         {
@@ -58,6 +64,15 @@ namespace YodaApp.ViewModels
             set => Set(ref isWindowHidden, nameof(IsWindowHidden), value);
         }
 
+        public RegisterViewModel RegisterVM
+        {
+            get
+            {
+                var vm = new RegisterViewModel(apiProvider);
+
+                return vm;
+            }
+        }
 
         #endregion
 
