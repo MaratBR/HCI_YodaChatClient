@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
@@ -27,10 +28,10 @@ namespace YodaApiClient
                 .Build();
             await connection.StartAsync();
 
-            InitHubProxy();
+            Init();
         }
 
-        private void InitHubProxy()
+        private void Init()
         {
             connection.On<Guid, Guid>("Left", YODAHub_Left);
             connection.On<Guid, Guid>("Joined", YODAHub_Joined);
@@ -71,6 +72,8 @@ namespace YodaApiClient
         public Task LeaveRoom(Guid roomId) => connection.InvokeAsync("LeaveRoom", roomId);
 
         public Task SendToRoom(string text, Guid roomId) => connection.InvokeAsync("Send", text, roomId);
+
+        public Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids) => connection.InvokeAsync("SendWithAttachments", text, roomId, fileGuids);
 
         #endregion
     }

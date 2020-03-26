@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YodaApiClient.DataTypes;
 
@@ -33,6 +34,8 @@ namespace YodaApiClient
     public interface IChatApiHandler
     {
         Task SendToRoom(string text, Guid roomId);
+
+        Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids);
 
         Task JoinRoom(Guid roomId);
 

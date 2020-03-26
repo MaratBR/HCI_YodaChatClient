@@ -16,6 +16,8 @@ namespace YodaApiClient.DataTypes
 
         public string Text { get; set; }
 
-        public Guid? FileId { get; set; }
+        public IEnumerable<Guid> Attachments { get; set; }
+
+        public DateTime PublishedAt { get; set; }
     }
 }

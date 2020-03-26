@@ -120,7 +120,7 @@ namespace YodaApp.ViewModels
 
 				var fileModel = await _api.UploadFile(fileName, stream);
 				attachment.FileModel = fileModel;
-				attachment.Upoaded = true;
+				attachment.Uploaded = true;
 			}
 		}
 

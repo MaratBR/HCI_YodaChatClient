@@ -76,25 +76,8 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Button Style="{StaticResource MaterialDesignFlatAccentButton}">Add new room</Button>
-
-        <StackPanel Grid.Row="1" Grid.Column="0">
-            <ListView
-                Margin="0,10,0,10"
-                ItemsSource="{Binding Session.Rooms}"
-                SelectedItem="{Binding Session.SelectedRoom}">
-                <ListView.ItemTemplate>
-                    <ItemContainerTemplate>
-                        <StackPanel>
-
-                            <TextBlock Text="{Binding Name}" />
-                            <TextBlock Text="{Binding Id}" />
-                        </StackPanel>
-                    </ItemContainerTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-
-            <DockPanel HorizontalAlignment="Center">
+        <StackPanel Grid.RowSpan="2" Grid.Column="0">
+            <DockPanel HorizontalAlignment="Center" Margin="0,10,0,10">
                 <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.AddRoomCommand}">
                     <StackPanel Orientation="Horizontal">
 
@@ -117,6 +100,20 @@
                     </Viewbox>
                 </Button>
             </DockPanel>
+
+            <ListView
+                ItemsSource="{Binding Session.Rooms}"
+                SelectedItem="{Binding Session.SelectedRoom}">
+                <ListView.ItemTemplate>
+                    <ItemContainerTemplate>
+                        <StackPanel>
+
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Id}" />
+                        </StackPanel>
+                    </ItemContainerTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
 
 
