@@ -45,5 +45,17 @@ namespace YodaApp.Properties {
                 this["ApiConfiguration"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid CurrentSessionID {
+            get {
+                return ((global::System.Guid)(this["CurrentSessionID"]));
+            }
+            set {
+                this["CurrentSessionID"] = value;
+            }
+        }
     }
 }

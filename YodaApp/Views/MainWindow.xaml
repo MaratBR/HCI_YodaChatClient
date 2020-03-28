@@ -188,6 +188,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                    
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                          Margin="10" Background="#22ffffff" Padding="10,0,10,10" AcceptsReturn="True" TextWrapping="Wrap"
                          Text="{Binding Session.SelectedRoom.Draft, UpdateSourceTrigger=PropertyChanged}" />

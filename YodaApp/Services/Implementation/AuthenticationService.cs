@@ -58,6 +58,11 @@ namespace YodaApp.Services.Implementation
             {
                 this.apis[api.GetGuid()] = api;
             });
+
+            if (this.apis.ContainsKey(Properties.Settings.Default.CurrentSessionID))
+            {
+                currentSession = this.apis[Properties.Settings.Default.CurrentSessionID];
+            }
         }
 
         private async Task<IApi> CreateApiOrNull(SessionInfo session)
@@ -84,8 +89,12 @@ namespace YodaApp.Services.Implementation
         public void SetCurrentSession(IApi api)
         {
             if (api != null)
+            {
+                Properties.Settings.Default.CurrentSessionID = api.GetGuid();
                 if (!apis.ContainsKey(api.GetGuid()))
                     AddSession(api);
+            }
+
             currentSession = api;
         }
 

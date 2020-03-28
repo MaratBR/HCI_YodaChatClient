@@ -60,7 +60,7 @@ namespace YodaApp.ViewModels
 
         #endregion
 
-        private void Init()
+        private async void Init()
         {
             var sessions = _authentication.GetSessions();
 
@@ -68,13 +68,14 @@ namespace YodaApp.ViewModels
                 sessions.Select((api) => new UserSessionViewModel(api))
                 );
 
-            if (UserSessions.Count != 0)
-                Session = UserSessions.First();
+            await SetApi(_authentication.GetCurrentSession());
+        }
 
-            if (Session == null)
-            {
-                LogIn();
-            }
+        private async Task SetApi(IApi api)
+        {
+            var session = UserSessions.Where(s => s.Api == api).SingleOrDefault();
+
+            await SetCurrentSession(session);
         }
 
         private void LogIn()
@@ -104,7 +105,9 @@ namespace YodaApp.ViewModels
             Session = userSession;
 
             if (Session != null)
-                await Session.Update();
+                Session.Update();
+            else
+                LogIn();
         }
     }
 }

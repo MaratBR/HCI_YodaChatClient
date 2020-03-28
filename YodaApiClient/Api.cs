@@ -130,6 +130,6 @@ namespace YodaApiClient
 
         public SessionInfo GetSessionInfo() => sessionInfo;
 
-        public Guid GetGuid() => GetSessionInfo().RefreshToken;
+        public Guid GetGuid() => GetSessionInfo().SessionId;
     }
 }

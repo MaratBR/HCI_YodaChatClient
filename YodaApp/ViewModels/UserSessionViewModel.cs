@@ -99,7 +99,18 @@ namespace YodaApp.ViewModels
 
 		private Task SendToRoom(RoomViewModel room)
 		{
-			return handler.SendToRoom(room.Draft, room.Id);
+			if (room.Attachments.Count != 0)
+			{
+				return handler.SendToRoomWithAttachments(
+					room.Draft,
+					room.Id,
+					room.Attachments.Select(a => a.FileModel.Id).ToList()
+					);
+			}
+			else
+			{
+				return handler.SendToRoom(room.Draft, room.Id);
+			}
 		}
 
 
@@ -131,7 +142,9 @@ namespace YodaApp.ViewModels
 			_api = api;
 		}
 
-		public async Task Update()
+		public IApi Api => _api;
+
+		public async void Update()
 		{
 			await UpdateUser();
 			await UpdateRooms();
@@ -185,6 +198,7 @@ namespace YodaApp.ViewModels
 
 		public async Task UpdateRooms()
 		{
+			Rooms.Clear();
 			foreach (var room in await _api.GetRooms())
 			{
 				AddRoom(room);
