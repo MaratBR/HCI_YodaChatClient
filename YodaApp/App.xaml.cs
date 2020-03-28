@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using YodaApp.Persistence;
+using YodaApp.Services;
 
 namespace YodaApp
 {
@@ -17,7 +19,20 @@ namespace YodaApp
 
         public App()
         {
-            Store.SetInstance(new AppConfigStore());
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // создать контейнер для dependency injection
+            var containerBuilder = new ContainerBuilder();
+
+            containerBuilder.RegisterModule(new ServiceAutofacModule());
+
+            var container = containerBuilder.Build();
+            var startup = container.Resolve<IStartUpService>();
+            startup.Start();
         }
     }
 }

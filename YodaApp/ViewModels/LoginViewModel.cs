@@ -9,7 +9,9 @@ using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
 using YodaApp.Persistence;
+using YodaApp.Services;
 using YodaApp.Utils;
+using YodaApp.Views;
 
 namespace YodaApp.ViewModels
 {
@@ -18,9 +20,9 @@ namespace YodaApp.ViewModels
 		public IApi Api { get; set; }
 	}
 
-    class LoginViewModel : ViewModelBase
-    {
-		private readonly IApiProvider apiProvider;
+    class LoginViewModel : WindowCloseableViewModel
+	{
+		private readonly IAuthenticationService _authentication;
 
         #region Properties
 
@@ -59,9 +61,9 @@ namespace YodaApp.ViewModels
 		#endregion
 
 
-		public LoginViewModel(IApiProvider apiProvider)
+		public LoginViewModel(IAuthenticationService authentication)
 		{
-			this.apiProvider = apiProvider;
+			_authentication = authentication;
 		}
 
 		public event EventHandler<UserAuthenticatedEventArgs> UserAuthenticated;
@@ -87,6 +89,7 @@ namespace YodaApp.ViewModels
 		private void SignUp()
 		{
 			ShowRegisterForm?.Invoke(this, EventArgs.Empty);
+			CloseParent();
 		}
 
 		#endregion
@@ -99,7 +102,7 @@ namespace YodaApp.ViewModels
 
 			try
 			{
-				api = await apiProvider.CreateApi(new AuthenticationRequest { Login = login, Password = password });
+				api = await _authentication.GetApiProvider().CreateApi(new AuthenticationRequest { Login = login, Password = password });
 			}
 			catch (ApiException exc)
 			{
@@ -109,14 +112,11 @@ namespace YodaApp.ViewModels
 				return;
 			}
 
-			NotifyOnUserAuthenticated(api);
-
 			Loading = false;
-		}
 
-		private void NotifyOnUserAuthenticated(IApi api)
-		{
-			UserAuthenticated?.Invoke(this, new UserAuthenticatedEventArgs { Api = api });
+
+			_authentication.SetCurrentSession(api);
+			CloseParent();
 		}
 	}
 }

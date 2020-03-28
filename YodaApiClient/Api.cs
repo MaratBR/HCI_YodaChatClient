@@ -16,24 +16,24 @@ namespace YodaApiClient
 
     internal class Api : IApi
     {
-        private string accessToken;
+        private SessionInfo sessionInfo;
         private readonly ApiConfiguration configuration;
         private readonly HttpClient httpClient;
 
         private User user;
         private DateTime lastUserUpdate;
 
-        public Api(string accessToken, ApiConfiguration configuration)
+        public Api(SessionInfo sessionInfo, ApiConfiguration configuration)
         {
-            this.accessToken = accessToken;
+            this.sessionInfo = sessionInfo;
             this.configuration = configuration;
             httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {sessionInfo.Token}");
         }
 
         public async Task<IChatApiHandler> Connect()
         {
-            var handler = new ChatApiHandler(accessToken, configuration);
+            var handler = new ChatApiHandler(sessionInfo.Token, configuration);
             await handler.Connect();
 
             return handler;
@@ -85,5 +85,9 @@ namespace YodaApiClient
                 return await response.GetJson<FileModel>();
             }
         }
+
+        public SessionInfo GetSessionInfo() => sessionInfo;
+
+        public Guid GetGuid() => GetSessionInfo().RefreshToken;
     }
 }

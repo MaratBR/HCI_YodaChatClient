@@ -11,7 +11,6 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        DataContext="{Binding RegisterVM, Source={StaticResource ParentVM}}"
         Title="Registration form" Height="522" Width="800">
     <Grid>
         <Grid.RowDefinitions>

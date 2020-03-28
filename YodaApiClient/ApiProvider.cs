@@ -14,7 +14,7 @@ namespace YodaApiClient
     {
         public string AccessToken { get; set; }
 
-        public string RefreshToken { get; set; }
+        public Guid RefreshToken { get; set; }
     }
 
     class RegistrationResponse
@@ -51,12 +51,22 @@ namespace YodaApiClient
 
             var data = await response.GetJson<AuthenticationResponse>();
 
-             return new Api(data.AccessToken, configuration);
+             return new Api(
+                 new SessionInfo
+                 {
+                     Token = data.AccessToken,
+                     RefreshToken = data.RefreshToken,
+                     ExpiresAt = DateTime.MaxValue, // TODO
+                 }
+             , configuration);
         }
 
         public async Task<IApi> CreateApi(SessionInfo session)
         {
-            return new Api(session.Token, configuration);
+            var api = new Api(session, configuration);
+            await api.GetUserAsync();
+
+            return api;
         }
 
         public async Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request)

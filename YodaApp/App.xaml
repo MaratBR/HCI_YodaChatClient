@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:utils="clr-namespace:YodaApp.Utils"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:vm="clr-namespace:YodaApp.ViewModels"
-             xmlns:System="clr-namespace:System;assembly=mscorlib"
-             StartupUri="Views/MainWindow.xaml">
+             xmlns:System="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Нам не нужен StartUpUri (или как там он назывался), см. App.xaml.cs -->
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,8 +18,6 @@
                 <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBody}" />
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
             </Style>
-
-            <vm:MainWindowViewModel x:Key="ParentVM" />
 
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
 

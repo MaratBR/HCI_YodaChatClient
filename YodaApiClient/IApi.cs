@@ -66,5 +66,9 @@ namespace YodaApiClient
         Task<IChatApiHandler> Connect();
 
         Task<FileModel> UploadFile(string fileName, Stream fileStream);
+
+        SessionInfo GetSessionInfo();
+
+        Guid GetGuid();
     }
 }
