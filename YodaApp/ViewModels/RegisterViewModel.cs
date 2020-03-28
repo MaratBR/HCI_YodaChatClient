@@ -16,20 +16,41 @@ namespace YodaApp.ViewModels
     class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
+        private readonly IWindowService _windows;
 
-        public RegisterViewModel(IAuthenticationService authentication)
+        public RegisterViewModel(IAuthenticationService authentication, IWindowService windows)
         {
             _authentication = authentication;
+            _windows = windows;
+            SelectedGender = alien;
+            GenderDeclarations.Add(alien);
         }
 
         #region Properties
+
+        private bool terms;
+
+        public bool Terms
+        {
+            get { return terms; }
+            set
+            {
+                Set(ref terms, nameof(Terms), value);
+                SubmitCommand.RaiseCanExecuteChanged();
+            }
+        }
+
 
         private string userName;
 
         public string UserName
         {
             get { return userName; }
-            set => Set(ref userName, nameof(UserName), value);
+            set
+            {
+                Set(ref userName, nameof(UserName), value);
+                SubmitCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private string email;
@@ -37,7 +58,11 @@ namespace YodaApp.ViewModels
         public string EMail
         {
             get { return email; }
-            set => Set(ref email, nameof(EMail), value);
+            set
+            {
+                Set(ref email, nameof(EMail), value);
+                SubmitCommand.RaiseCanExecuteChanged();
+            }
         }
 
 
@@ -46,15 +71,19 @@ namespace YodaApp.ViewModels
         public string Phone
         {
             get { return phone; }
-            set => Set(ref phone, nameof(Phone), value);
+            set
+            {
+                Set(ref phone, nameof(Phone), value);
+                SubmitCommand.RaiseCanExecuteChanged();
+            }
         }
 
-        private Gender gender;
+        private GenderDeclaration gender;
 
-        public Gender Gender
+        public GenderDeclaration SelectedGender
         {
             get { return gender; }
-            set => Set(ref gender, nameof(Gender), value);
+            set => Set(ref gender, nameof(SelectedGender), value);
         }
 
         internal class GenderDeclaration
@@ -64,27 +93,31 @@ namespace YodaApp.ViewModels
             public string Caption { get; set; }
         }
 
-        public readonly List<GenderDeclaration> GenderDeclarations = new List<GenderDeclaration>
+
+        private readonly GenderDeclaration alien = new GenderDeclaration
+        {
+            Caption = "Alien\naka ???",
+            Gender = null,
+            Image = (BitmapImage)App.Current.Resources["AlienIcon"]
+        };
+
+        public List<GenderDeclaration> GenderDeclarations { get; } = new List<GenderDeclaration>
         {
             new GenderDeclaration
             {
-                Caption = "Respect",
+                Caption = "Respect\naka male",
                 Gender = Gender.Respect,
                 Image = (BitmapImage)App.Current.Resources["RespectIcon"]
             },
             new GenderDeclaration
             {
-                Caption = "Smooch",
+                Caption = "Smooch\naka Female",
                 Gender = Gender.Smooch,
                 Image = (BitmapImage)App.Current.Resources["SmoochIcon"]
-            },
-            new GenderDeclaration
-            {
-                Caption = "Alien",
-                Gender = null,
-                Image = (BitmapImage)App.Current.Resources["AlienIcon"]
             }
         };
+
+        public bool IsValid => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(EMail) && !string.IsNullOrWhiteSpace(Phone) && Terms;
 
         #endregion
 
@@ -92,7 +125,7 @@ namespace YodaApp.ViewModels
 
         private AbstractCommand _submitCommand;
 
-        public AbstractCommand SubmitCommand => _submitCommand ?? (_submitCommand = new AsyncRelayCommand<PasswordBox>(Submit));
+        public AbstractCommand SubmitCommand => _submitCommand ?? (_submitCommand = new AsyncRelayCommand<PasswordBox>(Submit, _pwd => IsValid && _pwd.Password.Length >= 8));
 
         private async Task Submit(PasswordBox passwordBox)
         {
@@ -102,7 +135,7 @@ namespace YodaApp.ViewModels
             {
                 Password = pwd,
                 Email = email,
-                Gender = Gender,
+                Gender = SelectedGender.Gender,
                 UserName = UserName,
                 PhoneNumber = Phone
             };
@@ -113,7 +146,11 @@ namespace YodaApp.ViewModels
             catch(ApiException exception)
             {
                 MessageBox.Show(exception.Message);
+                return;
             }
+
+            _windows.ShowLogInWindow();
+            _windows.CloseSignUpWindow();
         }
 
         #endregion

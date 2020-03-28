@@ -46,6 +46,8 @@ namespace YodaApiClient
         Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request);
 
         Task<IApi> CreateApi(SessionInfo session);
+
+        Task<bool> Ping();
     }
 
     public class CreateRoomRequest

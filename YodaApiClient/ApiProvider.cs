@@ -43,10 +43,20 @@ namespace YodaApiClient
             var httpClient = new HttpClient();
 
             // PostJson -> Extensions.cs
-            var response = await httpClient.PostJson(
-                configuration.AppendPathToMainUrl(ApiReference.AUTHENTICATION_ROUTE),
-                request
-                );
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.PostJson(
+                    configuration.AppendPathToMainUrl(ApiReference.AUTHENTICATION_ROUTE),
+                    request
+                    );
+            }
+            catch(HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
             await response.ThrowErrorIfNotSuccessful();
 
             var data = await response.GetJson<AuthenticationResponse>();
@@ -69,13 +79,35 @@ namespace YodaApiClient
             return api;
         }
 
+        public async Task<bool> Ping()
+        {
+            try
+            {
+                var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.PING_ROUTE));
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<IApi> RegisterUserAndCreateApi(RegistrationRequest request)
         {
             // PostJson -> Extensions.cs
-            var response = await httpClient.PostJson(
-                configuration.AppendPathToMainUrl(ApiReference.REGISTRATION_ROUTE),
-                request
-                );
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.PostJson(
+                    configuration.AppendPathToMainUrl(ApiReference.REGISTRATION_ROUTE),
+                    request
+                    );
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
 
             await response.ThrowErrorIfNotSuccessful();
 

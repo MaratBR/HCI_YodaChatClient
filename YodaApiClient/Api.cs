@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
@@ -41,7 +42,17 @@ namespace YodaApiClient
 
         public async Task<Room> CreateRoom(CreateRoomRequest request)
         {
-            var response = await httpClient.PostJson(configuration.AppendPathToMainUrl(ApiReference.CREATE_ROOM_ROUTE), request);
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.PostJson(configuration.AppendPathToMainUrl(ApiReference.CREATE_ROOM_ROUTE), request);
+            }
+            catch(HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
             await response.ThrowErrorIfNotSuccessful();
 
             var room = await response.GetJson<Room>();
@@ -51,7 +62,18 @@ namespace YodaApiClient
 
         public async Task<ICollection<Room>> GetRooms()
         {
-            var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.LIST_OF_ROOMS_ROUTE));
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.LIST_OF_ROOMS_ROUTE));
+            }
+            catch(HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+
             await response.ThrowErrorIfNotSuccessful();
 
             var roomsResponse = await response.GetJson<RoomsResponse>();
@@ -62,7 +84,17 @@ namespace YodaApiClient
         {
             if (user == null || DateTime.Now - lastUserUpdate < TimeSpan.FromHours(1))
             {
-                var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.CURRENT_USER_ROUTE));
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.CURRENT_USER_ROUTE));
+                }
+                catch(HttpRequestException exc)
+                {
+                    throw new ServiceUnavailableException(exc.Message);
+                }
+
                 await response.ThrowErrorIfNotSuccessful();
 
                 var user = await response.GetJson<User>();
@@ -79,7 +111,17 @@ namespace YodaApiClient
             {
                 content.Add(new StreamContent(fileStream), "file", fileName);
 
-                var response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
+                }
+                catch (HttpRequestException exc)
+                {
+                    throw new ServiceUnavailableException(exc.Message);
+                }
+
                 await response.ThrowErrorIfNotSuccessful();
 
                 return await response.GetJson<FileModel>();

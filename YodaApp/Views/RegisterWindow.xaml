@@ -22,7 +22,7 @@
 
         <Border Background="#11FFFFFF" Grid.Row="1" BorderBrush="#55FFFFFF" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <CheckBox Visibility="{Binding IsSubmitting, Converter={StaticResource BooleanToVisibilityInverted}}" IsChecked="{Binding TermsOfServiceConfirmation}" Margin="0,0,20,0">I have read and agreed to the Terms of service</CheckBox>
+                <CheckBox Visibility="{Binding IsSubmitting, Converter={StaticResource BooleanToVisibilityInverted}}" IsChecked="{Binding Terms}" Margin="0,0,20,0">I have read and agreed to the Terms of service</CheckBox>
 
                 <Button Margin="0,0,20,0"
                         CommandParameter="{Binding ElementName=passwordBox}"
@@ -79,9 +79,15 @@
 
                 <TextBlock Margin="0,30,0,0" HorizontalAlignment="Center">You are...</TextBlock>
 
-                <ItemsControl HorizontalAlignment="Center" ItemsSource="{Binding GenderDeclarations}">
+                <ListBox SelectionMode="Single" HorizontalAlignment="Center" ItemsSource="{Binding GenderDeclarations}" SelectedItem="{Binding SelectedGender}">
 
-                    <ItemsControl.Resources>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.Resources>
                         <Style TargetType="RadioButton">
                             <Style.Triggers>
                                 <Trigger Property="IsChecked" Value="False">
@@ -99,29 +105,31 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
-                    </ItemsControl.Resources>
+                    </ListBox.Resources>
 
-                    <ItemsControl.ItemTemplate>
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
+                            <RadioButton GroupName="Gender" Command="{Binding SetGender}" CommandParameter="{Binding Gender}">
+                                <RadioButton.IsChecked>
+                                    <Binding Path="IsSelected"
+                                         RelativeSource="{RelativeSource AncestorType=ListBoxItem}"
+                                         Mode="TwoWay" />
+                                </RadioButton.IsChecked>
 
-                            <RadioButton
-                                IsChecked="{Binding
-                                    Path=DataContext.Gender,
-                                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}},
-                                    Converter={StaticResource EnumBooleanConverter},
-                                    ConverterParameter={Binding Gender}}" >
-                                <StackPanel>
-                                    <Image Source="{Binding Image}">
-                                        <Image.Clip>
-                                            <RectangleGeometry RadiusX="37.5" RadiusY="37.5" Rect="0,0,75,75" />
-                                        </Image.Clip>
-                                    </Image>
-                                    <TextBlock Text="{Binding Caption}" Foreground="White" HorizontalAlignment="Center" />
+                                <StackPanel Margin="4">
+                                    <Border HorizontalAlignment="Center" BorderBrush="White" BorderThickness="2" CornerRadius="37.5" Cursor="Hand">
+                                        <Image Source="{Binding Image}" Width="75" Height="75">
+                                            <Image.Clip>
+                                                <RectangleGeometry RadiusX="37.5" RadiusY="37.5" Rect="0,0,75,75" />
+                                            </Image.Clip>
+                                        </Image>
+                                    </Border>
+                                    <TextBlock TextAlignment="Center" TextWrapping="Wrap" Foreground="White" HorizontalAlignment="Center" Text="{Binding Caption}" />
                                 </StackPanel>
                             </RadioButton>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
             </StackPanel>
         </ScrollViewer>
