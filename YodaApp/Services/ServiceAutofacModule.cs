@@ -23,6 +23,11 @@ namespace YodaApp.Services
 
 
             builder
+                .RegisterType<StoreBasedApiConfiguration>()
+                .As<ApiConfiguration>()
+                .SingleInstance();
+
+            builder
                 .RegisterType<ApiProvider>()
                 .As<IApiProvider>()
                 .SingleInstance();
@@ -40,6 +45,11 @@ namespace YodaApp.Services
             builder
               .RegisterType<WindowFactory>()
               .As<IWindowFactory>()
+              .SingleInstance();
+
+            builder
+              .RegisterType<AuthenticationService>()
+              .As<IAuthenticationService>()
               .SingleInstance();
         }
     }

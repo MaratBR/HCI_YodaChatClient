@@ -38,9 +38,6 @@ namespace YodaApp.Services.Implementation
             {
                 _windows.ShowLogInWindow();
             }
-
-
-            mainWindow.Show();
         }
     }
 }

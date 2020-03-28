@@ -97,6 +97,7 @@
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\Implementation\AuthenticationService.cs" />
     <Compile Include="Services\Implementation\StartUpService.cs" />
+    <Compile Include="Services\Implementation\StoreBasedApiConfiguration.cs" />
     <Compile Include="Services\Implementation\WindowService.cs" />
     <Compile Include="Services\IStartUpService.cs" />
     <Compile Include="Services\IWindowFactory.cs" />

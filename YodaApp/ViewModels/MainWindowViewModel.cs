@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApp.Persistence;
+using YodaApp.Services;
 using YodaApp.Utils;
 using YodaApp.Views;
 
@@ -14,12 +15,13 @@ namespace YodaApp.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
-        private readonly IStore store = new AppConfigStore();
-        private readonly IApiProvider apiProvider;
+        private readonly IAuthenticationService _authentication;
+        private readonly IWindowService _windows;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IAuthenticationService authentication, IWindowService windows)
         {
-            apiProvider = new ApiProvider(new ApiConfiguration());
+            _authentication = authentication;
+            Init();
         }
 
         #region Properties
@@ -40,38 +42,12 @@ namespace YodaApp.ViewModels
             set => Set(ref userSessions, nameof(UserSessions), value);
         }
 
-        public LoginViewModel LoginVM
-        {
-            get
-            {
-                var loginViewModel = new LoginViewModel(apiProvider);
-                loginViewModel.UserAuthenticated += LoginWindowVM_UserAuthenticated;
-                loginViewModel.ShowRegisterForm += LoginViewModel_ShowRegisterForm;
-                return loginViewModel;
-            }
-        }
-
-        private void LoginViewModel_ShowRegisterForm(object sender, EventArgs e)
-        {
-
-        }
-
         private bool isWindowHidden = true;
 
         public bool IsWindowHidden
         {
             get => isWindowHidden;
             set => Set(ref isWindowHidden, nameof(IsWindowHidden), value);
-        }
-
-        public RegisterViewModel RegisterVM
-        {
-            get
-            {
-                var vm = new RegisterViewModel(apiProvider);
-
-                return vm;
-            }
         }
 
         #endregion
@@ -82,35 +58,14 @@ namespace YodaApp.ViewModels
 
         public ICommand LogInCommand => _logInCommand ?? (_logInCommand = new RelayCommand(LogIn));
 
-
-        private ICommand _loadedCommand;
-
-        public ICommand LoadedCommand => _loadedCommand ?? (_loadedCommand = new AsyncRelayCommand(Init));
-
-
         #endregion
 
-        private async Task Init()
+        private void Init()
         {
-            var sessions = store.GetSessions();
+            var sessions = _authentication.GetSessions();
 
             UserSessions = new ObservableCollection<UserSessionViewModel>(
-                sessions.Select(
-                    async (s) =>
-                    {
-                        try
-                        {
-                            var api = await apiProvider.CreateApi(s);
-
-                            return new UserSessionViewModel(api);
-                        }
-                        catch(ApiException)
-                        {
-                            return null;
-                        }
-                    })
-                    .Select(t => t.GetAwaiter().GetResult())
-                    .Where(r => r != null)
+                sessions.Select((api) => new UserSessionViewModel(api))
                 );
 
             if (UserSessions.Count != 0)
@@ -124,14 +79,8 @@ namespace YodaApp.ViewModels
 
         private void LogIn()
         {
-            IsWindowHidden = true;
-            var wnd = new LoginWindow();
-            var vm = (LoginViewModel)wnd.DataContext;
-            vm.UserAuthenticated += (object sender, UserAuthenticatedEventArgs e) =>
-            {
-                wnd.Close();
-            };
-            wnd.ShowDialog();
+            _windows.ShowLogInWindow();
+            _windows.HideMainWindow();
         }
 
         private async void LoginWindowVM_UserAuthenticated(object sender, UserAuthenticatedEventArgs e)

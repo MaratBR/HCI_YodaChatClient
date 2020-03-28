@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Features.ResolveAnything;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,6 +30,7 @@ namespace YodaApp
             var containerBuilder = new ContainerBuilder();
 
             containerBuilder.RegisterModule(new ServiceAutofacModule());
+            containerBuilder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
             var container = containerBuilder.Build();
             var startup = container.Resolve<IStartUpService>();

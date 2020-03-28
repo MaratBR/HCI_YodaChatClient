@@ -74,5 +74,24 @@ namespace YodaApp.Persistence
         {
             store.SetEncryted("SESSIONS", JsonConvert.SerializeObject(sessions));
         }
+
+        public static bool? GetBool(this IStore store, string key)
+        {
+            string val = store.Get(key);
+
+            if (val == null)
+                return null;
+
+            val = val.Trim().ToLower();
+
+            bool bVal = val == "yes" || val == "true" || val == "1" || val == "y" || val == "t";
+            if (bVal)
+                return true;
+            bVal = val == "no" || val == "false" || val == "0" || val == "n" || val == "f";
+            if (bVal)
+                return false;
+
+            return null;
+        }
     }
 }
