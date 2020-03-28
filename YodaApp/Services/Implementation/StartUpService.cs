@@ -9,14 +9,14 @@ namespace YodaApp.Services.Implementation
 {
     class StartUpService : IStartUpService
     {
-        private readonly IWindowFactory _factory;
+        private readonly IWindowService _windows;
         private readonly IAuthenticationService _authentication;
         private bool started = false;
         private readonly object _lock = new object();
 
-        public StartUpService(IWindowFactory factory, IAuthenticationService authentication)
+        public StartUpService(IWindowService windows, IAuthenticationService authentication)
         {
-            _factory = factory;
+            _windows = windows;
             _authentication = authentication;
         }
 
@@ -29,15 +29,14 @@ namespace YodaApp.Services.Implementation
                 started = true;
             }
 
-            Window mainWindow;
             await _authentication.Init();
             if (_authentication.HasAuthenticatedSession())
             {
-                mainWindow = _factory.CreateMainWindow();
+                _windows.ShowMainWindow();
             }
             else
             {
-                mainWindow = _factory.CreateLogInWindow();
+                _windows.ShowLogInWindow();
             }
 
 

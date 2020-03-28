@@ -20,9 +20,10 @@ namespace YodaApp.ViewModels
 		public IApi Api { get; set; }
 	}
 
-    class LoginViewModel : WindowCloseableViewModel
+    class LoginViewModel : ViewModelBase
 	{
 		private readonly IAuthenticationService _authentication;
+		private readonly IWindowService _windows;
 
         #region Properties
 
@@ -61,13 +62,11 @@ namespace YodaApp.ViewModels
 		#endregion
 
 
-		public LoginViewModel(IAuthenticationService authentication)
+		public LoginViewModel(IAuthenticationService authentication, IWindowService windows)
 		{
 			_authentication = authentication;
+			_windows = windows;
 		}
-
-		public event EventHandler<UserAuthenticatedEventArgs> UserAuthenticated;
-		public event EventHandler ShowRegisterForm;
 
 		#region Commands
 
@@ -88,8 +87,8 @@ namespace YodaApp.ViewModels
 
 		private void SignUp()
 		{
-			ShowRegisterForm?.Invoke(this, EventArgs.Empty);
-			CloseParent();
+			_windows.ShowSignUpWindow();
+			_windows.CloseLogInWindow();
 		}
 
 		#endregion
@@ -116,7 +115,8 @@ namespace YodaApp.ViewModels
 
 
 			_authentication.SetCurrentSession(api);
-			CloseParent();
+			_windows.CloseLogInWindow();
+			_windows.ShowMainWindow();
 		}
 	}
 }

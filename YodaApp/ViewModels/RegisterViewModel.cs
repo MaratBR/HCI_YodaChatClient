@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApp.Services;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
     class RegisterViewModel : ViewModelBase
     {
-        private readonly IApiProvider apiProvider;
+        private readonly IAuthenticationService _authentication;
 
-        public RegisterViewModel(IApiProvider apiProvider)
+        public RegisterViewModel(IAuthenticationService authentication)
         {
-            this.apiProvider = apiProvider;
+            _authentication = authentication;
         }
 
         #region Properties
@@ -47,9 +49,9 @@ namespace YodaApp.ViewModels
             set => Set(ref phone, nameof(Phone), value);
         }
 
-        private YodaApiClient.DataTypes.Gender gender;
+        private Gender gender;
 
-        public YodaApiClient.DataTypes.Gender Gender
+        public Gender Gender
         {
             get { return gender; }
             set => Set(ref gender, nameof(Gender), value);
@@ -104,7 +106,14 @@ namespace YodaApp.ViewModels
                 UserName = UserName,
                 PhoneNumber = Phone
             };
-            apiProvider.RegisterUserAndCreateApi(request);
+            try
+            {
+                await _authentication.GetApiProvider().RegisterUserAndCreateApi(request);
+            }
+            catch(ApiException exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
 
         #endregion

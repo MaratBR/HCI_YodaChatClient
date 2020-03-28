@@ -21,10 +21,6 @@ namespace YodaApp.Services
                 .As<IStartUpService>()
                 .SingleInstance();
 
-            builder
-                .RegisterType<WindowFactory>()
-                .As<IWindowFactory>()
-                .SingleInstance();
 
             builder
                 .RegisterType<ApiProvider>()
@@ -35,6 +31,16 @@ namespace YodaApp.Services
                 .RegisterType<AppConfigStore>()
                 .As<IStore>()
                 .SingleInstance();
+
+            builder
+                .RegisterType<WindowService>()
+                .As<IWindowService>()
+                .SingleInstance();
+
+            builder
+              .RegisterType<WindowFactory>()
+              .As<IWindowFactory>()
+              .SingleInstance();
         }
     }
 }
