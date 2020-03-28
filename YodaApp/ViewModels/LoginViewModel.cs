@@ -115,8 +115,8 @@ namespace YodaApp.ViewModels
 
 
 			_authentication.SetCurrentSession(api);
-			_windows.CloseLogInWindow();
 			_windows.ShowMainWindow();
+			_windows.CloseLogInWindow();
 		}
 	}
 }

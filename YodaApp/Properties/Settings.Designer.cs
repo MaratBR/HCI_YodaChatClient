@@ -22,5 +22,28 @@ namespace YodaApp.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Sessions {
+            get {
+                return ((string)(this["Sessions"]));
+            }
+            set {
+                this["Sessions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::YodaApiClient.ApiConfiguration ApiConfiguration {
+            get {
+                return ((global::YodaApiClient.ApiConfiguration)(this["ApiConfiguration"]));
+            }
+            set {
+                this["ApiConfiguration"] = value;
+            }
+        }
     }
 }

@@ -11,26 +11,31 @@ namespace YodaApp.Persistence
 {
     public interface IStore
     {
-        string Get(string key);
+        List<SessionInfo> GetSessions();
 
-        void Set(string key, string value);
+        void SetSessions(List<SessionInfo> sessions);
+
+        ApiConfiguration GetConfiguration();
+
+        void SetConfiguration(ApiConfiguration configuration);
     }
 
-    public static class StoreExtension
+    public static class Encryptions
     {
-        public static void SetEncryted(this IStore store, string key, string value)
+        public static string Encrypt(string value)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
+            int newSize = (bytes.Length / 16) * 16 + (bytes.Length % 16 == 0 ? 0 : 16); // размер массива должен быть кратен 16
+            Array.Resize(ref bytes, newSize);
             ProtectedMemory.Protect(bytes, MemoryProtectionScope.SameLogon);
-            store.Set(key, Convert.ToBase64String(bytes));
+            return Convert.ToBase64String(bytes);
         }
 
-        public static string GetEncryted(this IStore store, string key)
+        public static string Decrypt(string value)
         {
-            byte[] data;
-            string value = store.Get(key);
             if (value == null)
                 return null;
+            byte[] data;
             try
             {
                 data = Convert.FromBase64String(value);
@@ -51,47 +56,6 @@ namespace YodaApp.Persistence
             }
 
             return Encoding.UTF8.GetString(data);
-        }
-
-        public static List<SessionInfo> GetSessions(this IStore store)
-        {
-            string strValue = store.GetEncryted("SESSIONS");
-
-            if (strValue == null)
-                return new List<SessionInfo>();
-
-            try
-            {
-                return JsonConvert.DeserializeObject<List<SessionInfo>>(strValue);
-            }
-            catch(JsonException)
-            {
-                return new List<SessionInfo>();
-            }
-        }
-
-        public static void SetSessions(this IStore store, List<SessionInfo> sessions)
-        {
-            store.SetEncryted("SESSIONS", JsonConvert.SerializeObject(sessions));
-        }
-
-        public static bool? GetBool(this IStore store, string key)
-        {
-            string val = store.Get(key);
-
-            if (val == null)
-                return null;
-
-            val = val.Trim().ToLower();
-
-            bool bVal = val == "yes" || val == "true" || val == "1" || val == "y" || val == "t";
-            if (bVal)
-                return true;
-            bVal = val == "no" || val == "false" || val == "0" || val == "n" || val == "f";
-            if (bVal)
-                return false;
-
-            return null;
         }
     }
 }

@@ -93,11 +93,14 @@
     </ApplicationDefinition>
     <Compile Include="Persistence\AppConfigStore.cs" />
     <Compile Include="Persistence\IStore.cs" />
-    <Compile Include="Persistence\Store.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\Implementation\AuthenticationService.cs" />
     <Compile Include="Services\Implementation\StartUpService.cs" />
-    <Compile Include="Services\Implementation\StoreBasedApiConfiguration.cs" />
     <Compile Include="Services\Implementation\WindowService.cs" />
     <Compile Include="Services\IStartUpService.cs" />
     <Compile Include="Services\IWindowFactory.cs" />
@@ -149,11 +152,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

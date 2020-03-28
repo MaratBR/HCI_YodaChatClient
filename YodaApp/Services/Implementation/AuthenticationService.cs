@@ -25,8 +25,8 @@ namespace YodaApp.Services.Implementation
         {
             var sessions = _store.GetSessions();
             sessions.Insert(0, api.GetSessionInfo());
+            _store.SetSessions(sessions);
             apis[api.GetGuid()] = api;
-            SetCurrentSession(api);
         }
 
         public IApi GetCurrentSession() => currentSession;
