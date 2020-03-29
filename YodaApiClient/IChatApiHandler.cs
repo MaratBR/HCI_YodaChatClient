@@ -7,13 +7,14 @@ using YodaApiClient.DataTypes;
 
 namespace YodaApiClient
 {
+    #region Event args
+
     public class ChatEventArgs : EventArgs
     {
     }
 
     public class ChatMessageEventArgs : ChatEventArgs
     {
-
         public Message Message { get; set; }
     }
 
@@ -31,6 +32,8 @@ namespace YodaApiClient
         public Guid RoomId { get; set; }
     }
 
+    #endregion
+
     public interface IChatApiHandler
     {
         Task SendToRoom(string text, Guid roomId);
@@ -46,6 +49,8 @@ namespace YodaApiClient
         event EventHandler<ChatUserJoinedEventArgs> UserJoined;
 
         event EventHandler<ChatUserLeftEventArgs> UserLeft;
+
+        IRoomHandler GetRoomHandler(Guid id);
 
     }
 }

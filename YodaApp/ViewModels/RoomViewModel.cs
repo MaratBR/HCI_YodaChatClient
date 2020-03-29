@@ -23,6 +23,8 @@ namespace YodaApp.ViewModels
     class RoomViewModel : ViewModelBase
     {
         private readonly Room room;
+        private readonly IApi api;
+
 
         #region Properties
 
@@ -30,7 +32,7 @@ namespace YodaApp.ViewModels
         public string Description => room.Description;
         public Guid Id => room.Id;
 
-        public ObservableCollection<Message> Messages { get; } = new ObservableCollection<Message>();
+        public ObservableCollection<MessageViewModel> Messages { get; } = new ObservableCollection<MessageViewModel>();
 
         private RoomStatus status = RoomStatus.Left;
 
@@ -68,14 +70,10 @@ namespace YodaApp.ViewModels
 
         public event EventHandler HasMessageChanged;
 
-        #region Commands
-
-
-        #endregion
-
-        public RoomViewModel(Room room)
+        public RoomViewModel(Room room, IApi api)
         {
             this.room = room;
+            this.api = api;
         }
 
         public AttachmentViewModel AddAttachment(string fileName, Stream stream)

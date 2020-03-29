@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using YodaApiClient;
+using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
@@ -19,12 +21,12 @@ namespace YodaApp.ViewModels
 
     class MessageViewModel : ViewModelBase
     {
-        private readonly IApi api;
+        private readonly IChatApiHandler handler;
         private readonly Guid roomGuid;
 
-        public MessageViewModel(IApi api, Guid roomGuid)
+        public MessageViewModel(IChatApiHandler handler, Guid roomGuid)
         {
-            this.api = api;
+            this.handler = handler;
             this.roomGuid = roomGuid;
         }
 
@@ -34,6 +36,16 @@ namespace YodaApp.ViewModels
                 return;
 
             Status = MessageStatus.Sending;
+
+            if (Attachments.Any(a => a.FileModel == null))
+            {
+                return;
+            }
+
+            if (Attachments.Count == 0)
+                await handler.SendToRoom(Text, roomGuid);
+            else
+                await handler.SendToRoomWithAttachments(Text, roomGuid, Attachments.Select(a => a.FileModel.Id).ToList());
         }
 
         #region Properties
@@ -63,6 +75,14 @@ namespace YodaApp.ViewModels
             get { return status; }
             set => Set(ref status, nameof(Status), value);
         }
+
+        #endregion
+
+        #region Commands
+
+        private ICommand _sendCommand;
+
+        public ICommand SendCommand => _sendCommand ?? (_sendCommand = new AsyncRelayCommand(Send));
 
         #endregion
     }

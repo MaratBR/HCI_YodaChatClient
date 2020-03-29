@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
+using YodaApiClient.Implementation;
 
 namespace YodaApiClient
 {
@@ -74,6 +75,11 @@ namespace YodaApiClient
         public Task SendToRoom(string text, Guid roomId) => connection.InvokeAsync("Send", text, roomId);
 
         public Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids) => connection.InvokeAsync("SendWithAttachments", text, roomId, fileGuids);
+
+        public IRoomHandler GetRoomHandler(Guid id)
+        {
+            return new RoomHandler(id, this);
+        }
 
         #endregion
     }

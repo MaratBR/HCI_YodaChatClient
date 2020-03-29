@@ -192,7 +192,7 @@ namespace YodaApp.ViewModels
 		{
 			if (roomVMs.ContainsKey(e.Message.RoomId))
 			{
-				roomVMs[e.Message.RoomId].Messages.Add(e.Message);
+				roomVMs[e.Message.RoomId].Messages.Add(new );
 			}
 		}
 
