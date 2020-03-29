@@ -56,9 +56,9 @@ namespace YodaApp.ViewModels
 			SendToRoomCommand.RaiseCanExecuteChanged();
 		}
 
-		private User user;
+		private UserDto user;
 
-		public User User
+		public UserDto User
 		{
 			get => user;
 			set => Set(ref user, nameof(User), value);
@@ -77,6 +77,10 @@ namespace YodaApp.ViewModels
 			if (room.Status == RoomStatus.Joined)
 				return;
 			room.Status = RoomStatus.AwaitingServerReponse;
+#if DEBUG
+			// TODO Remove
+			await Task.Delay(500);
+#endif
 			await handler.JoinRoom(room.Id);
 		}
 
@@ -87,8 +91,13 @@ namespace YodaApp.ViewModels
 
 		private async Task LeaveRoom(RoomViewModel room)
 		{
+			if (room.Status == RoomStatus.Left)
+				return;
 			room.Status = RoomStatus.AwaitingServerReponse;
-
+#if DEBUG
+			// TODO Remove
+			await Task.Delay(500);
+#endif
 			await handler.LeaveRoom(room.Id);
 		}
 
@@ -97,6 +106,7 @@ namespace YodaApp.ViewModels
 
 		public AbstractCommand SendToRoomCommand => _sendToRoomCommand ?? (_sendToRoomCommand = new AsyncRelayCommand<RoomViewModel>(SendToRoom, room => room.HasMessage));
 
+		[Obsolete("This functionality will be moved to RoomViewModel")]
 		private Task SendToRoom(RoomViewModel room)
 		{
 			if (room.Attachments.Count != 0)
@@ -118,6 +128,7 @@ namespace YodaApp.ViewModels
 
 		public AbstractCommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new AsyncRelayCommand<RoomViewModel>(AddAttachment));
 
+		[Obsolete("This functionality will be moved to RoomViewModel")]
 		private async Task AddAttachment(RoomViewModel room)
 		{
 			var dialog = new OpenFileDialog();
@@ -161,6 +172,7 @@ namespace YodaApp.ViewModels
 
 		public void Disconnect()
 		{
+			// TODO add actual method for disconnection
 			handler = null;
 		}
 
@@ -172,8 +184,7 @@ namespace YodaApp.ViewModels
 				JoinRoomCommand.RaiseCanExecuteChanged();
 			}
 
-			Console.WriteLine($"User {e.UserId} joined {e.RoomId}");
-			//throw new NotImplementedException();
+			Console.WriteLine($"User {e.UserId} left {e.RoomId}");
 		}
 
 		private void Handler_UserJoined(object sender, ChatUserJoinedEventArgs e)
@@ -184,15 +195,14 @@ namespace YodaApp.ViewModels
 				LeaveRoomCommand.RaiseCanExecuteChanged();
 			}
 
-			Console.WriteLine($"User {e.UserId} left {e.RoomId}");
-			//throw new NotImplementedException();
+			Console.WriteLine($"User {e.UserId} joined {e.RoomId}");
 		}
 
 		private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
 		{
 			if (roomVMs.ContainsKey(e.Message.RoomId))
 			{
-				roomVMs[e.Message.RoomId].Messages.Add(new );
+				roomVMs[e.Message.RoomId].Messages.Add(new MessageViewModel(e.Message));
 			}
 		}
 
@@ -216,7 +226,7 @@ namespace YodaApp.ViewModels
 
 		public void AddRoom(Room room)
 		{
-			var vm = new RoomViewModel(room);
+			var vm = new RoomViewModel(room, api);
 			roomVMs[room.Id] = vm;
 			Rooms.Add(vm);
 		}

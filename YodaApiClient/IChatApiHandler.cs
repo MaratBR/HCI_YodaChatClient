@@ -15,7 +15,7 @@ namespace YodaApiClient
 
     public class ChatMessageEventArgs : ChatEventArgs
     {
-        public Message Message { get; set; }
+        public IMessageHandler Message { get; set; }
     }
 
     public class ChatUserJoinedEventArgs : ChatEventArgs
@@ -36,8 +36,10 @@ namespace YodaApiClient
 
     public interface IChatApiHandler
     {
+        [Obsolete]
         Task SendToRoom(string text, Guid roomId);
 
+        [Obsolete]
         Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids);
 
         Task JoinRoom(Guid roomId);
@@ -51,6 +53,8 @@ namespace YodaApiClient
         event EventHandler<ChatUserLeftEventArgs> UserLeft;
 
         IRoomHandler GetRoomHandler(Guid id);
+
+        IUser GetUser();
 
     }
 }

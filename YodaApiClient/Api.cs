@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
 using YodaApiClient.Helpers;
+using YodaApiClient.Implementation;
 
 namespace YodaApiClient
 {
@@ -21,7 +22,7 @@ namespace YodaApiClient
         private readonly ApiConfiguration configuration;
         private readonly HttpClient httpClient;
 
-        private User user;
+        private IUser user;
         private DateTime lastUserUpdate;
 
         public Api(SessionInfo sessionInfo, ApiConfiguration configuration)
@@ -34,7 +35,7 @@ namespace YodaApiClient
 
         public async Task<IChatApiHandler> Connect()
         {
-            var handler = new ChatApiHandler(sessionInfo.Token, configuration);
+            var handler = new ChatApiHandler(this, configuration);
             await handler.Connect();
 
             return handler;
@@ -80,7 +81,7 @@ namespace YodaApiClient
             return roomsResponse.Rooms;
         }
 
-        public async Task<User> GetUserAsync()
+        public async Task<IUser> GetUserAsync()
         {
             if (user == null || DateTime.Now - lastUserUpdate < TimeSpan.FromHours(1))
             {
@@ -97,9 +98,9 @@ namespace YodaApiClient
 
                 await response.ThrowErrorIfNotSuccessful();
 
-                var user = await response.GetJson<User>();
+                var user = await response.GetJson<UserDto>();
 
-                this.user = user;
+                this.user = new User(user);
             }
 
             return user;
@@ -131,5 +132,31 @@ namespace YodaApiClient
         public SessionInfo GetSessionInfo() => sessionInfo;
 
         public Guid GetGuid() => GetSessionInfo().SessionId;
+
+        public string GetAccessToken()
+        {
+            return sessionInfo.Token;
+
+        }
+
+        public async Task<IUser> GetUserAsync(Guid id)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(string.Format(ApiReference.GET_USER_ROUTE, id)));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            var user = await response.GetJson<UserDto>();
+
+            return new User(user);
+        }
     }
 }

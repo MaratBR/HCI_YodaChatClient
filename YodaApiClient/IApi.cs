@@ -59,7 +59,9 @@ namespace YodaApiClient
 
     public interface IApi
     {
-        Task<User> GetUserAsync();
+        Task<IUser> GetUserAsync();
+
+        Task<IUser> GetUserAsync(Guid id);
 
         Task<ICollection<Room>> GetRooms();
 
@@ -72,5 +74,7 @@ namespace YodaApiClient
         SessionInfo GetSessionInfo();
 
         Guid GetGuid();
+
+        string GetAccessToken();
     }
 }

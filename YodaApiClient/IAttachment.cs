@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient
 {
-    [Obsolete]
-    public interface IMessageSender
+    public interface IAttachment
     {
-        Task Send(string text);
-
-        Task SendWithAttachments(string text, IList<Guid> attachments);
+        Guid Id { get; }
     }
 }

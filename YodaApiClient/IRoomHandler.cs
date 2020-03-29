@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient
 {
-    public interface IRoomHandler
+    public interface IRoomHandler : IMessageQueue
     {
+        [Obsolete]
         IMessageSender GetMessageSender();
+
+        Guid Id { get; }
+
+        IMessageHandler CreateMessage();
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 

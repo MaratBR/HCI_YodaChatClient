@@ -19,7 +19,7 @@ namespace YodaApiClient
 
     class RegistrationResponse
     {
-        public User User { get; set; }
+        public UserDto User { get; set; }
     }
 
     /// <summary>

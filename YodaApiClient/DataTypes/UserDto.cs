@@ -14,7 +14,7 @@ namespace YodaApiClient.DataTypes
         Smooch = 1 // aka female
     }
 
-    public class User
+    public class UserDto
     {
         public string UserName { get; set; }
 

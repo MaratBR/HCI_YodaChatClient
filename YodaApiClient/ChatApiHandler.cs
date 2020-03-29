@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
@@ -8,16 +9,24 @@ using YodaApiClient.Implementation;
 
 namespace YodaApiClient
 {
-    internal class ChatApiHandler : IChatApiHandler
+    internal class ChatApiHandler : IChatApiHandler, IMessageQueue
     {
-        private string accessToken;
+        internal struct MessageQueueEntry
+        {
+            public IMessageHandler Message;
+            public TaskCompletionSource<MessageQueueStatus> Promise;
+        }
+
+        private IUser user;
+        private IApi api;
         private ApiConfiguration configuration;
         private HubConnection connection;
+        private Queue<MessageQueueEntry> messages = new Queue<MessageQueueEntry>();
+        private readonly IDictionary<Guid, IRoomHandler> roomHandlers = new Dictionary<Guid, IRoomHandler>();
 
-
-        public ChatApiHandler(string accessToken, ApiConfiguration configuration)
+        public ChatApiHandler(IApi api, ApiConfiguration configuration)
         {
-            this.accessToken = accessToken;
+            this.api = api;
             this.configuration = configuration;
         }
 
@@ -25,9 +34,10 @@ namespace YodaApiClient
         {
             connection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {accessToken}"))
+                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {api.GetAccessToken()}"))
                 .Build();
             await connection.StartAsync();
+            user = await api.GetUserAsync();
 
             Init();
         }
@@ -51,9 +61,22 @@ namespace YodaApiClient
             UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
-        private void YODAHub_Message(Message message)
+        private async void YODAHub_Message(Message message)
         {
-            MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = message });
+            IUser user = await FindUser(message.SenderId);
+            ICollection<IAttachment> attachments = GetAllAttachments(message.Attachments);
+            IMessageHandler messageHandler = new MessageHandler(GetRoomHandler(message.RoomId), user, message.Text, attachments);
+            MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = messageHandler });
+        }
+
+        private ICollection<IAttachment> GetAllAttachments(IEnumerable<Guid> attachments)
+        {
+            return attachments.Select(a => new Attachment(a) as IAttachment).ToList();
+        }
+
+        private Task<IUser> FindUser(Guid senderId)
+        {
+            return api.GetUserAsync(senderId);
         }
 
         #endregion
@@ -66,7 +89,7 @@ namespace YodaApiClient
 
         #endregion
 
-        #region Implementation
+        #region IChatApiHandler implementation
 
         public Task JoinRoom(Guid roomId) => connection.InvokeAsync("JoinRoom", roomId);
 
@@ -78,7 +101,28 @@ namespace YodaApiClient
 
         public IRoomHandler GetRoomHandler(Guid id)
         {
-            return new RoomHandler(id, this);
+            if (!roomHandlers.ContainsKey(id))
+            {
+                roomHandlers[id] = new RoomHandler(id, this);
+            }
+
+            return roomHandlers[id];
+        }
+
+        public IUser GetUser()
+        {
+            return user;
+        }
+
+        #endregion
+
+        #region IMessageQueue implementation
+
+        public Task<MessageQueueStatus> PutToQueue(IMessageHandler message)
+        {
+            var promise = new TaskCompletionSource<MessageQueueStatus>();
+            messages.Enqueue(new MessageQueueEntry { Promise = promise, Message = message });
+            return promise.Task;
         }
 
         #endregion

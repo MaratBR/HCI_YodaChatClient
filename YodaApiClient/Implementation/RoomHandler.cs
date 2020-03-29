@@ -8,12 +8,13 @@ namespace YodaApiClient.Implementation
 {
     class RoomHandler : IRoomHandler, IMessageSender
     {
-        private readonly Guid id;
-        private readonly IChatApiHandler _handler;
+        private readonly ChatApiHandler _handler;
 
-        internal RoomHandler(Guid id, IChatApiHandler handler)
+        public Guid Id { get; }
+
+        internal RoomHandler(Guid id, ChatApiHandler handler)
         {
-            this.id = id;
+            this.Id = id;
             _handler = handler;
 
             // TODO optimize (!!!)
@@ -32,7 +33,7 @@ namespace YodaApiClient.Implementation
 
         private void Handler_UserLeft(object sender, ChatUserLeftEventArgs e)
         {
-            if (e.RoomId == id)
+            if (e.RoomId == Id)
             {
                 UserLeft?.Invoke(this, e);
             }
@@ -40,7 +41,7 @@ namespace YodaApiClient.Implementation
 
         private void Handler_UserJoined(object sender, ChatUserJoinedEventArgs e)
         {
-            if (e.RoomId == id)
+            if (e.RoomId == Id)
             {
                 UserJoined?.Invoke(this, e);
             }
@@ -48,7 +49,7 @@ namespace YodaApiClient.Implementation
 
         private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
         {
-            if (e.Message.RoomId == id)
+            if (e.Message.Room.Id == Id)
             {
                 MessageReceived?.Invoke(this, e);
             }
@@ -65,12 +66,24 @@ namespace YodaApiClient.Implementation
 
         public Task Send(string text)
         {
-            return _handler.SendToRoom(text, id);
+            return _handler.SendToRoom(text, Id);
         }
+
 
         public Task SendWithAttachments(string text, IList<Guid> attachments)
         {
-            return _handler.SendToRoomWithAttachments(text, id, attachments);
+            return _handler.SendToRoomWithAttachments(text, Id, attachments);
+        }
+
+        public Task<MessageQueueStatus> PutToQueue(IMessageHandler messageHandler)
+        {
+            return _handler.PutToQueue(messageHandler);
+
+        }
+
+        public IMessageHandler CreateMessage()
+        {
+            return new MessageHandler(this, _handler.GetUser());
         }
     }
 }
