@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -21,51 +22,48 @@ namespace YodaApp.ViewModels
 
     class MessageViewModel : ViewModelBase
     {
-        private readonly IChatApiHandler handler;
-        private readonly Guid roomGuid;
+        private readonly IMessageHandler messageHandler;
 
-        public MessageViewModel(IChatApiHandler handler, Guid roomGuid)
+        public event EventHandler MessageSent;
+
+        public MessageViewModel(IMessageHandler messageHandler)
         {
-            this.handler = handler;
-            this.roomGuid = roomGuid;
+            this.messageHandler = messageHandler;
+            Attachments = new ObservableCollection<AttachmentViewModel>(
+                messageHandler.Attachments.Select(file => new AttachmentViewModel(file))
+                );
         }
 
         public async Task Send()
         {
-            if (Status == MessageStatus.Sent)
-                return;
-
-            Status = MessageStatus.Sending;
-
-            if (Attachments.Any(a => a.FileModel == null))
+            if (messageHandler.CanBeSent())
             {
-                return;
+                MessageSent?.Invoke(this, EventArgs.Empty);
+                await messageHandler.Send();
             }
+        }
 
-            if (Attachments.Count == 0)
-                await handler.SendToRoom(Text, roomGuid);
-            else
-                await handler.SendToRoomWithAttachments(Text, roomGuid, Attachments.Select(a => a.FileModel.Id).ToList());
+        public void AddAttachment(IFile file)
+        {
+            Attachments.Add(new AttachmentViewModel(file));
         }
 
         #region Properties
 
-        private string text;
 
         public string Text
         {
-            get { return text; }
-            set => Set(ref text, nameof(Text), value);
+            get => messageHandler.Text;
+            set
+            {
+                if (messageHandler.Text == value)
+                    return;
+                messageHandler.Text = value;
+                OnPropertyChanged(nameof(Text));
+            }
         }
 
-
-        private ObservableCollection<AttachmentViewModel> attachments;
-
-        public ObservableCollection<AttachmentViewModel> Attachments
-        {
-            get { return attachments; }
-            set => Set(ref attachments, nameof(Attachments), value);
-        }
+        public ObservableCollection<AttachmentViewModel> Attachments { get; }
 
 
         private MessageStatus status = MessageStatus.Sending;
@@ -83,6 +81,26 @@ namespace YodaApp.ViewModels
         private ICommand _sendCommand;
 
         public ICommand SendCommand => _sendCommand ?? (_sendCommand = new AsyncRelayCommand(Send));
+
+
+        private ICommand _addAttachmentCommand;
+
+        public ICommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new AsyncRelayCommand(AddAttachmentCommandHandler));
+
+        private async Task AddAttachmentCommandHandler()
+        {
+            var dialog = new OpenFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+                string filePath = dialog.FileName;
+                string fileName = Path.GetFileName(filePath);
+                var stream = dialog.OpenFile();
+                IFile file = messageHandler.AddAttachment(stream, stream.Length, fileName);
+                await file.Upload();
+                AddAttachment(file);
+            }
+        }
 
         #endregion
     }

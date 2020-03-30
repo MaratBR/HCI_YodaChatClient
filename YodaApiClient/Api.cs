@@ -106,7 +106,7 @@ namespace YodaApiClient
             return user;
         }
 
-        public async Task<FileModel> UploadFile(string fileName, Stream fileStream)
+        public async Task<FileModel> UploadFile(Stream fileStream, string fileName)
         {
             using (var content = new MultipartFormDataContent())
             {
@@ -157,6 +157,36 @@ namespace YodaApiClient
             var user = await response.GetJson<UserDto>();
 
             return new User(user);
+        }
+
+        public async Task<FileModel> LoadFileModel(Guid id)
+        {
+            HttpResponseMessage response;
+            try
+            {
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(string.Format(ApiReference.GET_FILEMODEL_ROUTE, id)));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            return await response.GetJson<FileModel>();
+        }
+
+        public IFile CreateFile(Stream stream, long fileSize, string fileName)
+        {
+            return new FileImpl(stream, fileName, fileSize, this);
+        }
+
+        public IFile CreateFile(Guid id)
+        {
+            return new FileImpl(id, this);
         }
     }
 }

@@ -67,8 +67,9 @@ namespace YodaApiClient
                      Token = data.AccessToken,
                      RefreshToken = data.RefreshToken,
                      ExpiresAt = DateTime.MaxValue, // TODO
-                 }
-             , configuration);
+                 },
+                 configuration
+                 );
         }
 
         public async Task<IApi> CreateApi(SessionInfo session)

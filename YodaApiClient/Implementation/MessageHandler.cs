@@ -14,7 +14,7 @@ namespace YodaApiClient.Implementation
             User = user;
         }
 
-        public MessageHandler(IRoomHandler room, IUser user, string text, ICollection<IAttachment> attachments)
+        public MessageHandler(IRoomHandler room, IUser user, string text, ICollection<IFile> attachments)
             : this(room, user)
         {
             Status = MessageStatus.Received;
@@ -30,7 +30,7 @@ namespace YodaApiClient.Implementation
 
         public string Error { get; set; }
 
-        public ICollection<IAttachment> Attachments { get; set; } = new List<IAttachment>();
+        public ICollection<IFile> Attachments { get; set; } = new List<IFile>();
 
         public MessageStatus Status { get; set; } = MessageStatus.Draft;
 

@@ -56,5 +56,6 @@ namespace YodaApiClient
 
         IUser GetUser();
 
+        IApi API { get; }
     }
 }

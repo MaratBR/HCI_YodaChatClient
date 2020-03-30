@@ -36,6 +36,14 @@ namespace YodaApp.Services.Implementation
             };
         }
 
+        public Window CreateNewRoomWindow()
+        {
+            return new NewRoomWindow
+            {
+                DataContext = _context.Resolve<NewRoomViewModel>()
+            };
+        }
+
         public Window CreateSignUpWindow()
         {
             return new RegisterWindow

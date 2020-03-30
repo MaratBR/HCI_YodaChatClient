@@ -11,6 +11,10 @@ namespace YodaApiClient
         [Obsolete]
         IMessageSender GetMessageSender();
 
+        string Name { get; }
+
+        string Description { get; }
+
         Guid Id { get; }
 
         IMessageHandler CreateMessage();
@@ -20,6 +24,8 @@ namespace YodaApiClient
         event EventHandler<ChatUserJoinedEventArgs> UserJoined;
 
         event EventHandler<ChatUserLeftEventArgs> UserLeft;
+
+        IApi API { get; }
 
     }
 }

@@ -24,5 +24,7 @@ namespace YodaApp.Services
         Task Init();
 
         IApiProvider GetApiProvider();
+
+        event EventHandler SessionChanged;
     }
 }

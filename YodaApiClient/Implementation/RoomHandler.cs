@@ -12,6 +12,12 @@ namespace YodaApiClient.Implementation
 
         public Guid Id { get; }
 
+        public string Name => "NOT IMPLEMENTED";
+
+        public string Description => "NOT IMPLEMENTED";
+
+        public IApi API => _handler.API;
+
         internal RoomHandler(Guid id, ChatApiHandler handler)
         {
             this.Id = id;

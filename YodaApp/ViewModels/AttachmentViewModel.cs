@@ -4,46 +4,47 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
 
     class AttachmentViewModel : ViewModelBase
     {
-        public string FileName { get; private set; }
+        private readonly IFile file;
 
-        public string FileSize { get; private set; }
+        public string FileName => file.FileName;
 
-        private bool uploaded;
+        public string FileSize => file.Size >= 1024 * 1024 ? $"{Math.Round((decimal)file.Size / (1024 * 1024), 1)}M" :
+                file.Size >= 1024 ? $"{Math.Round((decimal)file.Size / 1024, 1)}K" :
+                $"{file.Size}B";
 
-        public bool Uploaded
+        public FileState State => file.State;
+
+        public FileModel FileModel => file.FileModel;
+
+        public string Status => State.GetDescription();
+
+
+        public AttachmentViewModel(IFile file)
         {
-            get => uploaded;
-            set
-            {
-                Set(ref uploaded, nameof(Uploaded), value);
-                OnPropertyChanged(nameof(Status));
-            }
+            this.file = file;
+            file.StateChanged += File_StateChanged;
         }
 
-        private FileModel fileModel;
-
-        public FileModel FileModel
+        ~AttachmentViewModel()
         {
-            get { return fileModel; }
-            set => Set(ref fileModel, nameof(FileModel), value);
+            file.StateChanged -= File_StateChanged;
         }
 
-        public string Status => Uploaded ? "Done" : "Uploading...";
-
-
-        public AttachmentViewModel(string fileName, long size)
+        private void File_StateChanged(object sender, EventArgs e)
         {
-            FileName = fileName;
-            FileSize = size >= 1024 * 1024 ? $"{Math.Round((decimal)size / (1024 * 1024), 1)}M" :
-                size >= 1024 ? $"{Math.Round((decimal)size / 1024, 1)}K" :
-                $"{size}B";
+            OnPropertyChanged(nameof(State));
+            OnPropertyChanged(nameof(FileModel));
+            OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(FileName));
         }
     }
 }

@@ -24,6 +24,8 @@ namespace YodaApiClient
         private Queue<MessageQueueEntry> messages = new Queue<MessageQueueEntry>();
         private readonly IDictionary<Guid, IRoomHandler> roomHandlers = new Dictionary<Guid, IRoomHandler>();
 
+        public IApi API => api;
+
         public ChatApiHandler(IApi api, ApiConfiguration configuration)
         {
             this.api = api;
@@ -64,14 +66,14 @@ namespace YodaApiClient
         private async void YODAHub_Message(Message message)
         {
             IUser user = await FindUser(message.SenderId);
-            ICollection<IAttachment> attachments = GetAllAttachments(message.Attachments);
+            ICollection<IFile> attachments = GetAllAttachments(message.Attachments);
             IMessageHandler messageHandler = new MessageHandler(GetRoomHandler(message.RoomId), user, message.Text, attachments);
             MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = messageHandler });
         }
 
-        private ICollection<IAttachment> GetAllAttachments(IEnumerable<Guid> attachments)
+        private ICollection<IFile> GetAllAttachments(IEnumerable<Guid> attachments)
         {
-            return attachments.Select(a => new Attachment(a) as IAttachment).ToList();
+            return attachments.Select(a => new FileImpl(a, api) as IFile).ToList();
         }
 
         private Task<IUser> FindUser(Guid senderId)

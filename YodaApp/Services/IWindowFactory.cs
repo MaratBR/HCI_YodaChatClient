@@ -14,5 +14,7 @@ namespace YodaApp.Services
         Window CreateLogInWindow();
 
         Window CreateMainWindow();
+
+        Window CreateNewRoomWindow();
     }
 }

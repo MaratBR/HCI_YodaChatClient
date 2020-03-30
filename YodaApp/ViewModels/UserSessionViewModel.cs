@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApp.Services;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
     class UserSessionViewModel : ViewModelBase
 	{
-		private readonly IApi _api;
 		private IChatApiHandler handler;
+		private IWindowService _windows;
 		private readonly Dictionary<Guid, RoomViewModel> roomVMs = new Dictionary<Guid, RoomViewModel>();
 
 		#region Properties
@@ -36,29 +37,15 @@ namespace YodaApp.ViewModels
 			get => selectedRoom;
 			set
 			{
-				if (SelectedRoom != null)
-				{
-					SelectedRoom.HasMessageChanged -= SelectedRoom_HasMessageChanged;
-				}
 				Set(ref selectedRoom, nameof(SelectedRoom), value);
-				if (SelectedRoom != null)
-				{
-					SelectedRoom.HasMessageChanged += SelectedRoom_HasMessageChanged;
-				}
 				JoinRoomCommand.RaiseCanExecuteChanged();
 				LeaveRoomCommand.RaiseCanExecuteChanged();
-				SendToRoomCommand.RaiseCanExecuteChanged();
 			}
 		}
 
-		private void SelectedRoom_HasMessageChanged(object sender, EventArgs e)
-		{
-			SendToRoomCommand.RaiseCanExecuteChanged();
-		}
+		private IUser user;
 
-		private UserDto user;
-
-		public UserDto User
+		public IUser User
 		{
 			get => user;
 			set => Set(ref user, nameof(User), value);
@@ -101,70 +88,44 @@ namespace YodaApp.ViewModels
 			await handler.LeaveRoom(room.Id);
 		}
 
+		private ICommand _updateRoomsCommand;
 
-		private AbstractCommand _sendToRoomCommand;
+		public ICommand UpdateRoomsCommand => _updateRoomsCommand ?? (_updateRoomsCommand = new AsyncRelayCommand(UpdateRoomsCommandHandler));
 
-		public AbstractCommand SendToRoomCommand => _sendToRoomCommand ?? (_sendToRoomCommand = new AsyncRelayCommand<RoomViewModel>(SendToRoom, room => room.HasMessage));
-
-		[Obsolete("This functionality will be moved to RoomViewModel")]
-		private Task SendToRoom(RoomViewModel room)
+		private Task UpdateRoomsCommandHandler()
 		{
-			if (room.Attachments.Count != 0)
-			{
-				return handler.SendToRoomWithAttachments(
-					room.Draft,
-					room.Id,
-					room.Attachments.Select(a => a.FileModel.Id).ToList()
-					);
-			}
-			else
-			{
-				return handler.SendToRoom(room.Draft, room.Id);
-			}
+			return UpdateRooms();
 		}
 
+		private ICommand _createRoomCommand;
 
-		private AbstractCommand _addAttachmentCommand;
+		public ICommand CreateRoomCommand => _createRoomCommand ?? (_createRoomCommand = new RelayCommand(CreateRoomCommandHandler));
 
-		public AbstractCommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new AsyncRelayCommand<RoomViewModel>(AddAttachment));
-
-		[Obsolete("This functionality will be moved to RoomViewModel")]
-		private async Task AddAttachment(RoomViewModel room)
+		private void CreateRoomCommandHandler()
 		{
-			var dialog = new OpenFileDialog();
-
-			if (dialog.ShowDialog() == true)
-			{
-				string filePath = dialog.FileName;
-				string fileName = Path.GetFileName(filePath);
-				var stream = dialog.OpenFile();
-				var attachment = room.AddAttachment(fileName, stream);
-
-				var fileModel = await _api.UploadFile(fileName, stream);
-				attachment.FileModel = fileModel;
-				attachment.Uploaded = true;
-			}
+			_windows.ShowNewRoomWindow();
 		}
 
 		#endregion
 
-		public UserSessionViewModel(IApi api)
+		public UserSessionViewModel(IApi api, IWindowService windows)
 		{
-			_api = api;
+			_windows = windows;
+			Api = api;
 		}
 
-		public IApi Api => _api;
+		public IApi Api { get; }
 
 		public async void Update()
 		{
+			await Connect();
 			await UpdateUser();
 			await UpdateRooms();
-			await Connect();
 		}
 
 		private async Task Connect()
 		{
-			handler = await _api.Connect();
+			handler = await Api.Connect();
 			handler.MessageReceived += Handler_MessageReceived;
 			handler.UserJoined += Handler_UserJoined;
 			handler.UserLeft += Handler_UserLeft;
@@ -200,33 +161,33 @@ namespace YodaApp.ViewModels
 
 		private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
 		{
-			if (roomVMs.ContainsKey(e.Message.RoomId))
+			if (roomVMs.ContainsKey(e.Message.Room.Id))
 			{
-				roomVMs[e.Message.RoomId].Messages.Add(new MessageViewModel(e.Message));
+				roomVMs[e.Message.Room.Id].Messages.Add(new MessageViewModel(e.Message));
 			}
 		}
 
 		public async Task UpdateRooms()
 		{
 			Rooms.Clear();
-			foreach (var room in await _api.GetRooms())
+			foreach (var room in await Api.GetRooms())
 			{
 				AddRoom(room);
 			}
 		}
 
-		public async Task UpdateUser() => User = await _api.GetUserAsync();
+		public async Task UpdateUser() => User = await Api.GetUserAsync();
 
 		public async Task AddRoom(CreateRoomRequest request)
 		{
-			var room = await _api.CreateRoom(request);
+			var room = await Api.CreateRoom(request);
 
 			AddRoom(room);
 		}
 
 		public void AddRoom(Room room)
 		{
-			var vm = new RoomViewModel(room, api);
+			var vm = new RoomViewModel(handler.GetRoomHandler(room.Id));
 			roomVMs[room.Id] = vm;
 			Rooms.Add(vm);
 		}

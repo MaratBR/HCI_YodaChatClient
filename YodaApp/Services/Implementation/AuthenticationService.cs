@@ -15,6 +15,8 @@ namespace YodaApp.Services.Implementation
         private readonly IDictionary<Guid, IApi> apis = new Dictionary<Guid, IApi>();
         private IApi currentSession;
 
+        public event EventHandler SessionChanged;
+
         public AuthenticationService(IStore store, IApiProvider apiProvider)
         {
             _store = store;
@@ -96,6 +98,7 @@ namespace YodaApp.Services.Implementation
             }
 
             currentSession = api;
+            SessionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void FindSession()

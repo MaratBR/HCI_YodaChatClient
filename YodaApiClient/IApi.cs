@@ -57,7 +57,7 @@ namespace YodaApiClient
         public string Description { get; set; }
     }
 
-    public interface IApi
+    public interface IApi : IFileUploader
     {
         Task<IUser> GetUserAsync();
 
@@ -69,12 +69,14 @@ namespace YodaApiClient
 
         Task<IChatApiHandler> Connect();
 
-        Task<FileModel> UploadFile(string fileName, Stream fileStream);
-
         SessionInfo GetSessionInfo();
 
         Guid GetGuid();
 
         string GetAccessToken();
+
+        IFile CreateFile(Stream stream, long fileSize, string fileName);
+
+        IFile CreateFile(Guid id);
     }
 }

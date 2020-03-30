@@ -157,12 +157,13 @@
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\Json.cs" />
     <Compile Include="IApi.cs" />
-    <Compile Include="IAttachment.cs" />
     <Compile Include="IChatApiHandler.cs" />
+    <Compile Include="IFile.cs" />
+    <Compile Include="IFileUploader.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="IMessageQueue.cs" />
     <Compile Include="IMessageSender.cs" />
-    <Compile Include="Implementation\Attachment.cs" />
+    <Compile Include="Implementation\FileImpl.cs" />
     <Compile Include="Implementation\MessageHandler.cs" />
     <Compile Include="Implementation\RoomHandler.cs" />
     <Compile Include="Implementation\User.cs" />

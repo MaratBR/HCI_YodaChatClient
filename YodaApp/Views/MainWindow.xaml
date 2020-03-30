@@ -25,6 +25,8 @@
             </utils:BoolToAnythingConverter.FalseValue>
         </utils:BoolToAnythingConverter>
 
+        <materialDesign:NullableToVisibilityConverter NullValue="Collapsed" NotNullValue="Visible" x:Key="NotNullConverter" />
+
 
         <Style x:Key="HiddenIfDisabled" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
             <Style.Triggers>
@@ -71,7 +73,7 @@
 
         <StackPanel Grid.RowSpan="2" Grid.Column="0">
             <DockPanel HorizontalAlignment="Center" Margin="0,10,0,10">
-                <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.AddRoomCommand}">
+                <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.CreateRoomCommand}">
                     <StackPanel Orientation="Horizontal">
 
                         <Viewbox Width="24" Height="24">
@@ -158,26 +160,26 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <ItemsControl Margin="10,0,0,0" ItemsSource="{Binding Session.SelectedRoom.Attachments}">
+                    <ItemsControl Margin="10,0,0,0" ItemsSource="{Binding Session.SelectedRoom.Message.Attachments}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <DockPanel />
+                                <WrapPanel  />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <materialDesign:Card
-                                    Padding="3" Margin="4"
+                                    Padding="2" Margin="2"
                                     Width="Auto" HorizontalAlignment="Left">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
                                         <TextBlock Text="{Binding FileName}" />
                                         <TextBlock Text=" | " />
                                         <TextBlock Text="{Binding FileSize}" />
                                         <TextBlock Text=" | " />
                                         <TextBlock Text="{Binding Status}" />
-                                        <Button Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignToolButton}">
-                                            <Viewbox Width="20" Height="20">
+                                        <Button Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignToolButton}" Padding="0,0,0,10">
+                                            <Viewbox Width="12" Height="12">
                                                 <Canvas Width="24" Height="24">
                                                     <Path Fill="Black" Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                                                 </Canvas>
@@ -191,7 +193,7 @@
 
                     <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                          Margin="10" Background="#22ffffff" Padding="10,0,10,10" AcceptsReturn="True" TextWrapping="Wrap"
-                         Text="{Binding Session.SelectedRoom.Draft, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
 
@@ -200,7 +202,7 @@
                 <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                     <Button Style="{StaticResource MaterialDesignToolButton}"
-                        Command="{Binding Session.AddAttachmentCommand}"
+                        Command="{Binding Session.SelectedRoom.Message.AddAttachmentCommand}"
                         CommandParameter="{Binding Session.SelectedRoom}">
                         <Viewbox Width="24" Height="24">
                             <Canvas Width="24" Height="24">
@@ -210,8 +212,7 @@
                     </Button>
 
                     <Button Style="{StaticResource MaterialDesignToolButton}"
-                        Command="{Binding Session.SendToRoomCommand}"
-                        CommandParameter="{Binding Session.SelectedRoom}">
+                        Command="{Binding Session.SelectedRoom.Message.SendCommand}">
                         <Viewbox Width="24" Height="24">
                             <Canvas Width="24" Height="24">
                                 <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
@@ -231,16 +232,44 @@
                           ItemsSource="{Binding Session.SelectedRoom.Messages}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="5" Background="#22FFFFFF" Padding="5" Margin="5" HorizontalAlignment="Left" MinWidth="300">
-                                <StackPanel >
-                                    <TextBlock
-                                        Style="{StaticResource MaterialDesignBody1TextBlock}"
-                                        Foreground="White"
-                                        TextWrapping="Wrap"
-                                        Background="Transparent"
-                                        Text="{Binding Text}" />
-                                </StackPanel>
-                            </Border>
+                            <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect SlideInFromBottom}">
+                                <Border CornerRadius="5" Background="#22FFFFFF" Padding="5" Margin="5" HorizontalAlignment="Left" MinWidth="300" Width="Auto">
+                                    <StackPanel >
+                                        <TextBlock
+                                            Visibility="{Binding Text, Converter={StaticResource NotNullConverter}}"
+                                            Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                            Foreground="White"
+                                            TextWrapping="Wrap"
+                                            Background="Transparent"
+                                            Text="{Binding Text}" />
+
+                                        <ListBox ItemsSource="{Binding Attachments}" HorizontalContentAlignment="Stretch">
+
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0" TextBlock.FontSize="12">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock VerticalAlignment="Center" Text="{Binding FileName}" />
+                                                            <TextBlock VerticalAlignment="Center" Text=" | " />
+                                                            <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
+                                                        </StackPanel>
+                                                        <Button Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="White">Download</Button>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+                                        <DockPanel TextBlock.FontSize="10" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding Status}" Foreground="Gray" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+                            </materialDesign:TransitioningContent>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
 

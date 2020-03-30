@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,11 +18,20 @@ namespace YodaApp.ViewModels
     {
         private readonly IAuthenticationService _authentication;
         private readonly IWindowService _windows;
+        private readonly IComponentContext _componentContext;
 
-        public MainWindowViewModel(IAuthenticationService authentication, IWindowService windows)
+        public MainWindowViewModel(IAuthenticationService authentication, IWindowService windows, IComponentContext componentContext)
         {
             _authentication = authentication;
+            _windows = windows;
+            _authentication.SessionChanged += Authentication_SessionChanged;
+            _componentContext = componentContext;
             Init();
+        }
+
+        private void Authentication_SessionChanged(object sender, EventArgs e)
+        {
+            SetCurrentSession(_authentication.GetCurrentSession());
         }
 
         #region Properties
@@ -65,17 +75,15 @@ namespace YodaApp.ViewModels
             var sessions = _authentication.GetSessions();
 
             UserSessions = new ObservableCollection<UserSessionViewModel>(
-                sessions.Select((api) => new UserSessionViewModel(api))
+                sessions.Select(CreateUserSessionViewModel)
                 );
 
-            await SetApi(_authentication.GetCurrentSession());
+            SetCurrentSession(_authentication.GetCurrentSession());
         }
 
-        private async Task SetApi(IApi api)
+        private UserSessionViewModel CreateUserSessionViewModel(IApi api)
         {
-            var session = UserSessions.Where(s => s.Api == api).SingleOrDefault();
-
-            await SetCurrentSession(session);
+            return _componentContext.Resolve<UserSessionViewModel>(new TypedParameter(typeof(IApi), api));
         }
 
         private void LogIn()
@@ -84,20 +92,18 @@ namespace YodaApp.ViewModels
             _windows.HideMainWindow();
         }
 
-        private async void LoginWindowVM_UserAuthenticated(object sender, UserAuthenticatedEventArgs e)
+        private void SetCurrentSession(IApi api)
         {
-            IsWindowHidden = false;
-            await AddSession(e.Api);
+            UserSessionViewModel session = userSessions.SingleOrDefault(s => s.Api == api);
+            if (session == null)
+            {
+                session = CreateUserSessionViewModel(api);
+                UserSessions.Add(session);
+            }
+            SetCurrentSession(session);
         }
 
-        private async Task AddSession(IApi api)
-        {
-            var sessionVM = new UserSessionViewModel(api);
-            UserSessions.Add(sessionVM);
-            await SetCurrentSession(sessionVM);
-        }
-
-        private async Task SetCurrentSession(UserSessionViewModel userSession)
+        private void SetCurrentSession(UserSessionViewModel userSession)
         {
             if (Session != null)
                 Session.Disconnect();

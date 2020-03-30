@@ -19,5 +19,9 @@ namespace YodaApp.Services
         void ShowLogInWindow();
 
         void CloseLogInWindow();
+
+        void ShowNewRoomWindow();
+
+        void CloseNewRoomWindow();
     }
 }

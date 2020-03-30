@@ -22,9 +22,7 @@ namespace YodaApp.ViewModels
 
     class RoomViewModel : ViewModelBase
     {
-        private readonly Room room;
-        private readonly IApi api;
-
+        private readonly IRoomHandler room;
 
         #region Properties
 
@@ -52,35 +50,36 @@ namespace YodaApp.ViewModels
         public bool IsAwaitingServerResponse => Status == RoomStatus.AwaitingServerReponse;
         public bool IsLeft => Status == RoomStatus.Left;
 
-        private string draft;
 
-        public string Draft
+        private MessageViewModel message;
+
+        public MessageViewModel Message
         {
-            get => draft;
-            set
-            {
-                Set(ref draft, nameof(Draft), value);
-                HasMessageChanged?.Invoke(this, EventArgs.Empty);
-            }
+            get { return message; }
+            set => Set(ref message, nameof(Message), value);
         }
-        public bool HasMessage => !string.IsNullOrWhiteSpace(Draft);
-        public ObservableCollection<AttachmentViewModel> Attachments { get; } = new ObservableCollection<AttachmentViewModel>();
 
         #endregion
 
-        public event EventHandler HasMessageChanged;
-
-        public RoomViewModel(Room room, IApi api)
+        public RoomViewModel(IRoomHandler room)
         {
             this.room = room;
-            this.api = api;
+            CreateNewMessage();
         }
 
-        public AttachmentViewModel AddAttachment(string fileName, Stream stream)
+        private void CreateNewMessage()
         {
-            var attachment = new AttachmentViewModel(fileName, stream.Length);
-            Attachments.Add(attachment);
-            return attachment;
+            var message = room.CreateMessage();
+            Message = new MessageViewModel(message);
+            Message.MessageSent += Message_MessageSent;
+        }
+
+        private void Message_MessageSent(object sender, EventArgs e)
+        {
+            var vm = (MessageViewModel)sender;
+            vm.MessageSent -= Message_MessageSent;
+            Messages.Add(vm);
+            CreateNewMessage();
         }
     }
 }
