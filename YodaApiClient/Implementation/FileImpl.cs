@@ -44,10 +44,10 @@ namespace YodaApiClient.Implementation
             {
                 fm = await api.UploadFile(stream, fileName);
             }
-            catch
+            catch(Exception exc)
             {
                 State = FileState.NotUploaded;
-                // TODO error
+                Error = exc.Message;
                 return;
             }
             FileModel = fm;
@@ -91,5 +91,7 @@ namespace YodaApiClient.Implementation
         public string FileName => FileModel == null ? fileName : FileModel.FileName;
 
         public long Size => FileModel == null ? fileSize : FileModel.Size;
+
+        public string Error { get; private set; }
     }
 }

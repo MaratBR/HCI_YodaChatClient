@@ -174,6 +174,10 @@ namespace YodaApiClient
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return null;
 
+            if (response.StatusCode == System.Net.HttpStatusCode.RequestEntityTooLarge)
+            {
+                throw new FileTooBigException();
+            }
             await response.ThrowErrorIfNotSuccessful();
 
             return await response.GetJson<FileModel>();

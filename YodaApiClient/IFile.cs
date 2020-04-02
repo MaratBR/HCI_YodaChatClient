@@ -36,6 +36,8 @@ namespace YodaApiClient
 
         string FileName { get; }
 
+        string Error { get; }
+
         long Size { get; }
 
         Task Upload();

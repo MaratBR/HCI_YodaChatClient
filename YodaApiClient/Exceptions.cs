@@ -60,4 +60,13 @@ namespace YodaApiClient
         }
     }
 
+    [Serializable]
+    public class FileTooBigException : ApiException
+    {
+        public FileTooBigException()
+            : base("Size of the file is too big to upload")
+        {
+        }
+    }
+
 }
