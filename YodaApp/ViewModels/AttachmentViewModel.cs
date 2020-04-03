@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
 using YodaApp.Utils;
@@ -27,6 +28,18 @@ namespace YodaApp.ViewModels
 
         public string Status => State.GetDescription();
 
+        public string Error => file.Error;
+
+        public event EventHandler RemoveAttachment;
+
+        private ICommand _removeCommand;
+
+        public ICommand RemoveCommand => _removeCommand ?? (_removeCommand = new RelayCommand(RemoveCommandHandler));
+
+        private void RemoveCommandHandler()
+        {
+            RemoveAttachment?.Invoke(this, EventArgs.Empty);
+        }
 
         public AttachmentViewModel(IFile file)
         {
@@ -43,6 +56,7 @@ namespace YodaApp.ViewModels
         {
             OnPropertyChanged(nameof(State));
             OnPropertyChanged(nameof(FileModel));
+            OnPropertyChanged(nameof(Error));
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(FileName));
         }

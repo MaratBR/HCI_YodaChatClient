@@ -29,9 +29,12 @@ namespace YodaApp.ViewModels
         public MessageViewModel(IMessageHandler messageHandler)
         {
             this.messageHandler = messageHandler;
-            Attachments = new ObservableCollection<AttachmentViewModel>(
-                messageHandler.Attachments.Select(file => new AttachmentViewModel(file))
-                );
+            Attachments = new ObservableCollection<AttachmentViewModel>();
+
+            foreach(var file in messageHandler.Attachments)
+            {
+                AddAttachment(file);
+            }
         }
 
         public async Task Send()
@@ -45,7 +48,16 @@ namespace YodaApp.ViewModels
 
         public void AddAttachment(IFile file)
         {
-            Attachments.Add(new AttachmentViewModel(file));
+            var vm = new AttachmentViewModel(file);
+            vm.RemoveAttachment += AttachementVM_RemoveAttachment;
+            Attachments.Add(vm);
+        }
+
+        private void AttachementVM_RemoveAttachment(object sender, EventArgs e)
+        {
+            var vm = (AttachmentViewModel)sender;
+
+            Attachments.Remove(vm);
         }
 
         #region Properties
@@ -85,9 +97,9 @@ namespace YodaApp.ViewModels
 
         private ICommand _addAttachmentCommand;
 
-        public ICommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new AsyncRelayCommand(AddAttachmentCommandHandler));
+        public ICommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new RelayCommand(AddAttachmentCommandHandler));
 
-        private async Task AddAttachmentCommandHandler()
+        private void AddAttachmentCommandHandler()
         {
             var dialog = new OpenFileDialog();
 
@@ -97,7 +109,7 @@ namespace YodaApp.ViewModels
                 string fileName = Path.GetFileName(filePath);
                 var stream = dialog.OpenFile();
                 IFile file = messageHandler.AddAttachment(stream, stream.Length, fileName);
-                await file.Upload();
+                file.Upload();
                 AddAttachment(file);
             }
         }

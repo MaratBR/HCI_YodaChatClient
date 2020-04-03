@@ -46,8 +46,8 @@ namespace YodaApiClient.Implementation
             }
             catch(Exception exc)
             {
-                State = FileState.NotUploaded;
                 Error = exc.Message;
+                State = FileState.NotUploaded;
                 return;
             }
             FileModel = fm;
@@ -81,8 +81,8 @@ namespace YodaApiClient.Implementation
             get => state;
             set
             {
-                StateChanged?.Invoke(this, EventArgs.Empty);
                 state = value;
+                StateChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
