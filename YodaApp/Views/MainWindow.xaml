@@ -257,7 +257,9 @@
                                                             <TextBlock VerticalAlignment="Center" Text=" | " />
                                                             <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
                                                         </StackPanel>
-                                                        <Button Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="White" Command="{Binding RemoveCommand}">Download</Button>
+                                                        <Button Grid.Column="1" HorizontalAlignment="Right" FontSize="10"
+                                                                Margin="10,0,0,0"
+                                                                Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="White" Command="{Binding DownloadCommand}">Download</Button>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>

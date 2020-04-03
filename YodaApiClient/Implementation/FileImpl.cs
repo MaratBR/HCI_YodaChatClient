@@ -72,6 +72,11 @@ namespace YodaApiClient.Implementation
             State = FileState.Loaded;
         }
 
+        public Task DownloadTo(Stream fileStream)
+        {
+            return api.DownloadFile(Id, fileStream);
+        }
+
         public Guid Id => FileModel.Id;
 
         private FileState state;

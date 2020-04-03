@@ -149,10 +149,10 @@
     <Compile Include="ChatApiHandler.cs" />
     <Compile Include="Constants\ApiReference.cs" />
     <Compile Include="DataTypes\FileModel.cs" />
-    <Compile Include="DataTypes\MessageDto.cs" />
+    <Compile Include="DataTypes\ChatMessageDto.cs" />
     <Compile Include="DataTypes\MessageAckDto.cs" />
     <Compile Include="DataTypes\Room.cs" />
-    <Compile Include="DataTypes\SendMessageRequestDto.cs" />
+    <Compile Include="DataTypes\ChatMessageRequestDto.cs" />
     <Compile Include="DataTypes\UserActionDto.cs" />
     <Compile Include="DataTypes\UserDto.cs" />
     <Compile Include="DataTypes\YODAError.cs" />

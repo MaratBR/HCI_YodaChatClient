@@ -34,6 +34,8 @@ namespace YodaApiClient
 
         Task<bool> Send();
 
+        event EventHandler StatusChanged;
+
     }
 
     public static class MessageHandlerExtension

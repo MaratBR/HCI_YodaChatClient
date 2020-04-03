@@ -76,7 +76,7 @@ namespace YodaApiClient
         {
             IMessageHandler message = entry.Message;
             var stamp = Guid.NewGuid();
-            var dto = new SendMessageRequestDto
+            var dto = new ChatMessageRequestDto
             {
                 Text = message.Text,
                 Attachments = message.Attachments.Select(a => a.Id).ToList(),
@@ -97,7 +97,7 @@ namespace YodaApiClient
             connection.On<Guid, Guid>("Joined", YODAHub_Joined); // TODO obsolete, to be removed
 
             connection.On<UserActionDto>("UserAction", YODAHub_UserAction);
-            connection.On<MessageDto>("NewMessage", YODAHub_Message);
+            connection.On<ChatMessageDto>("NewMessage", YODAHub_Message);
             connection.On<MessageAckDto>("MessageAck", YODAHub_MessageAck);
         }
 
@@ -130,7 +130,7 @@ namespace YodaApiClient
             UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
-        private async void YODAHub_Message(MessageDto message)
+        private async void YODAHub_Message(ChatMessageDto message)
         {
             IUser user = await FindUser(message.SenderId);
             ICollection<IFile> attachments = GetAllAttachments(message.Attachments);

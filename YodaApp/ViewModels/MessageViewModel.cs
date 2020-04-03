@@ -12,14 +12,6 @@ using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
-    enum MessageStatus
-    {
-        Sending,
-        Error,
-        Sent
-    }
-
-
     class MessageViewModel : ViewModelBase
     {
         private readonly IMessageHandler messageHandler;
@@ -35,6 +27,13 @@ namespace YodaApp.ViewModels
             {
                 AddAttachment(file);
             }
+
+            messageHandler.StatusChanged += MessageHandler_StatusChanged;
+        }
+
+        private void MessageHandler_StatusChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Status));
         }
 
         public async Task Send()
@@ -78,13 +77,8 @@ namespace YodaApp.ViewModels
         public ObservableCollection<AttachmentViewModel> Attachments { get; }
 
 
-        private MessageStatus status = MessageStatus.Sending;
 
-        public MessageStatus Status
-        {
-            get { return status; }
-            set => Set(ref status, nameof(Status), value);
-        }
+        public MessageStatus Status => messageHandler.Status;
 
         #endregion
 

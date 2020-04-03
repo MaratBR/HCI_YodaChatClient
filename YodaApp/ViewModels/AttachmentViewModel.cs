@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,6 +36,22 @@ namespace YodaApp.ViewModels
         private ICommand _removeCommand;
 
         public ICommand RemoveCommand => _removeCommand ?? (_removeCommand = new RelayCommand(RemoveCommandHandler));
+
+        private ICommand _downloadCommand;
+
+        public ICommand DownloadCommand => _downloadCommand ?? (_downloadCommand = new AsyncRelayCommand(DownloadCommandHandler));
+
+        private async Task DownloadCommandHandler()
+        {
+            var dialog = new SaveFileDialog();
+            dialog.FileName = FileModel?.FileName;
+            if (dialog.ShowDialog() == true)
+            {
+                var filePath = dialog.FileName;
+                var fileStream = File.OpenWrite(filePath);
+                await file.DownloadTo(fileStream);
+            }
+        }
 
         private void RemoveCommandHandler()
         {

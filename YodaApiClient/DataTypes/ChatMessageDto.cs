@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes
 {
-    class SendMessageRequestDto
+    public class ChatMessageDto
     {
+        public long Id { get; set; }
+
+        public Guid SenderId { get; set; }
+
         public Guid RoomId { get; set; }
 
         public string Text { get; set; }
 
-        public Guid Stamp { get; set; }
+        public IEnumerable<Guid> Attachments { get; set; }
 
-        public List<Guid> Attachments { get; set; }
+        public DateTime PublishedAt { get; set; }
     }
 }

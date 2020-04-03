@@ -20,14 +20,13 @@ namespace YodaApiClient.Implementation
 
         internal RoomHandler(Guid id, ChatApiHandler handler)
         {
-            this.Id = id;
+            Id = id;
             _handler = handler;
 
             // TODO optimize (!!!)
             _handler.MessageReceived += Handler_MessageReceived;
             _handler.UserJoined += Handler_UserJoined;
             _handler.UserLeft += Handler_UserLeft;
-
         }
 
         ~RoomHandler()

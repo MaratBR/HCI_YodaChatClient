@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,5 +46,7 @@ namespace YodaApiClient
         Task LoadModel();
 
         event EventHandler StateChanged;
+
+        Task DownloadTo(Stream fileStream);
     }
 }

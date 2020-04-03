@@ -77,6 +77,8 @@ namespace YodaApiClient
 
         IFile CreateFile(Stream stream, long fileSize, string fileName);
 
+        Task DownloadFile(Guid id, Stream fileStream);
+
         IFile CreateFile(Guid id);
     }
 }

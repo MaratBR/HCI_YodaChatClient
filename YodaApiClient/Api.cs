@@ -192,5 +192,15 @@ namespace YodaApiClient
         {
             return new FileImpl(id, this);
         }
+
+        public async Task DownloadFile(Guid id, Stream fileStream)
+        {
+            var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(string.Format(ApiReference.DOWNLOAD_FILE_ROUTE, id)));
+
+            using(var stream = await response.Content.ReadAsStreamAsync())
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+        }
     }
 }

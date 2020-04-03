@@ -32,11 +32,23 @@ namespace YodaApiClient.Implementation
 
         public ICollection<IFile> Attachments { get; set; } = new List<IFile>();
 
-        public MessageStatus Status { get; set; } = MessageStatus.Draft;
+        public MessageStatus status = MessageStatus.Draft;
+
+        public MessageStatus Status
+        {
+            get => status;
+            set
+            {
+                status = value;
+                StatusChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         public IRoomHandler Room { get; }
 
         public IUser User { get;  }
+
+        public event EventHandler StatusChanged;
 
         public async Task<bool> Send()
         {
