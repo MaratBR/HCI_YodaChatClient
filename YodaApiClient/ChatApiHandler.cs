@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
@@ -18,28 +20,58 @@ namespace YodaApiClient
         }
 
         private IUser user;
-        private IApi api;
         private ApiConfiguration configuration;
         private HubConnection connection;
-        private Queue<MessageQueueEntry> messages = new Queue<MessageQueueEntry>();
+        private BlockingCollection<MessageQueueEntry> messages = new BlockingCollection<MessageQueueEntry>();
+        private Thread messagesWorkerThread;
         private readonly IDictionary<Guid, IRoomHandler> roomHandlers = new Dictionary<Guid, IRoomHandler>();
 
-        public IApi API => api;
+        public IApi API { get; }
 
         public ChatApiHandler(IApi api, ApiConfiguration configuration)
         {
-            this.api = api;
+            this.API = api;
             this.configuration = configuration;
+            StartSenderWorker();
+        }
+
+        private void StartSenderWorker()
+        {
+            messagesWorkerThread = new Thread(SenderWorkerLoop);
+            messagesWorkerThread.IsBackground = true;
+            messagesWorkerThread.Start();
+        }
+
+        private async void SenderWorkerLoop()
+        {
+            foreach (var message in messages.GetConsumingEnumerable())
+            {
+                await SendMessage(message);
+            }
+        }
+
+        private async Task SendMessage(MessageQueueEntry message)
+        {
+            if (message.Message.Attachments.Count == 0)
+            {
+                await SendToRoom(message.Message.Text, message.Message.Room.Id);
+            }
+            else
+            {
+                // TODO improve implementation
+                var attachements = message.Message.Attachments.Select(a => a.Id).ToList();
+                await SendToRoomWithAttachments(message.Message.Text, message.Message.Room.Id, attachements);
+            }
         }
 
         public async Task Connect()
         {
             connection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {api.GetAccessToken()}"))
+                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {API.GetAccessToken()}"))
                 .Build();
             await connection.StartAsync();
-            user = await api.GetUserAsync();
+            user = await API.GetUserAsync();
 
             Init();
         }
@@ -73,12 +105,12 @@ namespace YodaApiClient
 
         private ICollection<IFile> GetAllAttachments(IEnumerable<Guid> attachments)
         {
-            return attachments.Select(a => new FileImpl(a, api) as IFile).ToList();
+            return attachments.Select(a => new FileImpl(a, API) as IFile).ToList();
         }
 
         private Task<IUser> FindUser(Guid senderId)
         {
-            return api.GetUserAsync(senderId);
+            return API.GetUserAsync(senderId);
         }
 
         #endregion
@@ -123,7 +155,7 @@ namespace YodaApiClient
         public Task<MessageQueueStatus> PutToQueue(IMessageHandler message)
         {
             var promise = new TaskCompletionSource<MessageQueueStatus>();
-            messages.Enqueue(new MessageQueueEntry { Promise = promise, Message = message });
+            messages.Add(new MessageQueueEntry { Promise = promise, Message = message });
             return promise.Task;
         }
 
