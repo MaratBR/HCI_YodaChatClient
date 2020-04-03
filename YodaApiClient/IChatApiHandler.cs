@@ -18,11 +18,21 @@ namespace YodaApiClient
         public IMessageHandler Message { get; set; }
     }
 
+    public class ChatMessageAckEventArgs : ChatEventArgs
+    {
+        public MessageAckDto Ack { get; set; }
+    }
+
     public class ChatUserJoinedEventArgs : ChatEventArgs
     {
         public Guid UserId { get; set; }
 
         public Guid RoomId { get; set; }
+    }
+
+    public class ChatUserActionEventArgs : ChatEventArgs
+    {
+        public UserActionDto ActionDto { get; set; }
     }
 
     public class ChatUserLeftEventArgs : ChatEventArgs
@@ -48,9 +58,13 @@ namespace YodaApiClient
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 
+        [Obsolete]
         event EventHandler<ChatUserJoinedEventArgs> UserJoined;
 
+        [Obsolete]
         event EventHandler<ChatUserLeftEventArgs> UserLeft;
+
+        event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         IRoomHandler GetRoomHandler(Guid id);
 

@@ -22,9 +22,12 @@ namespace YodaApiClient
         private IUser user;
         private ApiConfiguration configuration;
         private HubConnection connection;
-        private BlockingCollection<MessageQueueEntry> messages = new BlockingCollection<MessageQueueEntry>();
         private Thread messagesWorkerThread;
         private readonly IDictionary<Guid, IRoomHandler> roomHandlers = new Dictionary<Guid, IRoomHandler>();
+
+        private BlockingCollection<MessageQueueEntry> messageQueue = new BlockingCollection<MessageQueueEntry>();
+        private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
+
 
         public IApi API { get; }
 
@@ -33,35 +36,6 @@ namespace YodaApiClient
             this.API = api;
             this.configuration = configuration;
             StartSenderWorker();
-        }
-
-        private void StartSenderWorker()
-        {
-            messagesWorkerThread = new Thread(SenderWorkerLoop);
-            messagesWorkerThread.IsBackground = true;
-            messagesWorkerThread.Start();
-        }
-
-        private async void SenderWorkerLoop()
-        {
-            foreach (var message in messages.GetConsumingEnumerable())
-            {
-                await SendMessage(message);
-            }
-        }
-
-        private async Task SendMessage(MessageQueueEntry message)
-        {
-            if (message.Message.Attachments.Count == 0)
-            {
-                await SendToRoom(message.Message.Text, message.Message.Room.Id);
-            }
-            else
-            {
-                // TODO improve implementation
-                var attachements = message.Message.Attachments.Select(a => a.Id).ToList();
-                await SendToRoomWithAttachments(message.Message.Text, message.Message.Room.Id, attachements);
-            }
         }
 
         public async Task Connect()
@@ -78,12 +52,73 @@ namespace YodaApiClient
 
         private void Init()
         {
-            connection.On<Guid, Guid>("Left", YODAHub_Left);
-            connection.On<Guid, Guid>("Joined", YODAHub_Joined);
-            connection.On<Message>("Message", YODAHub_Message);
+            SubscribeToAll();
         }
 
+        #region Background sender worker
+
+        private void StartSenderWorker()
+        {
+            messagesWorkerThread = new Thread(SenderWorkerLoop);
+            messagesWorkerThread.IsBackground = true;
+            messagesWorkerThread.Start();
+        }
+
+        private async void SenderWorkerLoop()
+        {
+            foreach (var message in messageQueue.GetConsumingEnumerable())
+            {
+                await SendMessage(message);
+            }
+        }
+
+        private async Task SendMessage(MessageQueueEntry entry)
+        {
+            IMessageHandler message = entry.Message;
+            var stamp = Guid.NewGuid();
+            var dto = new SendMessageRequestDto
+            {
+                Text = message.Text,
+                Attachments = message.Attachments.Select(a => a.Id).ToList(),
+                RoomId = message.Room.Id,
+                Stamp = stamp
+            };
+            awaitingAckMessages[stamp] = entry;
+            await connection.SendAsync("Send", dto);
+        }
+
+        #endregion
+
         #region Handling SignalR events
+
+        private void SubscribeToAll()
+        {
+            connection.On<Guid, Guid>("Left", YODAHub_Left); // TODO obsolete, to be removed
+            connection.On<Guid, Guid>("Joined", YODAHub_Joined); // TODO obsolete, to be removed
+
+            connection.On<UserActionDto>("UserAction", YODAHub_UserAction);
+            connection.On<MessageDto>("NewMessage", YODAHub_Message);
+            connection.On<MessageAckDto>("MessageAck", YODAHub_MessageAck);
+        }
+
+        private void YODAHub_UserAction(UserActionDto action)
+        {
+            UserActionPerformed?.Invoke(this, new ChatUserActionEventArgs { ActionDto = action });
+        }
+
+        private void YODAHub_MessageAck(MessageAckDto ack)
+        {
+            if (awaitingAckMessages.ContainsKey(ack.Stamp))
+            {
+                var result = new MessageQueueStatus
+                {
+                    Id = ack.Id,
+                    Sent = true
+                };
+                awaitingAckMessages[ack.Stamp].Promise.SetResult(result);
+                awaitingAckMessages.Remove(ack.Stamp);
+            }
+        }
 
         private void YODAHub_Joined(Guid userId, Guid roomId)
         {
@@ -95,7 +130,7 @@ namespace YodaApiClient
             UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
-        private async void YODAHub_Message(Message message)
+        private async void YODAHub_Message(MessageDto message)
         {
             IUser user = await FindUser(message.SenderId);
             ICollection<IFile> attachments = GetAllAttachments(message.Attachments);
@@ -120,6 +155,7 @@ namespace YodaApiClient
         public event EventHandler<ChatMessageEventArgs> MessageReceived;
         public event EventHandler<ChatUserJoinedEventArgs> UserJoined;
         public event EventHandler<ChatUserLeftEventArgs> UserLeft;
+        public event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         #endregion
 
@@ -129,8 +165,10 @@ namespace YodaApiClient
 
         public Task LeaveRoom(Guid roomId) => connection.InvokeAsync("LeaveRoom", roomId);
 
+        [Obsolete]
         public Task SendToRoom(string text, Guid roomId) => connection.InvokeAsync("Send", text, roomId);
 
+        [Obsolete]
         public Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids) => connection.InvokeAsync("SendWithAttachments", text, roomId, fileGuids);
 
         public IRoomHandler GetRoomHandler(Guid id)
@@ -155,7 +193,7 @@ namespace YodaApiClient
         public Task<MessageQueueStatus> PutToQueue(IMessageHandler message)
         {
             var promise = new TaskCompletionSource<MessageQueueStatus>();
-            messages.Add(new MessageQueueEntry { Promise = promise, Message = message });
+            messageQueue.Add(new MessageQueueEntry { Promise = promise, Message = message });
             return promise.Task;
         }
 
