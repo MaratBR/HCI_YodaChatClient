@@ -165,7 +165,6 @@
     <Compile Include="IFileUploader.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="IMessageQueue.cs" />
-    <Compile Include="IMessageSender.cs" />
     <Compile Include="Implementation\FileImpl.cs" />
     <Compile Include="Implementation\MessageHandler.cs" />
     <Compile Include="Implementation\RoomHandler.cs" />

@@ -8,8 +8,6 @@ namespace YodaApiClient
 {
     public interface IRoomHandler : IMessageQueue
     {
-        [Obsolete]
-        IMessageSender GetMessageSender();
 
         string Name { get; }
 

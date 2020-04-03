@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.Implementation
 {
-    class RoomHandler : IRoomHandler, IMessageSender
+    class RoomHandler : IRoomHandler
     {
         private readonly ChatApiHandler _handler;
 
@@ -64,22 +64,6 @@ namespace YodaApiClient.Implementation
         public event EventHandler<ChatMessageEventArgs> MessageReceived;
         public event EventHandler<ChatUserJoinedEventArgs> UserJoined;
         public event EventHandler<ChatUserLeftEventArgs> UserLeft;
-
-        public IMessageSender GetMessageSender()
-        {
-            return this;
-        }
-
-        public Task Send(string text)
-        {
-            return _handler.SendToRoom(text, Id);
-        }
-
-
-        public Task SendWithAttachments(string text, IList<Guid> attachments)
-        {
-            return _handler.SendToRoomWithAttachments(text, Id, attachments);
-        }
 
         public Task<MessageQueueStatus> PutToQueue(IMessageHandler messageHandler)
         {
