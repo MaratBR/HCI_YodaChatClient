@@ -12,25 +12,13 @@ namespace YodaApiClient.Implementation
         private readonly ChatApiHandler chatApiHandler;
         private Room room;
 
-        public Guid Id { get; }
+        public Guid Id => room?.Id ?? Guid.Empty;
 
-        public string Name => "NOT IMPLEMENTED";
+        public string Name => room?.Name;
 
-        public string Description => "NOT IMPLEMENTED";
+        public string Description => room?.Description;
 
-        public IApi API => chatApiHandler.API;
-
-        [Obsolete]
-        internal RoomHandler(Guid id, ChatApiHandler handler)
-        {
-            Id = id;
-            chatApiHandler = handler;
-
-            // TODO optimize (!!!)
-            chatApiHandler.MessageReceived += Handler_MessageReceived;
-            chatApiHandler.UserJoined += Handler_UserJoined;
-            chatApiHandler.UserLeft += Handler_UserLeft;
-        }
+        public IApi API => chatApiHandler.Api;
 
         public RoomHandler(Room room, ChatApiHandler chatApiHandler)
         {
@@ -39,15 +27,19 @@ namespace YodaApiClient.Implementation
 
             // TODO optimize (!!!)
             chatApiHandler.MessageReceived += Handler_MessageReceived;
-            chatApiHandler.UserJoined += Handler_UserJoined;
-            chatApiHandler.UserLeft += Handler_UserLeft;
+            chatApiHandler.UserActionPerformed += ChatApiHandler_UserActionPerformed;
         }
 
         ~RoomHandler()
         {
             chatApiHandler.MessageReceived -= Handler_MessageReceived;
-            chatApiHandler.UserJoined -= Handler_UserJoined;
-            chatApiHandler.UserLeft -= Handler_UserLeft;
+        }
+
+        #region Event handlers
+
+        private void ChatApiHandler_UserActionPerformed(object sender, ChatUserActionEventArgs e)
+        {
+            UserActionPerformed?.Invoke(this, e);
         }
 
         private void Handler_UserLeft(object sender, ChatUserLeftEventArgs e)
@@ -74,9 +66,12 @@ namespace YodaApiClient.Implementation
             }
         }
 
+        #endregion
+
         public event EventHandler<ChatMessageEventArgs> MessageReceived;
         public event EventHandler<ChatUserJoinedEventArgs> UserJoined;
         public event EventHandler<ChatUserLeftEventArgs> UserLeft;
+        public event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         public Task<MessageQueueStatus> PutToQueue(IMessageHandler messageHandler)
         {

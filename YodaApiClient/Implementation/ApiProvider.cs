@@ -8,7 +8,7 @@ using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
 using YodaApiClient.Helpers;
 
-namespace YodaApiClient
+namespace YodaApiClient.Implementation
 {
     class AuthenticationResponse
     {

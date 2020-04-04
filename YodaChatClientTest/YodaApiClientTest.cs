@@ -30,7 +30,7 @@ namespace YodaChatClientTest
             var api = await CreateApi();
 
             Assert.IsNotNull(await api.GetUserAsync());
-            Assert.IsNotNull(await api.GetRooms());
+            Assert.IsNotNull(await api.GetRoomsAsync());
 
 
             var roomName = $"TestRoom-{Guid.NewGuid()}";
@@ -40,7 +40,7 @@ namespace YodaChatClientTest
                 Description = "some description"
             };
 
-            var room = await api.CreateRoom(roomRequest);
+            var room = await api.CreateRoomAsync(roomRequest);
             Assert.IsNotNull(room);
             Assert.AreEqual(room.Name, roomName);
         }
@@ -49,7 +49,7 @@ namespace YodaChatClientTest
         public async Task TestChatHandler()
         {
             var api = await CreateApi();
-            var handler = await api.Connect();
+            var handler = await api.ConnectAsync();
 
             string messageText = "cake is a lie", receivedText = null;
             Guid? senderId = null,
@@ -72,13 +72,13 @@ namespace YodaChatClientTest
                     roomId = e.RoomId;
                 };
 
-            var room = await api.CreateRoom(new CreateRoomRequest
+            var room = await api.CreateRoomAsync(new CreateRoomRequest
             {
                 Name = $"TestRoom-{Guid.NewGuid()}",
                 Description = "some description"
             });
 
-            await handler.JoinRoom(room.Id);
+            await handler.JoinRoomAsync(room.Id);
             await Task.Delay(500);
             Assert.AreEqual(user.Id, userJoinedId);
             Assert.AreEqual(room.Id, roomId);

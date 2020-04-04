@@ -77,7 +77,7 @@ namespace YodaApp.ViewModels
 
             try
             {
-                await session.CreateRoom(new YodaApiClient.CreateRoomRequest
+                await session.CreateRoomAsync(new YodaApiClient.CreateRoomRequest
                 {
                     Name = Name,
                     Description = Description

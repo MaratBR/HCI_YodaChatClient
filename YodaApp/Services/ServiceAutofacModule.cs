@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient;
+using YodaApiClient.Implementation;
 using YodaApp.Persistence;
 using YodaApp.Services.Implementation;
 

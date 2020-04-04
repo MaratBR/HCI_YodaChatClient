@@ -46,24 +46,32 @@ namespace YodaApiClient
 
     public interface IChatApiHandler
     {
-        [Obsolete]
-        Task SendToRoom(string text, Guid roomId);
 
-        [Obsolete]
-        Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids);
+        [Obsolete] Task SendToRoom(string text, Guid roomId);
 
-        Task JoinRoom(Guid roomId);
 
-        Task LeaveRoom(Guid roomId);
+        [Obsolete] Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids);
+
+        Task JoinRoomAsync(Guid roomId);
+
+        Task LeaveRoomAsync(Guid roomId);
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 
         event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
-        IRoomHandler GetRoomHandler(Guid id);
 
-        IUser GetUser();
+        [Obsolete] IRoomHandler GetRoomHandler(Guid id);
 
-        IApi API { get; }
+        Task<IRoomHandler> GetRoomHandlerAsync(Guid id);
+
+        [Obsolete] IUser GetUser();
+
+        IApi Api { get; }
+    }
+
+    public static class ChatApiHandlerExtension
+    {
+        public static Task<IUser> GetUserAsync(this IChatApiHandler handler) => handler.Api.GetUserAsync();
     }
 }

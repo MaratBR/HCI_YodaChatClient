@@ -7,9 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
-using YodaApiClient.Implementation;
 
-namespace YodaApiClient
+namespace YodaApiClient.Implementation
 {
     internal class ChatApiHandler : IChatApiHandler, IMessageQueue
     {
@@ -28,11 +27,11 @@ namespace YodaApiClient
         private BlockingCollection<MessageQueueEntry> messageQueue = new BlockingCollection<MessageQueueEntry>();
         private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
 
-        public IApi API { get; }
+        public IApi Api { get; }
 
         public ChatApiHandler(IApi api, ApiConfiguration configuration)
         {
-            this.API = api;
+            this.Api = api;
             this.configuration = configuration;
             StartSenderWorker();
         }
@@ -43,10 +42,10 @@ namespace YodaApiClient
                 return;
             connection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {API.GetAccessToken()}"))
+                .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {Api.GetAccessToken()}"))
                 .Build();
             await connection.StartAsync();
-            user = await API.GetUserAsync();
+            user = await Api.GetUserAsync();
 
             await Init();
         }
@@ -54,12 +53,17 @@ namespace YodaApiClient
         private async Task Init()
         {
             SubscribeToAll(); // "Handling SignalR events" region
+            await Update();
+        }
+
+        private async Task Update()
+        {
             await LoadRooms();
         }
 
         private async Task LoadRooms()
         {
-            List<Room> rooms = await API.GetRooms();
+            List<Room> rooms = await Api.GetRoomsAsync();
 
             foreach(var room in rooms)
             {
@@ -133,18 +137,19 @@ namespace YodaApiClient
         {
             IUser user = await FindUser(message.SenderId);
             ICollection<IFile> attachments = GetAllAttachments(message.Attachments);
-            IMessageHandler messageHandler = new MessageHandler(GetRoomHandler(message.RoomId), user, message.Text, attachments);
+            IRoomHandler roomHandler = await GetRoomHandlerAsync(message.RoomId);
+            IMessageHandler messageHandler = new MessageHandler(roomHandler, user, message.Text, attachments);
             MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = messageHandler });
         }
 
         private ICollection<IFile> GetAllAttachments(IEnumerable<Guid> attachments)
         {
-            return attachments.Select(a => new FileImpl(a, API) as IFile).ToList();
+            return attachments.Select(a => new FileImpl(a, Api) as IFile).ToList();
         }
 
         private Task<IUser> FindUser(Guid senderId)
         {
-            return API.GetUserAsync(senderId);
+            return Api.GetUserAsync(senderId);
         }
 
         #endregion
@@ -158,9 +163,9 @@ namespace YodaApiClient
 
         #region IChatApiHandler implementation
 
-        public Task JoinRoom(Guid roomId) => connection.InvokeAsync("JoinRoom", roomId);
+        public Task JoinRoomAsync(Guid roomId) => connection.InvokeAsync("JoinRoom", roomId);
 
-        public Task LeaveRoom(Guid roomId) => connection.InvokeAsync("LeaveRoom", roomId);
+        public Task LeaveRoomAsync(Guid roomId) => connection.InvokeAsync("LeaveRoom", roomId);
 
         [Obsolete]
         public Task SendToRoom(string text, Guid roomId) => connection.InvokeAsync("Send", text, roomId);
@@ -168,6 +173,7 @@ namespace YodaApiClient
         [Obsolete]
         public Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids) => connection.InvokeAsync("SendWithAttachments", text, roomId, fileGuids);
 
+        [Obsolete]
         public IRoomHandler GetRoomHandler(Guid id)
         {
             if (!savedRooms.ContainsKey(id))
@@ -178,9 +184,17 @@ namespace YodaApiClient
             throw new KeyNotFoundException($"Room with id {id} not found");
         }
 
+        [Obsolete]
         public IUser GetUser()
         {
             return user;
+        }
+
+        public async Task<IRoomHandler> GetRoomHandlerAsync(Guid id)
+        {
+            var room = await Api.GetRoomAsync(id);
+
+            return new RoomHandler(room, this);
         }
 
         #endregion

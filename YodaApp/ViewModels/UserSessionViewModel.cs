@@ -68,7 +68,7 @@ namespace YodaApp.ViewModels
 			// TODO Remove
 			await Task.Delay(500);
 #endif
-			await handler.JoinRoom(room.Id);
+			await handler.JoinRoomAsync(room.Id);
 		}
 
 
@@ -85,7 +85,7 @@ namespace YodaApp.ViewModels
 			// TODO Remove
 			await Task.Delay(500);
 #endif
-			await handler.LeaveRoom(room.Id);
+			await handler.LeaveRoomAsync(room.Id);
 		}
 
 		private ICommand _updateRoomsCommand;
@@ -125,7 +125,7 @@ namespace YodaApp.ViewModels
 
 		private async Task Connect()
 		{
-			handler = await Api.Connect();
+			handler = await Api.ConnectAsync();
 			handler.MessageReceived += Handler_MessageReceived;
 			handler.UserActionPerformed += Handler_UserActionPerformed;
 		}
@@ -168,9 +168,9 @@ namespace YodaApp.ViewModels
 		public async Task UpdateRooms()
 		{
 			Rooms.Clear();
-			foreach (var room in await Api.GetRooms())
+			foreach (var room in await Api.GetRoomsAsync())
 			{
-				AddRoom(room);
+				await AddRoom(room);
 			}
 		}
 
@@ -178,14 +178,15 @@ namespace YodaApp.ViewModels
 
 		public async Task AddRoom(CreateRoomRequest request)
 		{
-			var room = await Api.CreateRoom(request);
+			var room = await Api.CreateRoomAsync(request);
 
-			AddRoom(room);
+			await AddRoom(room);
 		}
 
-		public void AddRoom(Room room)
+		public async Task AddRoom(Room room)
 		{
-			var vm = new RoomViewModel(handler.GetRoomHandler(room.Id));
+			var roomHandler = await handler.GetRoomHandlerAsync(room.Id);
+			var vm = new RoomViewModel(roomHandler);
 			roomVMs[room.Id] = vm;
 			Rooms.Add(vm);
 		}

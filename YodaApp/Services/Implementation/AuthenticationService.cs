@@ -28,7 +28,7 @@ namespace YodaApp.Services.Implementation
             var sessions = _store.GetSessions();
             sessions.Insert(0, api.GetSessionInfo());
             _store.SetSessions(sessions);
-            apis[api.GetGuid()] = api;
+            apis[api.GetApiSessionGuid()] = api;
         }
 
         public IApi GetCurrentSession() => currentSession;
@@ -58,7 +58,7 @@ namespace YodaApp.Services.Implementation
 
             apis.ForEach(api =>
             {
-                this.apis[api.GetGuid()] = api;
+                this.apis[api.GetApiSessionGuid()] = api;
             });
 
             if (this.apis.ContainsKey(Properties.Settings.Default.CurrentSessionID))
@@ -82,9 +82,9 @@ namespace YodaApp.Services.Implementation
 
         public void RemoveSession(IApi api)
         {
-            if (apis.ContainsKey(api.GetGuid()))
-                apis.Remove(api.GetGuid());
-            if (api.GetGuid() == currentSession.GetGuid())
+            if (apis.ContainsKey(api.GetApiSessionGuid()))
+                apis.Remove(api.GetApiSessionGuid());
+            if (api.GetApiSessionGuid() == currentSession.GetApiSessionGuid())
                 FindSession();
         }
 
@@ -92,8 +92,8 @@ namespace YodaApp.Services.Implementation
         {
             if (api != null)
             {
-                Properties.Settings.Default.CurrentSessionID = api.GetGuid();
-                if (!apis.ContainsKey(api.GetGuid()))
+                Properties.Settings.Default.CurrentSessionID = api.GetApiSessionGuid();
+                if (!apis.ContainsKey(api.GetApiSessionGuid()))
                     AddSession(api);
             }
 

@@ -74,7 +74,7 @@ namespace YodaApiClient.Implementation
 
         public Task DownloadTo(Stream fileStream)
         {
-            return api.DownloadFile(Id, fileStream);
+            return api.DownloadFileAsync(Id, fileStream);
         }
 
         public Guid Id => FileModel.Id;

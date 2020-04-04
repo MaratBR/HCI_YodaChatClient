@@ -143,10 +143,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api.cs" />
+    <Compile Include="Implementation\Api.cs" />
     <Compile Include="ApiConfiguration.cs" />
-    <Compile Include="ApiProvider.cs" />
-    <Compile Include="ChatApiHandler.cs" />
+    <Compile Include="Implementation\ApiProvider.cs" />
+    <Compile Include="Implementation\ChatApiHandler.cs" />
     <Compile Include="Constants\ApiReference.cs" />
     <Compile Include="DataTypes\FileModel.cs" />
     <Compile Include="DataTypes\ChatMessageDto.cs" />

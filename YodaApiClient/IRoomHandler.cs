@@ -19,9 +19,7 @@ namespace YodaApiClient
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 
-        event EventHandler<ChatUserJoinedEventArgs> UserJoined;
-
-        event EventHandler<ChatUserLeftEventArgs> UserLeft;
+        event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         IApi API { get; }
 

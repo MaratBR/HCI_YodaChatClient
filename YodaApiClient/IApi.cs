@@ -63,21 +63,24 @@ namespace YodaApiClient
 
         Task<IUser> GetUserAsync(Guid id);
 
-        Task<List<Room>> GetRooms();
+        Task<List<Room>> GetRoomsAsync();
 
-        Task<Room> CreateRoom(CreateRoomRequest createRoom);
+        Task<Room> GetRoomAsync(Guid id);
 
-        Task<IChatApiHandler> Connect();
+        Task<Room> CreateRoomAsync(CreateRoomRequest createRoom);
+
+        Task<IChatApiHandler> ConnectAsync();
+
+        Task DownloadFileAsync(Guid id, Stream fileStream);
+
 
         SessionInfo GetSessionInfo();
 
-        Guid GetGuid();
+        Guid GetApiSessionGuid();
 
         string GetAccessToken();
 
         IFile CreateFile(Stream stream, long fileSize, string fileName);
-
-        Task DownloadFile(Guid id, Stream fileStream);
 
         IFile CreateFile(Guid id);
     }

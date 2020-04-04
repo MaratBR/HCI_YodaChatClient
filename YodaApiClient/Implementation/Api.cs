@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
 using YodaApiClient.Helpers;
-using YodaApiClient.Implementation;
 
-namespace YodaApiClient
+namespace YodaApiClient.Implementation
 {
     class RoomsResponse
     {
@@ -22,8 +21,6 @@ namespace YodaApiClient
         private readonly ApiConfiguration configuration;
         private readonly HttpClient httpClient;
 
-        private IUser user;
-
         public Api(SessionInfo sessionInfo, ApiConfiguration configuration)
         {
             this.sessionInfo = sessionInfo;
@@ -32,7 +29,7 @@ namespace YodaApiClient
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {sessionInfo.Token}");
         }
 
-        public async Task<IChatApiHandler> Connect()
+        public async Task<IChatApiHandler> ConnectAsync()
         {
             var handler = new ChatApiHandler(this, configuration);
             await handler.Connect();
@@ -40,7 +37,9 @@ namespace YodaApiClient
             return handler;
         }
 
-        public async Task<Room> CreateRoom(CreateRoomRequest request)
+        #region "Raw" data
+
+        public async Task<Room> CreateRoomAsync(CreateRoomRequest request)
         {
             HttpResponseMessage response;
 
@@ -59,8 +58,7 @@ namespace YodaApiClient
 
             return room;
         }
-
-        public async Task<List<Room>> GetRooms()
+        public async Task<List<Room>> GetRoomsAsync()
         {
             HttpResponseMessage response;
 
@@ -79,64 +77,55 @@ namespace YodaApiClient
             var roomsResponse = await response.GetJson<RoomsResponse>();
             return roomsResponse.Rooms;
         }
-
-        public async Task<IUser> GetUserAsync()
+        public async Task<Room> GetRoomAsync(Guid id)
         {
-            if (user == null)
+            HttpResponseMessage response;
+
+            try
             {
-                HttpResponseMessage response;
-
-                try
-                {
-                    response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.CURRENT_USER_ROUTE));
-                }
-                catch(HttpRequestException exc)
-                {
-                    throw new ServiceUnavailableException(exc.Message);
-                }
-
-                await response.ThrowErrorIfNotSuccessful();
-
-                var user = await response.GetJson<UserDto>();
-
-                this.user = new User(user);
+                response = await httpClient.GetAsync(
+                    configuration.AppendPathToMainUrl(
+                        string.Format(ApiReference.GET_ROOM_ROUTE, id))
+                    );
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
             }
 
-            return user;
+            await response.ThrowErrorIfNotSuccessful();
+
+            return await response.GetJson<Room>();
         }
 
-        public async Task<FileModel> UploadFile(Stream fileStream, string fileName)
-        {
-            using (var content = new MultipartFormDataContent())
-            {
-                content.Add(new StreamContent(fileStream), "file", fileName);
-
-                HttpResponseMessage response;
-
-                try
-                {
-                    response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
-                }
-                catch (HttpRequestException exc)
-                {
-                    throw new ServiceUnavailableException(exc.Message);
-                }
-
-                await response.ThrowErrorIfNotSuccessful();
-
-                return await response.GetJson<FileModel>();
-            }
-        }
 
         public SessionInfo GetSessionInfo() => sessionInfo;
-
-        public Guid GetGuid() => GetSessionInfo().SessionId;
-
+        public Guid GetApiSessionGuid() => GetSessionInfo().SessionId;
         public string GetAccessToken()
         {
             return sessionInfo.Token;
         }
 
+
+        public async Task<IUser> GetUserAsync()
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.CURRENT_USER_ROUTE));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            var user = await response.GetJson<UserDto>();
+
+            return new User(user);
+        }
         public async Task<IUser> GetUserAsync(Guid id)
         {
             HttpResponseMessage response;
@@ -156,6 +145,7 @@ namespace YodaApiClient
 
             return new User(user);
         }
+
 
         public async Task<FileModel> LoadFileModel(Guid id)
         {
@@ -180,6 +170,39 @@ namespace YodaApiClient
 
             return await response.GetJson<FileModel>();
         }
+        public async Task<FileModel> UploadFile(Stream fileStream, string fileName)
+        {
+            using (var content = new MultipartFormDataContent())
+            {
+                content.Add(new StreamContent(fileStream), "file", fileName);
+
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
+                }
+                catch (HttpRequestException exc)
+                {
+                    throw new ServiceUnavailableException(exc.Message);
+                }
+
+                await response.ThrowErrorIfNotSuccessful();
+
+                return await response.GetJson<FileModel>();
+            }
+        }
+        public async Task DownloadFileAsync(Guid id, Stream fileStream)
+        {
+            var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(string.Format(ApiReference.DOWNLOAD_FILE_ROUTE, id)));
+
+            using(var stream = await response.Content.ReadAsStreamAsync())
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+        }
+
+        #endregion
 
         public IFile CreateFile(Stream stream, long fileSize, string fileName)
         {
@@ -191,14 +214,5 @@ namespace YodaApiClient
             return new FileImpl(id, this);
         }
 
-        public async Task DownloadFile(Guid id, Stream fileStream)
-        {
-            var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(string.Format(ApiReference.DOWNLOAD_FILE_ROUTE, id)));
-
-            using(var stream = await response.Content.ReadAsStreamAsync())
-            {
-                await stream.CopyToAsync(fileStream);
-            }
-        }
     }
 }
