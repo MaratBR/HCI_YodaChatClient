@@ -23,11 +23,10 @@ namespace YodaApiClient
         private ApiConfiguration configuration;
         private HubConnection connection;
         private Thread messagesWorkerThread;
-        private readonly IDictionary<Guid, IRoomHandler> roomHandlers = new Dictionary<Guid, IRoomHandler>();
+        private readonly IDictionary<Guid, IRoomHandler> savedRooms = new Dictionary<Guid, IRoomHandler>();
 
         private BlockingCollection<MessageQueueEntry> messageQueue = new BlockingCollection<MessageQueueEntry>();
         private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
-
 
         public IApi API { get; }
 
@@ -40,6 +39,8 @@ namespace YodaApiClient
 
         public async Task Connect()
         {
+            if (connection != null)
+                return;
             connection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
                 .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {API.GetAccessToken()}"))
@@ -47,12 +48,23 @@ namespace YodaApiClient
             await connection.StartAsync();
             user = await API.GetUserAsync();
 
-            Init();
+            await Init();
         }
 
-        private void Init()
+        private async Task Init()
         {
-            SubscribeToAll();
+            SubscribeToAll(); // "Handling SignalR events" region
+            await LoadRooms();
+        }
+
+        private async Task LoadRooms()
+        {
+            List<Room> rooms = await API.GetRooms();
+
+            foreach(var room in rooms)
+            {
+                savedRooms[room.Id] = new RoomHandler(room, this);
+            }
         }
 
         #region Background sender worker
@@ -93,9 +105,6 @@ namespace YodaApiClient
 
         private void SubscribeToAll()
         {
-            connection.On<Guid, Guid>("Left", YODAHub_Left); // TODO obsolete, to be removed
-            connection.On<Guid, Guid>("Joined", YODAHub_Joined); // TODO obsolete, to be removed
-
             connection.On<UserActionDto>("UserAction", YODAHub_UserAction);
             connection.On<ChatMessageDto>("NewMessage", YODAHub_Message);
             connection.On<MessageAckDto>("MessageAck", YODAHub_MessageAck);
@@ -118,16 +127,6 @@ namespace YodaApiClient
                 awaitingAckMessages[ack.Stamp].Promise.SetResult(result);
                 awaitingAckMessages.Remove(ack.Stamp);
             }
-        }
-
-        private void YODAHub_Joined(Guid userId, Guid roomId)
-        {
-            UserJoined?.Invoke(this, new ChatUserJoinedEventArgs { RoomId = roomId, UserId = userId });
-        }
-
-        private void YODAHub_Left(Guid userId, Guid roomId)
-        {
-            UserLeft?.Invoke(this, new ChatUserLeftEventArgs { UserId = userId, RoomId = roomId });
         }
 
         private async void YODAHub_Message(ChatMessageDto message)
@@ -153,8 +152,6 @@ namespace YodaApiClient
         #region Events
 
         public event EventHandler<ChatMessageEventArgs> MessageReceived;
-        public event EventHandler<ChatUserJoinedEventArgs> UserJoined;
-        public event EventHandler<ChatUserLeftEventArgs> UserLeft;
         public event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         #endregion
@@ -173,12 +170,12 @@ namespace YodaApiClient
 
         public IRoomHandler GetRoomHandler(Guid id)
         {
-            if (!roomHandlers.ContainsKey(id))
+            if (!savedRooms.ContainsKey(id))
             {
-                roomHandlers[id] = new RoomHandler(id, this);
+                return savedRooms[id];
             }
 
-            return roomHandlers[id];
+            throw new KeyNotFoundException($"Room with id {id} not found");
         }
 
         public IUser GetUser()

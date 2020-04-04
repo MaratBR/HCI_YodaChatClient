@@ -63,7 +63,7 @@ namespace YodaApiClient
 
         Task<IUser> GetUserAsync(Guid id);
 
-        Task<ICollection<Room>> GetRooms();
+        Task<List<Room>> GetRooms();
 
         Task<Room> CreateRoom(CreateRoomRequest createRoom);
 

@@ -58,12 +58,6 @@ namespace YodaApiClient
 
         event EventHandler<ChatMessageEventArgs> MessageReceived;
 
-        [Obsolete]
-        event EventHandler<ChatUserJoinedEventArgs> UserJoined;
-
-        [Obsolete]
-        event EventHandler<ChatUserLeftEventArgs> UserLeft;
-
         event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         IRoomHandler GetRoomHandler(Guid id);

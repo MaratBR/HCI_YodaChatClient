@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes;
 
 namespace YodaApiClient.Implementation
 {
     class RoomHandler : IRoomHandler
     {
-        private readonly ChatApiHandler _handler;
+        private readonly ChatApiHandler chatApiHandler;
+        private Room room;
 
         public Guid Id { get; }
 
@@ -16,24 +18,36 @@ namespace YodaApiClient.Implementation
 
         public string Description => "NOT IMPLEMENTED";
 
-        public IApi API => _handler.API;
+        public IApi API => chatApiHandler.API;
 
+        [Obsolete]
         internal RoomHandler(Guid id, ChatApiHandler handler)
         {
             Id = id;
-            _handler = handler;
+            chatApiHandler = handler;
 
             // TODO optimize (!!!)
-            _handler.MessageReceived += Handler_MessageReceived;
-            _handler.UserJoined += Handler_UserJoined;
-            _handler.UserLeft += Handler_UserLeft;
+            chatApiHandler.MessageReceived += Handler_MessageReceived;
+            chatApiHandler.UserJoined += Handler_UserJoined;
+            chatApiHandler.UserLeft += Handler_UserLeft;
+        }
+
+        public RoomHandler(Room room, ChatApiHandler chatApiHandler)
+        {
+            this.room = room;
+            this.chatApiHandler = chatApiHandler;
+
+            // TODO optimize (!!!)
+            chatApiHandler.MessageReceived += Handler_MessageReceived;
+            chatApiHandler.UserJoined += Handler_UserJoined;
+            chatApiHandler.UserLeft += Handler_UserLeft;
         }
 
         ~RoomHandler()
         {
-            _handler.MessageReceived -= Handler_MessageReceived;
-            _handler.UserJoined -= Handler_UserJoined;
-            _handler.UserLeft -= Handler_UserLeft;
+            chatApiHandler.MessageReceived -= Handler_MessageReceived;
+            chatApiHandler.UserJoined -= Handler_UserJoined;
+            chatApiHandler.UserLeft -= Handler_UserLeft;
         }
 
         private void Handler_UserLeft(object sender, ChatUserLeftEventArgs e)
@@ -66,13 +80,13 @@ namespace YodaApiClient.Implementation
 
         public Task<MessageQueueStatus> PutToQueue(IMessageHandler messageHandler)
         {
-            return _handler.PutToQueue(messageHandler);
+            return chatApiHandler.PutToQueue(messageHandler);
 
         }
 
         public IMessageHandler CreateMessage()
         {
-            return new MessageHandler(this, _handler.GetUser());
+            return new MessageHandler(this, chatApiHandler.GetUser());
         }
     }
 }

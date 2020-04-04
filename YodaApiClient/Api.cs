@@ -13,7 +13,7 @@ namespace YodaApiClient
 {
     class RoomsResponse
     {
-        public ICollection<Room> Rooms { get; set; }
+        public List<Room> Rooms { get; set; }
     }
 
     internal class Api : IApi
@@ -23,7 +23,6 @@ namespace YodaApiClient
         private readonly HttpClient httpClient;
 
         private IUser user;
-        private DateTime lastUserUpdate;
 
         public Api(SessionInfo sessionInfo, ApiConfiguration configuration)
         {
@@ -61,7 +60,7 @@ namespace YodaApiClient
             return room;
         }
 
-        public async Task<ICollection<Room>> GetRooms()
+        public async Task<List<Room>> GetRooms()
         {
             HttpResponseMessage response;
 
@@ -83,7 +82,7 @@ namespace YodaApiClient
 
         public async Task<IUser> GetUserAsync()
         {
-            if (user == null || DateTime.Now - lastUserUpdate < TimeSpan.FromHours(1))
+            if (user == null)
             {
                 HttpResponseMessage response;
 
@@ -136,7 +135,6 @@ namespace YodaApiClient
         public string GetAccessToken()
         {
             return sessionInfo.Token;
-
         }
 
         public async Task<IUser> GetUserAsync(Guid id)

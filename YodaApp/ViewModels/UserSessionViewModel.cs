@@ -127,36 +127,34 @@ namespace YodaApp.ViewModels
 		{
 			handler = await Api.Connect();
 			handler.MessageReceived += Handler_MessageReceived;
-			handler.UserJoined += Handler_UserJoined;
-			handler.UserLeft += Handler_UserLeft;
+			handler.UserActionPerformed += Handler_UserActionPerformed;
+		}
+
+		private void Handler_UserActionPerformed(object sender, ChatUserActionEventArgs e)
+		{
+			var dto = e.ActionDto;
+			if (dto.ActionType == UserActionType.Joined)
+			{
+				if (dto.UserId == User.Id)
+				{
+					roomVMs[dto.RoomId].Status = RoomStatus.Joined;
+					LeaveRoomCommand.RaiseCanExecuteChanged();
+				}
+			}
+			else if (dto.ActionType == UserActionType.Left)
+			{
+				if (dto.UserId == User.Id)
+				{
+					roomVMs[dto.RoomId].Status = RoomStatus.Left;
+					JoinRoomCommand.RaiseCanExecuteChanged();
+				}
+			}
 		}
 
 		public void Disconnect()
 		{
 			// TODO add actual method for disconnection
 			handler = null;
-		}
-
-		private void Handler_UserLeft(object sender, ChatUserLeftEventArgs e)
-		{
-			if (e.UserId == User.Id)
-			{
-				roomVMs[e.RoomId].Status = RoomStatus.Left;
-				JoinRoomCommand.RaiseCanExecuteChanged();
-			}
-
-			Console.WriteLine($"User {e.UserId} left {e.RoomId}");
-		}
-
-		private void Handler_UserJoined(object sender, ChatUserJoinedEventArgs e)
-		{
-			if (e.UserId == User.Id)
-			{
-				roomVMs[e.RoomId].Status = RoomStatus.Joined;
-				LeaveRoomCommand.RaiseCanExecuteChanged();
-			}
-
-			Console.WriteLine($"User {e.UserId} joined {e.RoomId}");
 		}
 
 		private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
