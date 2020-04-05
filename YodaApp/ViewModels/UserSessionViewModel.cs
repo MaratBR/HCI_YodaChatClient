@@ -16,7 +16,7 @@ namespace YodaApp.ViewModels
 {
     class UserSessionViewModel : ViewModelBase
 	{
-		private IChatApiHandler handler;
+		private IChatClient handler;
 		private IWindowService _windows;
 		private readonly Dictionary<Guid, RoomViewModel> roomVMs = new Dictionary<Guid, RoomViewModel>();
 
@@ -30,6 +30,7 @@ namespace YodaApp.ViewModels
 			set => Set(ref rooms, nameof(Rooms), value);
 		}
 
+
 		private RoomViewModel selectedRoom;
 
 		public RoomViewModel SelectedRoom
@@ -42,6 +43,7 @@ namespace YodaApp.ViewModels
 				LeaveRoomCommand.RaiseCanExecuteChanged();
 			}
 		}
+
 
 		private IUser user;
 
@@ -64,10 +66,6 @@ namespace YodaApp.ViewModels
 			if (room.Status == RoomStatus.Joined)
 				return;
 			room.Status = RoomStatus.AwaitingServerReponse;
-#if DEBUG
-			// TODO Remove
-			await Task.Delay(500);
-#endif
 			await handler.JoinRoomAsync(room.Id);
 		}
 
@@ -81,10 +79,6 @@ namespace YodaApp.ViewModels
 			if (room.Status == RoomStatus.Left)
 				return;
 			room.Status = RoomStatus.AwaitingServerReponse;
-#if DEBUG
-			// TODO Remove
-			await Task.Delay(500);
-#endif
 			await handler.LeaveRoomAsync(room.Id);
 		}
 
@@ -153,7 +147,7 @@ namespace YodaApp.ViewModels
 
 		public void Disconnect()
 		{
-			// TODO add actual method for disconnection
+			handler.Disconnect();
 			handler = null;
 		}
 
@@ -167,11 +161,33 @@ namespace YodaApp.ViewModels
 
 		public async Task UpdateRooms()
 		{
+			Guid? roomGuid = SelectedRoom?.Id;
+			SelectedRoom = null;
+
+			foreach (var room in Rooms)
+			{
+				await LeaveRoom(room);
+			}
+
 			Rooms.Clear();
+
 			foreach (var room in await Api.GetRoomsAsync())
 			{
 				await AddRoom(room);
 			}
+
+			foreach (var room in Rooms)
+			{
+				await JoinRoom(room);
+			}
+
+			if (roomGuid != null)
+			{
+				SelectedRoom = Rooms.Where(r => r.Id == roomGuid).SingleOrDefault();
+			}
+
+			JoinRoomCommand.RaiseCanExecuteChanged();
+			LeaveRoomCommand.RaiseCanExecuteChanged();
 		}
 
 		public async Task UpdateUser() => User = await Api.GetUserAsync();
@@ -187,6 +203,7 @@ namespace YodaApp.ViewModels
 		{
 			var roomHandler = await handler.GetRoomHandlerAsync(room.Id);
 			var vm = new RoomViewModel(roomHandler);
+			await vm.CreateNewMessage();
 			roomVMs[room.Id] = vm;
 			Rooms.Add(vm);
 		}

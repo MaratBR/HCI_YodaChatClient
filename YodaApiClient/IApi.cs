@@ -59,29 +59,19 @@ namespace YodaApiClient
 
     public interface IApi : IFileUploader
     {
-        Task<IUser> GetUserAsync();
+        Task<IChatClient> ConnectAsync();
 
-        Task<IUser> GetUserAsync(Guid id);
+        Task<User> GetUserAsync();
+        Task<User> GetUserAsync(Guid id);
 
         Task<List<Room>> GetRoomsAsync();
-
         Task<Room> GetRoomAsync(Guid id);
-
         Task<Room> CreateRoomAsync(CreateRoomRequest createRoom);
-
-        Task<IChatApiHandler> ConnectAsync();
 
         Task DownloadFileAsync(Guid id, Stream fileStream);
 
-
         SessionInfo GetSessionInfo();
-
         Guid GetApiSessionGuid();
-
         string GetAccessToken();
-
-        IFile CreateFile(Stream stream, long fileSize, string fileName);
-
-        IFile CreateFile(Guid id);
     }
 }

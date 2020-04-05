@@ -15,18 +15,22 @@ namespace YodaApiClient.Implementation
         public string AccessToken { get; set; }
 
         public Guid RefreshToken { get; set; }
+
+        public DateTime ExpiresAt { get; set; }
+
+        public Guid UserId { get; set; }
     }
 
     class RegistrationResponse
     {
-        public UserDto User { get; set; }
+        public User User { get; set; }
     }
 
     /// <summary>
     /// Provides authentication and registration
     /// </summary>
     public class ApiProvider : IApiProvider
-    {
+    { 
         private readonly ApiConfiguration configuration;
         private readonly HttpClient httpClient;
 
@@ -66,7 +70,8 @@ namespace YodaApiClient.Implementation
                  {
                      Token = data.AccessToken,
                      RefreshToken = data.RefreshToken,
-                     ExpiresAt = DateTime.MaxValue, // TODO
+                     ExpiresAt = data.ExpiresAt,
+                     UserId = data.UserId
                  },
                  configuration
                  );

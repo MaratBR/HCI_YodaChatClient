@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YodaApiClient.DataTypes
+namespace YodaApiClient.DataTypes.DTO
 {
     public enum UserActionType : byte
     {

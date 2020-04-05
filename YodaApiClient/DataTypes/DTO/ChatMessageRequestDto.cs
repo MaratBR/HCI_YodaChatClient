@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YodaApiClient.DataTypes
+namespace YodaApiClient.DataTypes.DTO
 {
-    class ChatMessageRequestDto
+    public class ChatMessageRequestDto
     {
         public Guid RoomId { get; set; }
 

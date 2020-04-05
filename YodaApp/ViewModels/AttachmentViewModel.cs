@@ -15,21 +15,21 @@ namespace YodaApp.ViewModels
 
     class AttachmentViewModel : ViewModelBase
     {
-        private readonly IFile file;
+        public IFile File { get; }
 
-        public string FileName => file.FileName;
+        public string FileName => File.FileName;
 
-        public string FileSize => file.Size >= 1024 * 1024 ? $"{Math.Round((decimal)file.Size / (1024 * 1024), 1)}M" :
-                file.Size >= 1024 ? $"{Math.Round((decimal)file.Size / 1024, 1)}K" :
-                $"{file.Size}B";
+        public string FileSize => File.Size >= 1024 * 1024 ? $"{Math.Round((decimal)File.Size / (1024 * 1024), 1)}M" :
+                File.Size >= 1024 ? $"{Math.Round((decimal)File.Size / 1024, 1)}K" :
+                $"{File.Size}B";
 
-        public FileState State => file.State;
+        public FileState State => File.State;
 
-        public FileModel FileModel => file.FileModel;
+        public FileModel FileModel => File.FileModel;
 
         public string Status => State.GetDescription();
 
-        public string Error => file.Error;
+        public string Error => File.Error;
 
         public event EventHandler RemoveAttachment;
 
@@ -48,8 +48,8 @@ namespace YodaApp.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 var filePath = dialog.FileName;
-                var fileStream = File.OpenWrite(filePath);
-                await file.DownloadTo(fileStream);
+                var fileStream = System.IO.File.OpenWrite(filePath);
+                await File.DownloadToAsync(fileStream);
             }
         }
 
@@ -60,13 +60,13 @@ namespace YodaApp.ViewModels
 
         public AttachmentViewModel(IFile file)
         {
-            this.file = file;
+            this.File = file;
             file.StateChanged += File_StateChanged;
         }
 
         ~AttachmentViewModel()
         {
-            file.StateChanged -= File_StateChanged;
+            File.StateChanged -= File_StateChanged;
         }
 
         private void File_StateChanged(object sender, EventArgs e)

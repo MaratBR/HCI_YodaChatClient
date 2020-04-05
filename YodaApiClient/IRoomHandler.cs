@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes.DTO;
+using YodaApiClient.Events;
 
 namespace YodaApiClient
 {
@@ -13,15 +12,16 @@ namespace YodaApiClient
 
         string Description { get; }
 
+        IApi Api { get; }
+
         Guid Id { get; }
 
-        IMessageHandler CreateMessage();
+        event ChatEventHandler<ChatMessageDto> MessageReceived;
 
-        event EventHandler<ChatMessageEventArgs> MessageReceived;
+        event ChatEventHandler<UserJoinedRoomDto> UserJoined;
 
-        event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
+        event ChatEventHandler<UserDepartedDto> UserDeparted;
 
-        IApi API { get; }
 
     }
 }

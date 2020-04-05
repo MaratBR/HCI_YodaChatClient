@@ -64,22 +64,21 @@ namespace YodaApp.ViewModels
         public RoomViewModel(IRoomHandler room)
         {
             this.room = room;
-            CreateNewMessage();
         }
 
-        private void CreateNewMessage()
+        public async Task CreateNewMessage()
         {
-            var message = room.CreateMessage();
+            var message = await room.CreateMessageAsync();
             Message = new MessageViewModel(message);
             Message.MessageSent += Message_MessageSent;
         }
 
-        private void Message_MessageSent(object sender, EventArgs e)
+        private async void Message_MessageSent(object sender, EventArgs e)
         {
             var vm = (MessageViewModel)sender;
             vm.MessageSent -= Message_MessageSent;
             Messages.Add(vm);
-            CreateNewMessage();
+            await CreateNewMessage();
         }
     }
 }

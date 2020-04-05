@@ -22,8 +22,8 @@ namespace YodaApp.ViewModels
 
         public MainWindowViewModel(IAuthenticationService authentication, IWindowService windows, IComponentContext componentContext)
         {
-            _authentication = authentication;
             _windows = windows;
+            _authentication = authentication;
             _authentication.SessionChanged += Authentication_SessionChanged;
             _componentContext = componentContext;
             Init();
@@ -44,20 +44,13 @@ namespace YodaApp.ViewModels
             set => Set(ref session, nameof(Session), value);
         }
 
+
         private ObservableCollection<UserSessionViewModel> userSessions = new ObservableCollection<UserSessionViewModel>();
 
         public ObservableCollection<UserSessionViewModel> UserSessions
         {
             get => userSessions;
             set => Set(ref userSessions, nameof(UserSessions), value);
-        }
-
-        private bool isWindowHidden = true;
-
-        public bool IsWindowHidden
-        {
-            get => isWindowHidden;
-            set => Set(ref isWindowHidden, nameof(IsWindowHidden), value);
         }
 
         #endregion

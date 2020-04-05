@@ -12,6 +12,8 @@ namespace YodaApiClient
 
         public Guid RefreshToken { get; set; }
 
+        public Guid UserId { get; set; }
+
         public Guid SessionId { get; set; } = Guid.NewGuid();
 
         public DateTime ExpiresAt { get; set; }

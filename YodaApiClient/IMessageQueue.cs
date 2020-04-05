@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient.DataTypes.DTO;
 
 namespace YodaApiClient
 {
@@ -17,6 +18,6 @@ namespace YodaApiClient
 
     public interface IMessageQueue
     {
-        Task<MessageQueueStatus> PutToQueue(IMessageHandler message);
+        Task<MessageQueueStatus> PutToQueue(ChatMessageRequestDto message);
     }
 }

@@ -29,9 +29,9 @@ namespace YodaApiClient.Implementation
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {sessionInfo.Token}");
         }
 
-        public async Task<IChatApiHandler> ConnectAsync()
+        public async Task<IChatClient> ConnectAsync()
         {
-            var handler = new ChatApiHandler(this, configuration);
+            var handler = new ChatClient(this, configuration);
             await handler.Connect();
 
             return handler;
@@ -107,7 +107,7 @@ namespace YodaApiClient.Implementation
         }
 
 
-        public async Task<IUser> GetUserAsync()
+        public async Task<User> GetUserAsync()
         {
             HttpResponseMessage response;
 
@@ -122,11 +122,9 @@ namespace YodaApiClient.Implementation
 
             await response.ThrowErrorIfNotSuccessful();
 
-            var user = await response.GetJson<UserDto>();
-
-            return new User(user);
+            return await response.GetJson<User>();
         }
-        public async Task<IUser> GetUserAsync(Guid id)
+        public async Task<User> GetUserAsync(Guid id)
         {
             HttpResponseMessage response;
 
@@ -141,13 +139,11 @@ namespace YodaApiClient.Implementation
 
             await response.ThrowErrorIfNotSuccessful();
 
-            var user = await response.GetJson<UserDto>();
-
-            return new User(user);
+            return await response.GetJson<User>();
         }
 
 
-        public async Task<FileModel> LoadFileModel(Guid id)
+        public async Task<FileModel> GetFileModelAsync(Guid id)
         {
             HttpResponseMessage response;
             try
@@ -170,7 +166,7 @@ namespace YodaApiClient.Implementation
 
             return await response.GetJson<FileModel>();
         }
-        public async Task<FileModel> UploadFile(Stream fileStream, string fileName)
+        public async Task<FileModel> UploadFileAsync(Stream fileStream, string fileName)
         {
             using (var content = new MultipartFormDataContent())
             {
@@ -203,16 +199,5 @@ namespace YodaApiClient.Implementation
         }
 
         #endregion
-
-        public IFile CreateFile(Stream stream, long fileSize, string fileName)
-        {
-            return new FileImpl(stream, fileName, fileSize, this);
-        }
-
-        public IFile CreateFile(Guid id)
-        {
-            return new FileImpl(id, this);
-        }
-
     }
 }

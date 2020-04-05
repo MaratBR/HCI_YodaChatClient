@@ -7,18 +7,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
+using YodaApiClient.Events;
 
 namespace YodaApiClient.Implementation
 {
-    internal class ChatApiHandler : IChatApiHandler, IMessageQueue
+    internal class ChatClient : IChatClient, IMessageQueue
     {
         internal struct MessageQueueEntry
         {
-            public IMessageHandler Message;
+            public ChatMessageRequestDto Message;
             public TaskCompletionSource<MessageQueueStatus> Promise;
         }
 
-        private IUser user;
         private ApiConfiguration configuration;
         private HubConnection connection;
         private Thread messagesWorkerThread;
@@ -27,9 +28,13 @@ namespace YodaApiClient.Implementation
         private BlockingCollection<MessageQueueEntry> messageQueue = new BlockingCollection<MessageQueueEntry>();
         private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
 
+        public event ChatEventHandler<ChatMessageDto> MessageReceived;
+        public event ChatEventHandler<UserJoinedRoomDto> UserJoined;
+        public event ChatEventHandler<UserDepartedDto> UserLeft;
+
         public IApi Api { get; }
 
-        public ChatApiHandler(IApi api, ApiConfiguration configuration)
+        public ChatClient(IApi api, ApiConfiguration configuration)
         {
             this.Api = api;
             this.configuration = configuration;
@@ -45,9 +50,16 @@ namespace YodaApiClient.Implementation
                 .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {Api.GetAccessToken()}"))
                 .Build();
             await connection.StartAsync();
-            user = await Api.GetUserAsync();
 
             await Init();
+        }
+
+        public async Task Disconnect()
+        {
+            if (connection == null)
+                return;
+
+            await connection.StopAsync();
         }
 
         private async Task Init()
@@ -85,22 +97,15 @@ namespace YodaApiClient.Implementation
             foreach (var message in messageQueue.GetConsumingEnumerable())
             {
                 await SendMessage(message);
+                await Task.Delay(50);
             }
         }
 
         private async Task SendMessage(MessageQueueEntry entry)
         {
-            IMessageHandler message = entry.Message;
-            var stamp = Guid.NewGuid();
-            var dto = new ChatMessageRequestDto
-            {
-                Text = message.Text,
-                Attachments = message.Attachments.Select(a => a.Id).ToList(),
-                RoomId = message.Room.Id,
-                Stamp = stamp
-            };
-            awaitingAckMessages[stamp] = entry;
-            await connection.SendAsync("Send", dto);
+            entry.Message.Stamp = Guid.NewGuid();
+            awaitingAckMessages[entry.Message.Stamp] = entry;
+            await connection.SendAsync("Send", entry.Message);
         }
 
         #endregion
@@ -109,14 +114,26 @@ namespace YodaApiClient.Implementation
 
         private void SubscribeToAll()
         {
-            connection.On<UserActionDto>("UserAction", YODAHub_UserAction);
             connection.On<ChatMessageDto>("NewMessage", YODAHub_Message);
             connection.On<MessageAckDto>("MessageAck", YODAHub_MessageAck);
+            connection.On<UserJoinedRoomDto>("UserJoined", YODAHub_UserJoined);
+            connection.On<UserDepartedDto>("UserLeft", YODAHub_UserDeparted);
         }
 
-        private void YODAHub_UserAction(UserActionDto action)
+        private void YODAHub_UserJoined(UserJoinedRoomDto message)
         {
-            UserActionPerformed?.Invoke(this, new ChatUserActionEventArgs { ActionDto = action });
+            UserJoined?.Invoke(
+                this,
+                new ChatEventArgs<UserJoinedRoomDto>(new ChatEventContext(this), message)
+                );
+        }
+
+        private void YODAHub_UserDeparted(UserDepartedDto msg)
+        {
+            UserLeft?.Invoke(
+                this,
+                new ChatEventArgs<UserDepartedDto>(new ChatEventContext(this), msg)
+                );
         }
 
         private void YODAHub_MessageAck(MessageAckDto ack)
@@ -133,31 +150,13 @@ namespace YodaApiClient.Implementation
             }
         }
 
-        private async void YODAHub_Message(ChatMessageDto message)
+        private void YODAHub_Message(ChatMessageDto message)
         {
-            IUser user = await FindUser(message.SenderId);
-            ICollection<IFile> attachments = GetAllAttachments(message.Attachments);
-            IRoomHandler roomHandler = await GetRoomHandlerAsync(message.RoomId);
-            IMessageHandler messageHandler = new MessageHandler(roomHandler, user, message.Text, attachments);
-            MessageReceived?.Invoke(this, new ChatMessageEventArgs { Message = messageHandler });
+            MessageReceived?.Invoke(
+                this,
+                new ChatEventArgs<ChatMessageDto>(new ChatEventContext(this), message)
+                );
         }
-
-        private ICollection<IFile> GetAllAttachments(IEnumerable<Guid> attachments)
-        {
-            return attachments.Select(a => new FileImpl(a, Api) as IFile).ToList();
-        }
-
-        private Task<IUser> FindUser(Guid senderId)
-        {
-            return Api.GetUserAsync(senderId);
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler<ChatMessageEventArgs> MessageReceived;
-        public event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
 
         #endregion
 
@@ -173,23 +172,6 @@ namespace YodaApiClient.Implementation
         [Obsolete]
         public Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids) => connection.InvokeAsync("SendWithAttachments", text, roomId, fileGuids);
 
-        [Obsolete]
-        public IRoomHandler GetRoomHandler(Guid id)
-        {
-            if (!savedRooms.ContainsKey(id))
-            {
-                return savedRooms[id];
-            }
-
-            throw new KeyNotFoundException($"Room with id {id} not found");
-        }
-
-        [Obsolete]
-        public IUser GetUser()
-        {
-            return user;
-        }
-
         public async Task<IRoomHandler> GetRoomHandlerAsync(Guid id)
         {
             var room = await Api.GetRoomAsync(id);
@@ -201,7 +183,7 @@ namespace YodaApiClient.Implementation
 
         #region IMessageQueue implementation
 
-        public Task<MessageQueueStatus> PutToQueue(IMessageHandler message)
+        public Task<MessageQueueStatus> PutToQueue(ChatMessageRequestDto message)
         {
             var promise = new TaskCompletionSource<MessageQueueStatus>();
             messageQueue.Add(new MessageQueueEntry { Promise = promise, Message = message });

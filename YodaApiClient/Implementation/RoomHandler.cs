@@ -4,13 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
+using YodaApiClient.Events;
 
 namespace YodaApiClient.Implementation
 {
     class RoomHandler : IRoomHandler
     {
-        private readonly ChatApiHandler chatApiHandler;
+        private readonly ChatClient client;
+        private readonly Dictionary<Guid, IUser> usersCache = new Dictionary<Guid, IUser>();
         private Room room;
+
+        public event ChatEventHandler<ChatMessageDto> MessageReceived;
+        public event ChatEventHandler<UserJoinedRoomDto> UserJoined;
+        public event ChatEventHandler<UserDepartedDto> UserDeparted;
 
         public Guid Id => room?.Id ?? Guid.Empty;
 
@@ -18,49 +25,44 @@ namespace YodaApiClient.Implementation
 
         public string Description => room?.Description;
 
-        public IApi API => chatApiHandler.Api;
+        public IApi Api => client.Api;
 
-        public RoomHandler(Room room, ChatApiHandler chatApiHandler)
+        public RoomHandler(Room room, ChatClient client)
         {
             this.room = room;
-            this.chatApiHandler = chatApiHandler;
+            this.client = client;
 
             // TODO optimize (!!!)
-            chatApiHandler.MessageReceived += Handler_MessageReceived;
-            chatApiHandler.UserActionPerformed += ChatApiHandler_UserActionPerformed;
+            this.client.MessageReceived += Handler_MessageReceived;
+            this.client.UserLeft += Handler_UserLeft;
+            this.client.UserJoined += Handler_UserJoined;
         }
 
         ~RoomHandler()
         {
-            chatApiHandler.MessageReceived -= Handler_MessageReceived;
+
         }
 
         #region Event handlers
-
-        private void ChatApiHandler_UserActionPerformed(object sender, ChatUserActionEventArgs e)
+        private void Handler_UserLeft(object sender, ChatEventArgs<UserDepartedDto> e)
         {
-            UserActionPerformed?.Invoke(this, e);
-        }
-
-        private void Handler_UserLeft(object sender, ChatUserLeftEventArgs e)
-        {
-            if (e.RoomId == Id)
+            if (e.InnerMessage.RoomId == Id)
             {
-                UserLeft?.Invoke(this, e);
+                UserDeparted?.Invoke(this, e);
             }
         }
 
-        private void Handler_UserJoined(object sender, ChatUserJoinedEventArgs e)
+        private void Handler_UserJoined(object sender, ChatEventArgs<UserJoinedRoomDto> e)
         {
-            if (e.RoomId == Id)
+            if (e.InnerMessage.RoomId == Id)
             {
                 UserJoined?.Invoke(this, e);
             }
         }
 
-        private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
+        private void Handler_MessageReceived(object sender, ChatEventArgs<ChatMessageDto> e)
         {
-            if (e.Message.Room.Id == Id)
+            if (e.InnerMessage.RoomId == Id)
             {
                 MessageReceived?.Invoke(this, e);
             }
@@ -68,20 +70,9 @@ namespace YodaApiClient.Implementation
 
         #endregion
 
-        public event EventHandler<ChatMessageEventArgs> MessageReceived;
-        public event EventHandler<ChatUserJoinedEventArgs> UserJoined;
-        public event EventHandler<ChatUserLeftEventArgs> UserLeft;
-        public event EventHandler<ChatUserActionEventArgs> UserActionPerformed;
-
-        public Task<MessageQueueStatus> PutToQueue(IMessageHandler messageHandler)
+        public Task<MessageQueueStatus> PutToQueue(ChatMessageRequestDto message)
         {
-            return chatApiHandler.PutToQueue(messageHandler);
-
-        }
-
-        public IMessageHandler CreateMessage()
-        {
-            return new MessageHandler(this, chatApiHandler.GetUser());
+            return client.PutToQueue(message);
         }
     }
 }

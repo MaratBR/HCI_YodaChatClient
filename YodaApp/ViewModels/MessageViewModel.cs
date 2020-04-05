@@ -8,27 +8,79 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
+using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
+    enum MessageStatus
+    {
+        Sending,
+        Sent,
+        Error,
+        Received
+    }
+
     class MessageViewModel : ViewModelBase
     {
-        private readonly IMessageHandler messageHandler;
+        private readonly IRoomHandler roomHandler;
+        private ChatMessageDto message;
+        private ChatMessageRequestDto request;
 
         public event EventHandler MessageSent;
 
-        public MessageViewModel(IMessageHandler messageHandler)
+        #region Properties
+
+        private string text;
+
+        public string Text
         {
-            this.messageHandler = messageHandler;
-            Attachments = new ObservableCollection<AttachmentViewModel>();
+            get { return text; }
+            set => Set(ref text, nameof(Text), value);
+        }
 
-            foreach(var file in messageHandler.Attachments)
-            {
-                AddAttachment(file);
-            }
+        private string sender;
 
-            messageHandler.StatusChanged += MessageHandler_StatusChanged;
+        public string Sender
+        {
+            get { return sender; }
+            set => Set(ref sender, nameof(Sender), value);
+        }
+
+        private Guid senderId;
+
+        public Guid SenderId
+        {
+            get { return senderId; }
+            set => Set(ref senderId, nameof(SenderId), value);
+        }
+
+        private DateTime publishedAt;
+
+        public DateTime PublishedAt
+        {
+            get { return publishedAt; }
+            set => Set(ref publishedAt, nameof(PublishedAt), value);
+        }
+
+        private MessageStatus status;
+
+        public MessageStatus Status
+        {
+            get { return status; }
+            set => Set(ref status, nameof(Status), value);
+        }
+
+        public ObservableCollection<AttachmentViewModel> Attachments { get; } = new ObservableCollection<AttachmentViewModel>();
+
+        #endregion
+
+        public MessageViewModel(IRoomHandler roomHandler, User user)
+        {
+            this.roomHandler = roomHandler;
+            SenderId = user.Id;
+            Sender = user.UserName;
         }
 
         private void MessageHandler_StatusChanged(object sender, EventArgs e)
@@ -38,6 +90,7 @@ namespace YodaApp.ViewModels
 
         public async Task Send()
         {
+
             if (messageHandler.CanBeSent())
             {
                 MessageSent?.Invoke(this, EventArgs.Empty);
@@ -56,31 +109,9 @@ namespace YodaApp.ViewModels
         {
             var vm = (AttachmentViewModel)sender;
 
+            messageHandler.Attachments.Remove(vm.File);
             Attachments.Remove(vm);
         }
-
-        #region Properties
-
-
-        public string Text
-        {
-            get => messageHandler.Text;
-            set
-            {
-                if (messageHandler.Text == value)
-                    return;
-                messageHandler.Text = value;
-                OnPropertyChanged(nameof(Text));
-            }
-        }
-
-        public ObservableCollection<AttachmentViewModel> Attachments { get; }
-
-
-
-        public MessageStatus Status => messageHandler.Status;
-
-        #endregion
 
         #region Commands
 
@@ -103,7 +134,7 @@ namespace YodaApp.ViewModels
                 string fileName = Path.GetFileName(filePath);
                 var stream = dialog.OpenFile();
                 IFile file = messageHandler.AddAttachment(stream, stream.Length, fileName);
-                file.Upload();
+                file.UploadAsync();
                 AddAttachment(file);
             }
         }

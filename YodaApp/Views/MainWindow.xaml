@@ -15,7 +15,7 @@
         Title="MainWindow" Height="676" Width="1086">
 
     <Window.Resources>
-        <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
+        <utils:BoolToAnythingConverter x:Key="BooleanToHorizontalAlignment">
             <utils:BoolToAnythingConverter.TrueValue>
                 <HorizontalAlignment>Right</HorizontalAlignment>
             </utils:BoolToAnythingConverter.TrueValue>
@@ -26,6 +26,7 @@
         </utils:BoolToAnythingConverter>
 
         <materialDesign:NullableToVisibilityConverter NullValue="Collapsed" NotNullValue="Visible" x:Key="NotNullConverter" />
+        <materialDesign:NullableToVisibilityConverter NullValue="Visible" NotNullValue="Collapsed" x:Key="NullConverter" />
 
 
         <Style x:Key="HiddenIfDisabled" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
@@ -121,27 +122,37 @@
             Grid.Column="1" Grid.RowSpan="2"
             Width="10"/>
 
-        <DockPanel Grid.Column="2" VerticalAlignment="Stretch">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Session.SelectedRoom.IsJoined}" />
-                <Button
-                    Style="{StaticResource HiddenIfDisabled}"
-                    Command="{Binding Session.JoinRoomCommand}"
-                    CommandParameter="{Binding Session.SelectedRoom}">Join</Button>
-                <Button
-                    Style="{StaticResource HiddenIfDisabled}"
-                    Command="{Binding Session.LeaveRoomCommand}"
-                    CommandParameter="{Binding Session.SelectedRoom}">Left</Button>
-            </StackPanel>
-            <Button MinWidth="100"
+        <Grid Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Style="{StaticResource HiddenIfDisabled}"
+                Command="{Binding Session.JoinRoomCommand}"
+                CommandParameter="{Binding Session.SelectedRoom}">Join</Button>
+            <Button
+                Style="{StaticResource HiddenIfDisabled}"
+                Command="{Binding Session.LeaveRoomCommand}"
+                CommandParameter="{Binding Session.SelectedRoom}">Left</Button>
+
+            <TextBlock VerticalAlignment="Center" FontSize="20" Grid.Column="1" Margin="10,0,0,0" Text="{Binding Session.SelectedRoom.Name}" />
+
+            <Button MinWidth="100" Grid.Column="2"
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
                     Command="{Binding SwitchSessionCommand}">
                 <TextBlock Text="{Binding Session.User.UserName}" />
             </Button>
-        </DockPanel>
+        </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="2">
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NullConverter}}">
+            <TextBlock>Hi</TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="100" />
@@ -153,7 +164,7 @@
             </Grid.RowDefinitions>
 
 
-            <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid Grid.Row="1" Grid.ColumnSpan="2"  IsEnabled="{Binding Session.SelectedRoom.IsJoined}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
@@ -232,8 +243,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect SlideInFromBottom}">
-                                <Border CornerRadius="5" Background="#22FFFFFF" Padding="5" Margin="5" HorizontalAlignment="Left" MinWidth="300" Width="Auto">
-                                    <StackPanel >
+                                <Border CornerRadius="5" Background="#22FFFFFF" Padding="5" Margin="5" HorizontalAlignment="{Binding IsSelf, Converter={StaticResource BooleanToHorizontalAlignment}}" MinWidth="300" Width="Auto">
+                                    <StackPanel>
                                         <TextBlock
                                             Visibility="{Binding Text, Converter={StaticResource NotNullConverter}}"
                                             Style="{StaticResource MaterialDesignBody1TextBlock}"
@@ -243,7 +254,6 @@
                                             Text="{Binding Text}" />
 
                                         <ItemsControl ItemsSource="{Binding Attachments}" HorizontalContentAlignment="Stretch">
-
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Grid Margin="0" TextBlock.FontSize="12">
@@ -266,7 +276,9 @@
                                         </ItemsControl>
 
                                         <DockPanel TextBlock.FontSize="10" HorizontalAlignment="Right">
-                                            <TextBlock Text="{Binding Status}" Foreground="Gray" />
+                                            <TextBlock Text="{Binding User.UserName}" Foreground="Gray" />
+                                            <TextBlock Text=" | " Foreground="Gray" />
+                                            <TextBlock Text="{Binding Status}" Foreground="Gray"  />
                                         </DockPanel>
                                     </StackPanel>
                                 </Border>
