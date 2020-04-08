@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
 using YodaApiClient.Helpers;
 
 namespace YodaApiClient.Implementation
@@ -98,14 +99,12 @@ namespace YodaApiClient.Implementation
             return await response.GetJson<Room>();
         }
 
-
         public SessionInfo GetSessionInfo() => sessionInfo;
         public Guid GetApiSessionGuid() => GetSessionInfo().SessionId;
         public string GetAccessToken()
         {
             return sessionInfo.Token;
         }
-
 
         public async Task<User> GetUserAsync()
         {
@@ -141,7 +140,6 @@ namespace YodaApiClient.Implementation
 
             return await response.GetJson<User>();
         }
-
 
         public async Task<FileModel> GetFileModelAsync(Guid id)
         {
@@ -196,6 +194,35 @@ namespace YodaApiClient.Implementation
             {
                 await stream.CopyToAsync(fileStream);
             }
+        }
+
+        private class RoomMessagesResponse
+        {
+            public List<ChatMessageDto> Messages { get; set; }
+        }
+
+        public async Task<List<ChatMessageDto>> GetRoomMessages(Guid roomId, DateTime? before = null)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                string url = string.Format(ApiReference.GET_ROOM_MESSAGES_ROUTE, roomId);
+                if (before == null)
+                    url += $"?=before={before}";
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(url));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            var data = await response.GetJson<RoomMessagesResponse>();
+
+            return data.Messages;
+
         }
 
         #endregion

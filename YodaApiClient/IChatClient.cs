@@ -25,9 +25,9 @@ namespace YodaApiClient
 
         event ChatEventHandler<ChatMessageDto> MessageReceived;
 
-        event ChatEventHandler<UserJoinedRoomDto> UserJoined;
+        event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
 
-        event ChatEventHandler<UserDepartedDto> UserLeft;
+        event ChatEventHandler<ChatUserDepartedDto> UserLeft;
 
         Task<IRoomHandler> GetRoomHandlerAsync(Guid id);
 

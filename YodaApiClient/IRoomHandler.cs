@@ -17,9 +17,9 @@ namespace YodaApiClient
 
         event ChatEventHandler<ChatMessageDto> MessageReceived;
 
-        event ChatEventHandler<UserJoinedRoomDto> UserJoined;
+        event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
 
-        event ChatEventHandler<UserDepartedDto> UserDeparted;
+        event ChatEventHandler<ChatUserDepartedDto> UserDeparted;
 
 
     }

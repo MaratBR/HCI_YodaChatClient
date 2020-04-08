@@ -72,7 +72,7 @@ namespace YodaApp.ViewModels
             CreateNewMessage();
         }
 
-        private void Room_UserJoined(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.UserJoinedRoomDto> args)
+        private void Room_UserJoined(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.ChatUserJoinedRoomDto> args)
         {
             if (args.InnerMessage.User.Id == room.Client.User.Id)
             {
@@ -80,7 +80,7 @@ namespace YodaApp.ViewModels
             }
         }
 
-        private void Room_UserDeparted(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.UserDepartedDto> args)
+        private void Room_UserDeparted(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.ChatUserDepartedDto> args)
         {
             if (args.InnerMessage.UserId == room.Client.User.Id)
             {

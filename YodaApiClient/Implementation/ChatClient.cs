@@ -29,8 +29,8 @@ namespace YodaApiClient.Implementation
         private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
 
         public event ChatEventHandler<ChatMessageDto> MessageReceived;
-        public event ChatEventHandler<UserJoinedRoomDto> UserJoined;
-        public event ChatEventHandler<UserDepartedDto> UserLeft;
+        public event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
+        public event ChatEventHandler<ChatUserDepartedDto> UserLeft;
 
         public IApi Api { get; }
 
@@ -118,28 +118,28 @@ namespace YodaApiClient.Implementation
         private void SubscribeToAll()
         {
             connection.On<ChatMessageDto>("NewMessage", YODAHub_Message);
-            connection.On<MessageAckDto>("MessageAck", YODAHub_MessageAck);
-            connection.On<UserJoinedRoomDto>("UserJoined", YODAHub_UserJoined);
-            connection.On<UserDepartedDto>("UserLeft", YODAHub_UserDeparted);
+            connection.On<ChatMessageAckDto>("MessageAck", YODAHub_MessageAck);
+            connection.On<ChatUserJoinedRoomDto>("UserJoined", YODAHub_UserJoined);
+            connection.On<ChatUserDepartedDto>("UserLeft", YODAHub_UserDeparted);
         }
 
-        private void YODAHub_UserJoined(UserJoinedRoomDto message)
+        private void YODAHub_UserJoined(ChatUserJoinedRoomDto message)
         {
             UserJoined?.Invoke(
                 this,
-                new ChatEventArgs<UserJoinedRoomDto>(new ChatEventContext(this), message)
+                new ChatEventArgs<ChatUserJoinedRoomDto>(new ChatEventContext(this), message)
                 );
         }
 
-        private void YODAHub_UserDeparted(UserDepartedDto msg)
+        private void YODAHub_UserDeparted(ChatUserDepartedDto msg)
         {
             UserLeft?.Invoke(
                 this,
-                new ChatEventArgs<UserDepartedDto>(new ChatEventContext(this), msg)
+                new ChatEventArgs<ChatUserDepartedDto>(new ChatEventContext(this), msg)
                 );
         }
 
-        private void YODAHub_MessageAck(MessageAckDto ack)
+        private void YODAHub_MessageAck(ChatMessageAckDto ack)
         {
             if (awaitingAckMessages.ContainsKey(ack.Stamp))
             {

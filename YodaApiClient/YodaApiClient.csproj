@@ -146,8 +146,8 @@
     <Compile Include="DataTypes\DTO\ChatAttachmentDto.cs" />
     <Compile Include="DataTypes\DTO\ChatMessageSenderDto.cs" />
     <Compile Include="DataTypes\DTO\ChatUserDto.cs" />
-    <Compile Include="DataTypes\DTO\UserDepartedDto.cs" />
-    <Compile Include="DataTypes\DTO\UserJoinedRoomDto.cs" />
+    <Compile Include="DataTypes\DTO\ChatUserDepartedDto.cs" />
+    <Compile Include="DataTypes\DTO\ChatUserJoinedRoomDto.cs" />
     <Compile Include="DataTypes\Gender.cs" />
     <Compile Include="DataTypes\User.cs" />
     <Compile Include="Events\ChatEventArgs.cs" />
@@ -159,10 +159,10 @@
     <Compile Include="Constants\ApiReference.cs" />
     <Compile Include="DataTypes\FileModel.cs" />
     <Compile Include="DataTypes\DTO\ChatMessageDto.cs" />
-    <Compile Include="DataTypes\DTO\MessageAckDto.cs" />
+    <Compile Include="DataTypes\DTO\ChatMessageAckDto.cs" />
     <Compile Include="DataTypes\Room.cs" />
     <Compile Include="DataTypes\DTO\ChatMessageRequestDto.cs" />
-    <Compile Include="DataTypes\DTO\UserActionDto.cs" />
+    <Compile Include="DataTypes\DTO\ChatUserActionDto.cs" />
     <Compile Include="DataTypes\YODAError.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\Extensions.cs" />

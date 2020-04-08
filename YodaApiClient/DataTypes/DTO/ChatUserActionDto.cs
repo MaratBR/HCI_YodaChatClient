@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes.DTO
 {
-    public enum UserActionType : byte
+    public enum ChatUserActionType : byte
     {
         Joined,
         Left,
         QuacksterAscending
     }
 
-    public class UserActionDto
+    public class ChatUserActionDto
     {
-        public UserActionType ActionType { get; set; }
+        public ChatUserActionType ActionType { get; set; }
 
         public Guid UserId { get; set; }
 

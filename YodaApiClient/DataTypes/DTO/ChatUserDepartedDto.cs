@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes.DTO
 {
-    public class UserDepartedDto
+    public class ChatUserDepartedDto
     {
         public Guid RoomId { get; set; }
 

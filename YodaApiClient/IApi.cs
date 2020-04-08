@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
 
 namespace YodaApiClient
 {
@@ -67,6 +68,8 @@ namespace YodaApiClient
         Task<List<Room>> GetRoomsAsync();
         Task<Room> GetRoomAsync(Guid id);
         Task<Room> CreateRoomAsync(CreateRoomRequest createRoom);
+
+        Task<List<ChatMessageDto>> GetRoomMessages(Guid roomId, DateTime? before = null);
 
         Task DownloadFileAsync(Guid id, Stream fileStream);
         SessionInfo GetSessionInfo();

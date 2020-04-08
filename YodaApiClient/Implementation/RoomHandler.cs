@@ -16,8 +16,8 @@ namespace YodaApiClient.Implementation
         private Room room;
 
         public event ChatEventHandler<ChatMessageDto> MessageReceived;
-        public event ChatEventHandler<UserJoinedRoomDto> UserJoined;
-        public event ChatEventHandler<UserDepartedDto> UserDeparted;
+        public event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
+        public event ChatEventHandler<ChatUserDepartedDto> UserDeparted;
 
         public Guid Id => room?.Id ?? Guid.Empty;
 
@@ -44,7 +44,7 @@ namespace YodaApiClient.Implementation
         }
 
         #region Event handlers
-        private void Handler_UserLeft(object sender, ChatEventArgs<UserDepartedDto> e)
+        private void Handler_UserLeft(object sender, ChatEventArgs<ChatUserDepartedDto> e)
         {
             if (e.InnerMessage.RoomId == Id)
             {
@@ -52,7 +52,7 @@ namespace YodaApiClient.Implementation
             }
         }
 
-        private void Handler_UserJoined(object sender, ChatEventArgs<UserJoinedRoomDto> e)
+        private void Handler_UserJoined(object sender, ChatEventArgs<ChatUserJoinedRoomDto> e)
         {
             if (e.InnerMessage.RoomId == Id)
             {
