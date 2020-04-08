@@ -16,6 +16,7 @@ namespace YodaApp.ViewModels
 {
     enum MessageStatus
     {
+        Draft,
         Sending,
         Sent,
         Error,
@@ -25,12 +26,28 @@ namespace YodaApp.ViewModels
     class MessageViewModel : ViewModelBase
     {
         private readonly IRoomHandler roomHandler;
-        private ChatMessageDto message;
-        private ChatMessageRequestDto request;
 
-        public event EventHandler MessageSent;
+        public event EventHandler MessageSubmitted;
 
         #region Properties
+
+        private long? id;
+
+        public long? Id
+        {
+            get { return id; }
+            set => Set(ref id, nameof(Id), value);
+        }
+
+
+        private string error;
+
+        public string Error
+        {
+            get { return error; }
+            set => Set(ref error, nameof(Error), value);
+        }
+
 
         private string text;
 
@@ -69,38 +86,91 @@ namespace YodaApp.ViewModels
         public MessageStatus Status
         {
             get { return status; }
-            set => Set(ref status, nameof(Status), value);
+            set
+            {
+                Set(ref status, nameof(Status), value);
+                OnPropertyChanged(nameof(IsPersistent));
+                OnPropertyChanged(nameof(IsSending));
+            }
         }
 
         public ObservableCollection<AttachmentViewModel> Attachments { get; } = new ObservableCollection<AttachmentViewModel>();
 
+        public bool IsSelf { get; }
+
+        public bool IsPersistent => Status == MessageStatus.Received || Status == MessageStatus.Sent;
+
+        public bool IsSending => Status == MessageStatus.Sending;
+
         #endregion
 
-        public MessageViewModel(IRoomHandler roomHandler, User user)
+        public MessageViewModel(IRoomHandler roomHandler)
         {
             this.roomHandler = roomHandler;
-            SenderId = user.Id;
-            Sender = user.UserName;
+
+            SenderId = roomHandler.Client.User.Id;
+            Sender = roomHandler.Client.User.UserName;
+            IsSelf = true;
+            Status = MessageStatus.Draft;
         }
 
-        private void MessageHandler_StatusChanged(object sender, EventArgs e)
+        public MessageViewModel(IRoomHandler roomHandler, ChatMessageDto messageDto)
         {
-            OnPropertyChanged(nameof(Status));
+            this.roomHandler = roomHandler;
+
+            SenderId = messageDto.Sender.Id;
+            Sender = messageDto.Sender.UserName;
+            IsSelf = false;
+            Status = MessageStatus.Received;
+
+            foreach (var attachment in messageDto.Attachments)
+            {
+                AddAttachment(attachment);
+            }
         }
 
         public async Task Send()
         {
-
-            if (messageHandler.CanBeSent())
+            if (!IsPersistent && IsSelf && !IsSending)
             {
-                MessageSent?.Invoke(this, EventArgs.Empty);
-                await messageHandler.Send();
+                MessageSubmitted?.Invoke(this, EventArgs.Empty);
+                Status = MessageStatus.Sending;
+                var request = new ChatMessageRequestDto
+                {
+                    RoomId = roomHandler.Id,
+                    Text = Text,
+                    Attachments = Attachments.Select(a => a.Id).ToList()
+                };
+                var result = await roomHandler.PutToQueue(request);
+
+                if (result.Sent)
+                {
+                    Status = MessageStatus.Sent;
+                    Id = result.Id;
+                }
+                else
+                {
+                    Status = MessageStatus.Error;
+                    Error = result.Error;
+                }
             }
         }
 
-        public void AddAttachment(IFile file)
+        private void AddAttachment(ChatAttachmentDto attachmentDto)
         {
-            var vm = new AttachmentViewModel(file);
+            AddAttachment(new AttachmentViewModel(roomHandler.Client.Api, attachmentDto));
+        }
+
+        private void AddAttachment(FileInfo fileInfo)
+        {
+            var vm = new AttachmentViewModel(roomHandler.Client.Api, fileInfo);
+            var task = vm.EnsureServerSidePersistence();
+            // TODO do smth with tasks
+            AddAttachment(vm);
+        }
+
+        private void AddAttachment(AttachmentViewModel vm)
+        {
             vm.RemoveAttachment += AttachementVM_RemoveAttachment;
             Attachments.Add(vm);
         }
@@ -108,8 +178,6 @@ namespace YodaApp.ViewModels
         private void AttachementVM_RemoveAttachment(object sender, EventArgs e)
         {
             var vm = (AttachmentViewModel)sender;
-
-            messageHandler.Attachments.Remove(vm.File);
             Attachments.Remove(vm);
         }
 
@@ -131,11 +199,8 @@ namespace YodaApp.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 string filePath = dialog.FileName;
-                string fileName = Path.GetFileName(filePath);
-                var stream = dialog.OpenFile();
-                IFile file = messageHandler.AddAttachment(stream, stream.Length, fileName);
-                file.UploadAsync();
-                AddAttachment(file);
+                var fileInfo = new FileInfo(filePath);
+                AddAttachment(fileInfo);
             }
         }
 

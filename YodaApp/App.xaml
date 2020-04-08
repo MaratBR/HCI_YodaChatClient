@@ -14,13 +14,43 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <utils:BoolToAnythingConverter x:Key="BooleanToHorizontalAlignment">
+                <utils:BoolToAnythingConverter.TrueValue>
+                    <HorizontalAlignment>Right</HorizontalAlignment>
+                </utils:BoolToAnythingConverter.TrueValue>
+
+                <utils:BoolToAnythingConverter.FalseValue>
+                    <HorizontalAlignment>Left</HorizontalAlignment>
+                </utils:BoolToAnythingConverter.FalseValue>
+            </utils:BoolToAnythingConverter>
+
+            <materialDesign:NullableToVisibilityConverter NullValue="Collapsed" NotNullValue="Visible" x:Key="NotNullConverter" />
+            <materialDesign:NullableToVisibilityConverter NullValue="Visible" NotNullValue="Collapsed" x:Key="NullConverter" />
+
+            <Style x:Key="HiddenIfDisabled" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Trigger.Setters>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger.Setters>
+                    </Trigger>
+
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Trigger.Setters>
+                            <Setter Property="Visibility" Value="Visible" />
+                        </Trigger.Setters>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
             <Style TargetType="Window">
                 <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBody}" />
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
             </Style>
 
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
 
+            <!-- Some converters -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
             <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
                 <utils:BoolToAnythingConverter.TrueValue>
                     <Visibility>Collapsed</Visibility>
@@ -30,7 +60,6 @@
                     <Visibility>Visible</Visibility>
                 </utils:BoolToAnythingConverter.FalseValue>
             </utils:BoolToAnythingConverter>
-
             <utils:BoolToAnythingConverter x:Key="InvertBoolConverter">
                 <utils:BoolToAnythingConverter.TrueValue>
                     <System:Boolean>False</System:Boolean>
@@ -40,15 +69,16 @@
                     <System:Boolean>True</System:Boolean>
                 </utils:BoolToAnythingConverter.FalseValue>
             </utils:BoolToAnythingConverter>
-
-
             <utils:EnumBooleanConverter x:Key="EnumBooleanConverter" />
 
+            <!-- Other stuff -->
+            <utils:CopyToClipboardCommand x:Key="CopyToClipboardCommand" />
 
             <!-- Images -->
             <BitmapImage x:Key="AlienIcon" UriSource="Resources/alien.jpg" />
             <BitmapImage x:Key="SmoochIcon" UriSource="Resources/smooch.jpg" />
             <BitmapImage x:Key="RespectIcon" UriSource="Resources/respect.jpg" />
+            <BitmapImage x:Key="CursedWelcome" UriSource="Resources/welcome1.png" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

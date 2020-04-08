@@ -47,7 +47,7 @@ namespace YodaApiClient
 
         Task<IApi> CreateApi(SessionInfo session);
 
-        Task<bool> Ping();
+        Task<string> PingAsync();
     }
 
     public class CreateRoomRequest
@@ -69,7 +69,6 @@ namespace YodaApiClient
         Task<Room> CreateRoomAsync(CreateRoomRequest createRoom);
 
         Task DownloadFileAsync(Guid id, Stream fileStream);
-
         SessionInfo GetSessionInfo();
         Guid GetApiSessionGuid();
         string GetAccessToken();

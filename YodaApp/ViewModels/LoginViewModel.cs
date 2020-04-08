@@ -23,7 +23,7 @@ namespace YodaApp.ViewModels
     class LoginViewModel : ViewModelBase
 	{
 		private readonly IAuthenticationService _authentication;
-		private readonly IWindowService _windows;
+		private readonly IAppUIService _windows;
 
         #region Properties
 
@@ -62,7 +62,7 @@ namespace YodaApp.ViewModels
 		#endregion
 
 
-		public LoginViewModel(IAuthenticationService authentication, IWindowService windows)
+		public LoginViewModel(IAuthenticationService authentication, IAppUIService windows)
 		{
 			_authentication = authentication;
 			_windows = windows;

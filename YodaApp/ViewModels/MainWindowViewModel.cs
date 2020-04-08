@@ -17,10 +17,10 @@ namespace YodaApp.ViewModels
     class MainWindowViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
-        private readonly IWindowService _windows;
+        private readonly IAppUIService _windows;
         private readonly IComponentContext _componentContext;
 
-        public MainWindowViewModel(IAuthenticationService authentication, IWindowService windows, IComponentContext componentContext)
+        public MainWindowViewModel(IAuthenticationService authentication, IAppUIService windows, IComponentContext componentContext)
         {
             _windows = windows;
             _authentication = authentication;

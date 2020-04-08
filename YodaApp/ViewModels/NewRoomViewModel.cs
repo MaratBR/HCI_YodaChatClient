@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +14,9 @@ namespace YodaApp.ViewModels
     class NewRoomViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
-        private readonly IWindowService _windows;
+        private readonly IAppUIService _windows;
 
-        public NewRoomViewModel(IAuthenticationService authentication, IWindowService windows)
+        public NewRoomViewModel(IAuthenticationService authentication, IAppUIService windows)
         {
             _windows = windows;
             _authentication = authentication;
@@ -52,16 +53,9 @@ namespace YodaApp.ViewModels
 
         #endregion
 
+        public event EventHandler CloseForm;
+
         #region Commands
-
-        private ICommand _cancelCommand;
-
-        public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new RelayCommand(CancelCommandHandler));
-
-        private void CancelCommandHandler()
-        {
-            _windows.CloseNewRoomWindow();
-        }
 
         private ICommand _submitCommand;
 
@@ -82,6 +76,7 @@ namespace YodaApp.ViewModels
                     Name = Name,
                     Description = Description
                 });
+                CloseForm?.Invoke(this, EventArgs.Empty);
             }
             catch(ApiException exc)
             {

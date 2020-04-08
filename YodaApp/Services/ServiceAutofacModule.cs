@@ -34,7 +34,7 @@ namespace YodaApp.Services
 
             builder
                 .RegisterType<WindowService>()
-                .As<IWindowService>()
+                .As<IAppUIService>()
                 .SingleInstance();
 
             builder

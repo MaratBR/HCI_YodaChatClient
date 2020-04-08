@@ -7,10 +7,10 @@ using System.Windows;
 
 namespace YodaApp.Services.Implementation
 {
-    class WindowService : IWindowService
+    class WindowService : IAppUIService
     {
         private readonly IWindowFactory factory;
-        private Window main, login, signup, newRoom;
+        private Window main, login, signup;
         private bool mainIsShown = false;
 
         public WindowService(IWindowFactory factory)
@@ -75,24 +75,6 @@ namespace YodaApp.Services.Implementation
             {
                 mainIsShown = false;
                 main.Hide();
-            }
-        }
-
-        public void ShowNewRoomWindow()
-        {
-            if (main == null)
-                return;
-
-            newRoom = factory.CreateNewRoomWindow();
-            newRoom.Show();
-        }
-
-        public void CloseNewRoomWindow()
-        {
-            if (newRoom != null)
-            {
-                newRoom.Close();
-                newRoom = null;
             }
         }
     }

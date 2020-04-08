@@ -30,7 +30,7 @@ namespace YodaApiClient.Implementation
     /// Provides authentication and registration
     /// </summary>
     public class ApiProvider : IApiProvider
-    { 
+    {
         private readonly ApiConfiguration configuration;
         private readonly HttpClient httpClient;
 
@@ -85,16 +85,18 @@ namespace YodaApiClient.Implementation
             return api;
         }
 
-        public async Task<bool> Ping()
+        public async Task<string> PingAsync()
         {
             try
             {
                 var response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.PING_ROUTE));
-                return response.IsSuccessStatusCode;
+                if (!response.IsSuccessStatusCode)
+                    return null;
+                return await response.Content.ReadAsStringAsync();
             }
             catch
             {
-                return false;
+                return null;
             }
         }
 

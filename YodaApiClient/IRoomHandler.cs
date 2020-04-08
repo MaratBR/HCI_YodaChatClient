@@ -11,8 +11,7 @@ namespace YodaApiClient
         string Name { get; }
 
         string Description { get; }
-
-        IApi Api { get; }
+        IChatClient Client { get; }
 
         Guid Id { get; }
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Autofac;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
+using YodaApiClient.Events;
+using YodaApp.Controls;
 using YodaApp.Services;
 using YodaApp.Utils;
 
@@ -17,10 +22,21 @@ namespace YodaApp.ViewModels
     class UserSessionViewModel : ViewModelBase
 	{
 		private IChatClient handler;
-		private IWindowService _windows;
+		private readonly IComponentContext componentContext;
+		private readonly IApiProvider provider;
+		private readonly IAppUIService _windows;
 		private readonly Dictionary<Guid, RoomViewModel> roomVMs = new Dictionary<Guid, RoomViewModel>();
 
 		#region Properties
+
+		private string quote;
+
+		public string Quote
+		{
+			get { return quote; }
+			set => Set(ref quote, nameof(Quote), value);
+		}
+
 
 		private ObservableCollection<RoomViewModel> rooms = new ObservableCollection<RoomViewModel>();
 
@@ -45,9 +61,9 @@ namespace YodaApp.ViewModels
 		}
 
 
-		private IUser user;
+		private User user;
 
-		public IUser User
+		public User User
 		{
 			get => user;
 			set => Set(ref user, nameof(User), value);
@@ -93,19 +109,48 @@ namespace YodaApp.ViewModels
 
 		private ICommand _createRoomCommand;
 
-		public ICommand CreateRoomCommand => _createRoomCommand ?? (_createRoomCommand = new RelayCommand(CreateRoomCommandHandler));
+		public ICommand CreateRoomCommand => _createRoomCommand ?? (_createRoomCommand = new AsyncRelayCommand(CreateRoomCommandHandler));
 
-		private void CreateRoomCommandHandler()
+		private async Task CreateRoomCommandHandler()
 		{
-			_windows.ShowNewRoomWindow();
+			var vm = componentContext.Resolve<NewRoomViewModel>();
+			await DialogHost.Show(
+				new CreateNewRoomForm
+				{
+					DataContext = vm
+				},
+				(object sender, DialogOpenedEventArgs e) =>
+				{
+					vm.CloseForm += (object _sender, EventArgs _e) =>
+					{
+						e.Session.Close();
+					};
+				}
+				);
+			await UpdateRooms();
+		}
+
+		private ICommand _updateQuoteCommand;
+
+		public ICommand UpdateQuoteCommand => _updateQuoteCommand ?? (_updateQuoteCommand = new AsyncRelayCommand(UpdateQuote));
+
+		private ICommand _closeSelectedRoomCommand;
+
+		public ICommand CloseSelectedRoomCommand => _closeSelectedRoomCommand ?? (_closeSelectedRoomCommand = new RelayCommand(CloseSelectedRoom));
+
+		private void CloseSelectedRoom()
+		{
+			SelectedRoom = null;
 		}
 
 		#endregion
 
-		public UserSessionViewModel(IApi api, IWindowService windows)
+		public UserSessionViewModel(IApi api, IAppUIService windows, IApiProvider provider, IComponentContext componentContext)
 		{
 			_windows = windows;
 			Api = api;
+			this.provider = provider;
+			this.componentContext = componentContext;
 		}
 
 		public IApi Api { get; }
@@ -115,48 +160,24 @@ namespace YodaApp.ViewModels
 			await Connect();
 			await UpdateUser();
 			await UpdateRooms();
+			await UpdateQuote();
+		}
+
+		private async Task UpdateQuote()
+		{
+			Quote = null;
+			Quote = await provider.PingAsync();
 		}
 
 		private async Task Connect()
 		{
 			handler = await Api.ConnectAsync();
-			handler.MessageReceived += Handler_MessageReceived;
-			handler.UserActionPerformed += Handler_UserActionPerformed;
-		}
-
-		private void Handler_UserActionPerformed(object sender, ChatUserActionEventArgs e)
-		{
-			var dto = e.ActionDto;
-			if (dto.ActionType == UserActionType.Joined)
-			{
-				if (dto.UserId == User.Id)
-				{
-					roomVMs[dto.RoomId].Status = RoomStatus.Joined;
-					LeaveRoomCommand.RaiseCanExecuteChanged();
-				}
-			}
-			else if (dto.ActionType == UserActionType.Left)
-			{
-				if (dto.UserId == User.Id)
-				{
-					roomVMs[dto.RoomId].Status = RoomStatus.Left;
-					JoinRoomCommand.RaiseCanExecuteChanged();
-				}
-			}
 		}
 
 		public void Disconnect()
 		{
 			handler.Disconnect();
 			handler = null;
-		}
-
-		private void Handler_MessageReceived(object sender, ChatMessageEventArgs e)
-		{
-			if (roomVMs.ContainsKey(e.Message.Room.Id))
-			{
-				roomVMs[e.Message.Room.Id].Messages.Add(new MessageViewModel(e.Message));
-			}
 		}
 
 		public async Task UpdateRooms()
@@ -203,7 +224,6 @@ namespace YodaApp.ViewModels
 		{
 			var roomHandler = await handler.GetRoomHandlerAsync(room.Id);
 			var vm = new RoomViewModel(roomHandler);
-			await vm.CreateNewMessage();
 			roomVMs[room.Id] = vm;
 			Rooms.Add(vm);
 		}

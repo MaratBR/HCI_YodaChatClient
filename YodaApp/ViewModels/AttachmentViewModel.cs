@@ -8,28 +8,34 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.DTO;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
+    enum FileState : byte
+    {
+        Uploading,
+
+    }
 
     class AttachmentViewModel : ViewModelBase
     {
-        public IFile File { get; }
+        private readonly IApi api;
+        private FileModel model;
 
-        public string FileName => File.FileName;
 
-        public string FileSize => File.Size >= 1024 * 1024 ? $"{Math.Round((decimal)File.Size / (1024 * 1024), 1)}M" :
-                File.Size >= 1024 ? $"{Math.Round((decimal)File.Size / 1024, 1)}K" :
-                $"{File.Size}B";
+        public string FullPath { get; set; }
 
-        public FileState State => File.State;
+        public string FileName { get; set; }
 
-        public FileModel FileModel => File.FileModel;
+        public Guid Id { get; set; }
 
-        public string Status => State.GetDescription();
+        public int Size { get; set; }
 
-        public string Error => File.Error;
+        public string FileSize => Size >= 1024 * 1024 ? $"{Math.Round((decimal)Size / (1024 * 1024), 1)}M" :
+                Size >= 1024 ? $"{Math.Round((decimal)Size / 1024, 1)}K" :
+                $"{Size}B";
 
         public event EventHandler RemoveAttachment;
 
@@ -44,12 +50,12 @@ namespace YodaApp.ViewModels
         private async Task DownloadCommandHandler()
         {
             var dialog = new SaveFileDialog();
-            dialog.FileName = FileModel?.FileName;
+            dialog.FileName = FileName;
             if (dialog.ShowDialog() == true)
             {
                 var filePath = dialog.FileName;
                 var fileStream = System.IO.File.OpenWrite(filePath);
-                await File.DownloadToAsync(fileStream);
+                await api.DownloadFileAsync(Id, fileStream);
             }
         }
 
@@ -58,24 +64,46 @@ namespace YodaApp.ViewModels
             RemoveAttachment?.Invoke(this, EventArgs.Empty);
         }
 
-        public AttachmentViewModel(IFile file)
+        public AttachmentViewModel(IApi api, ChatAttachmentDto file)
         {
-            this.File = file;
-            file.StateChanged += File_StateChanged;
+            this.api = api;
+            FileName = file.Name;
+            Size = file.Size;
+            Id = file.Id;
         }
 
-        ~AttachmentViewModel()
+        public AttachmentViewModel(IApi api, FileInfo fileInfo)
         {
-            File.StateChanged -= File_StateChanged;
+            this.api = api;
+            FullPath = fileInfo.FullName;
+            FileName = fileInfo.Name;
+            Size = (int)fileInfo.Length;
         }
 
-        private void File_StateChanged(object sender, EventArgs e)
+        public Task EnsureServerSidePersistence()
         {
-            OnPropertyChanged(nameof(State));
-            OnPropertyChanged(nameof(FileModel));
-            OnPropertyChanged(nameof(Error));
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(FileName));
+            if (!Id.Equals(Guid.Empty))
+            {
+                if (model == null)
+                    return LoadModel();
+
+                return Task.CompletedTask;
+            }
+
+            if (FullPath == null)
+            {
+                return Task.FromException(new InvalidOperationException("Attachment has empty GUID, hence considered to be local, but path to the local file is missing"));
+            }
+
+            using (var stream = File.OpenRead(FullPath))
+            {
+                return api.UploadFileAsync(stream, FileName);
+            }
+        }
+
+        private async Task LoadModel()
+        {
+            model = await api.GetFileModelAsync(Id);
         }
     }
 }

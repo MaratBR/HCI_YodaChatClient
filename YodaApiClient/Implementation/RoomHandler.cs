@@ -25,7 +25,7 @@ namespace YodaApiClient.Implementation
 
         public string Description => room?.Description;
 
-        public IApi Api => client.Api;
+        public IChatClient Client => client;
 
         public RoomHandler(Room room, ChatClient client)
         {

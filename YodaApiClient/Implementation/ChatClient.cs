@@ -34,6 +34,8 @@ namespace YodaApiClient.Implementation
 
         public IApi Api { get; }
 
+        public User User { get; set; }
+
         public ChatClient(IApi api, ApiConfiguration configuration)
         {
             this.Api = api;
@@ -71,6 +73,7 @@ namespace YodaApiClient.Implementation
         private async Task Update()
         {
             await LoadRooms();
+            User = await Api.GetUserAsync();
         }
 
         private async Task LoadRooms()

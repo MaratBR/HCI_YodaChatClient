@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YodaApp.Services
 {
-    interface IWindowService
+    interface IAppUIService
     {
         void ShowMainWindow();
 
@@ -19,9 +19,5 @@ namespace YodaApp.Services
         void ShowLogInWindow();
 
         void CloseLogInWindow();
-
-        void ShowNewRoomWindow();
-
-        void CloseNewRoomWindow();
     }
 }

@@ -16,9 +16,9 @@ namespace YodaApp.ViewModels
     class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
-        private readonly IWindowService _windows;
+        private readonly IAppUIService _windows;
 
-        public RegisterViewModel(IAuthenticationService authentication, IWindowService windows)
+        public RegisterViewModel(IAuthenticationService authentication, IAppUIService windows)
         {
             _authentication = authentication;
             _windows = windows;

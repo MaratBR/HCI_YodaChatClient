@@ -13,6 +13,8 @@ namespace YodaApiClient
     {
         IApi Api { get; }
 
+        User User { get; }
+
         [Obsolete] Task SendToRoom(string text, Guid roomId);
 
         [Obsolete] Task SendToRoomWithAttachments(string text, Guid roomId, IList<Guid> fileGuids);
