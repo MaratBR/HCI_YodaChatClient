@@ -200,6 +200,7 @@ namespace YodaApp.ViewModels
 			foreach (var room in Rooms)
 			{
 				await JoinRoom(room);
+				await Task.Delay(100);
 			}
 
 			if (roomGuid != null)

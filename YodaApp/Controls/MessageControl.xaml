@@ -23,13 +23,33 @@
         </Border.ContextMenu>
 
         <StackPanel>
-            <TextBlock
-                Visibility="{Binding Text, Converter={StaticResource NotNullConverter}}"
-                Style="{StaticResource MaterialDesignBody1TextBlock}"
-                Foreground="White"
-                TextWrapping="Wrap"
-                Background="Transparent"
-                Text="{Binding Text}" />
+            <WrapPanel TextElement.FontSize="12">
+                <TextBlock
+                    Style="{x:Null}"
+                    Visibility="{Binding Text, Converter={StaticResource NotNullConverter}}"
+                    Foreground="White" TextWrapping="Wrap"
+                    Background="Transparent">
+                    <Run Text="{Binding DisplayedText, Mode=OneWay}" />
+                    <Hyperlink Command="{Binding ToggleTextCommand}">
+                        more/less
+
+                        <Hyperlink.Style>
+                            <Style TargetType="Hyperlink">
+                                <Style.Triggers>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Foreground" Value="Transparent" />
+                                    </Trigger>
+
+                                    <Trigger Property="IsEnabled" Value="True">
+                                        <Setter Property="Foreground" Value="AliceBlue" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Hyperlink.Style>
+                    </Hyperlink>
+                </TextBlock>
+            </WrapPanel>
+
 
             <ItemsControl ItemsSource="{Binding Attachments}" HorizontalContentAlignment="Stretch">
                 <ItemsControl.ItemTemplate>

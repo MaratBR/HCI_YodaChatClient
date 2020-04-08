@@ -54,8 +54,29 @@ namespace YodaApp.ViewModels
         public string Text
         {
             get { return text; }
-            set => Set(ref text, nameof(Text), value);
+            set
+            {
+                Set(ref text, nameof(Text), value);
+                OnPropertyChanged(nameof(HasMoreButton));
+            }
         }
+
+        private bool displayAll;
+
+        public bool DisplayAll
+        {
+            get { return displayAll; }
+            set
+            {
+                Set(ref displayAll, nameof(DisplayAll), value);
+                OnPropertyChanged(nameof(DisplayedText));
+            }
+        }
+
+
+        public string DisplayedText => DisplayAll || !HasMoreButton ? Text : (Text.Substring(0, 300) + "...");
+
+        public bool HasMoreButton => Text != null && Text.Length > 300;
 
         private string sender;
 
@@ -120,8 +141,9 @@ namespace YodaApp.ViewModels
 
             SenderId = messageDto.Sender.Id;
             Sender = messageDto.Sender.UserName;
-            IsSelf = false;
+            IsSelf = messageDto.Sender.Id == roomHandler.Client.User.Id;
             Status = MessageStatus.Received;
+            Text = messageDto.Text;
 
             foreach (var attachment in messageDto.Attachments)
             {
@@ -202,6 +224,15 @@ namespace YodaApp.ViewModels
                 var fileInfo = new FileInfo(filePath);
                 AddAttachment(fileInfo);
             }
+        }
+
+        private ICommand _toggleTextCommand;
+
+        public ICommand ToggleTextCommand => _toggleTextCommand ?? (_toggleTextCommand = new RelayCommand(ToggleTextCommandHandler, () => HasMoreButton));
+
+        private void ToggleTextCommandHandler()
+        {
+            DisplayAll = !DisplayAll;
         }
 
         #endregion
