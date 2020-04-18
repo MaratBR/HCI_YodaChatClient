@@ -12,7 +12,6 @@ namespace YodaApiClient.Implementation
     class RoomHandler : IRoomHandler
     {
         private readonly ChatClient client;
-        private readonly Dictionary<Guid, IUser> usersCache = new Dictionary<Guid, IUser>();
         private Room room;
 
         public event ChatEventHandler<ChatMessageDto> MessageReceived;

@@ -148,6 +148,7 @@
     <Compile Include="DataTypes\DTO\ChatUserDto.cs" />
     <Compile Include="DataTypes\DTO\ChatUserDepartedDto.cs" />
     <Compile Include="DataTypes\DTO\ChatUserJoinedRoomDto.cs" />
+    <Compile Include="DataTypes\DTO\UserStatusDto.cs" />
     <Compile Include="DataTypes\Gender.cs" />
     <Compile Include="DataTypes\User.cs" />
     <Compile Include="Events\ChatEventArgs.cs" />

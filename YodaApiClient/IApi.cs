@@ -69,6 +69,9 @@ namespace YodaApiClient
         Task<Room> GetRoomAsync(Guid id);
         Task<Room> CreateRoomAsync(CreateRoomRequest createRoom);
 
+        Task<List<User>> GetRoomMembersAsync(Guid roomId);
+        Task JoinRoomAsync(Guid roomId);
+        Task LeaveRoomAsync(Guid roomId);
         Task<List<ChatMessageDto>> GetRoomMessages(Guid roomId, DateTime? before = null);
 
         Task DownloadFileAsync(Guid id, Stream fileStream);

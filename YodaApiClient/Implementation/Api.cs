@@ -16,6 +16,11 @@ namespace YodaApiClient.Implementation
         public List<Room> Rooms { get; set; }
     }
 
+    class MembersResponse
+    {
+        public List<User> Users { get; set; }
+    }
+
     internal class Api : IApi
     {
         private SessionInfo sessionInfo;
@@ -223,6 +228,61 @@ namespace YodaApiClient.Implementation
 
             return data.Messages;
 
+        }
+
+        public async Task<List<User>> GetRoomMembersAsync(Guid roomId)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                string url = string.Format(ApiReference.GET_ROOM_MEMBERS_ROUTE, roomId);
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(url));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            var data = await response.GetJson<MembersResponse>();
+
+            return data.Users;
+        }
+
+        public async Task JoinRoomAsync(Guid roomId)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                string url = string.Format(ApiReference.ROOM_MEMBERSHIP_ROUTE, roomId);
+                response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(url), new StringContent(string.Empty));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+        }
+
+        public async Task LeaveRoomAsync(Guid roomId)
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                string url = string.Format(ApiReference.ROOM_MEMBERSHIP_ROUTE, roomId);
+                response = await httpClient.DeleteAsync(configuration.AppendPathToMainUrl(url));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
         }
 
         #endregion

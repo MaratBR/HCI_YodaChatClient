@@ -31,6 +31,7 @@ namespace YodaApiClient.Implementation
         public event ChatEventHandler<ChatMessageDto> MessageReceived;
         public event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
         public event ChatEventHandler<ChatUserDepartedDto> UserLeft;
+        public event ChatEventHandler<UserStatusDto> UserStatusChanged;
 
         public IApi Api { get; }
 
@@ -119,23 +120,14 @@ namespace YodaApiClient.Implementation
         {
             connection.On<ChatMessageDto>("NewMessage", YODAHub_Message);
             connection.On<ChatMessageAckDto>("MessageAck", YODAHub_MessageAck);
-            connection.On<ChatUserJoinedRoomDto>("UserJoined", YODAHub_UserJoined);
-            connection.On<ChatUserDepartedDto>("UserLeft", YODAHub_UserDeparted);
+            connection.On<UserStatusDto>("UserStatus", YODAHub_UserStatusChanged);
         }
 
-        private void YODAHub_UserJoined(ChatUserJoinedRoomDto message)
+        private void YODAHub_UserStatusChanged(UserStatusDto msg)
         {
-            UserJoined?.Invoke(
+            UserStatusChanged?.Invoke(
                 this,
-                new ChatEventArgs<ChatUserJoinedRoomDto>(new ChatEventContext(this), message)
-                );
-        }
-
-        private void YODAHub_UserDeparted(ChatUserDepartedDto msg)
-        {
-            UserLeft?.Invoke(
-                this,
-                new ChatEventArgs<ChatUserDepartedDto>(new ChatEventContext(this), msg)
+                new ChatEventArgs<UserStatusDto>(new ChatEventContext(this), msg)
                 );
         }
 
