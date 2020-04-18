@@ -89,7 +89,8 @@ namespace YodaApp.ViewModels
         internal class GenderDeclaration
         {
             public BitmapImage Image { get; set; }
-            public byte? Gender { get; set; }
+            public byte
+                Gender { get; set; }
             public string Caption { get; set; }
         }
 
@@ -97,7 +98,7 @@ namespace YodaApp.ViewModels
         private readonly GenderDeclaration alien = new GenderDeclaration
         {
             Caption = "Alien\naka ???",
-            Gender = null,
+            Gender = Gender.UNKNOWN,
             Image = (BitmapImage)App.Current.Resources["AlienIcon"]
         };
 
