@@ -89,7 +89,7 @@ namespace YodaApp.ViewModels
         internal class GenderDeclaration
         {
             public BitmapImage Image { get; set; }
-            public Gender? Gender { get; set; }
+            public byte? Gender { get; set; }
             public string Caption { get; set; }
         }
 
@@ -106,13 +106,13 @@ namespace YodaApp.ViewModels
             new GenderDeclaration
             {
                 Caption = "Respect\naka male",
-                Gender = Gender.Respect,
+                Gender = Gender.MALE,
                 Image = (BitmapImage)App.Current.Resources["RespectIcon"]
             },
             new GenderDeclaration
             {
                 Caption = "Smooch\naka Female",
-                Gender = Gender.Smooch,
+                Gender = Gender.FEMALE,
                 Image = (BitmapImage)App.Current.Resources["SmoochIcon"]
             }
         };

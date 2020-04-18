@@ -15,7 +15,7 @@ namespace YodaApiClient
 
         string Alias { get; }
 
-        Gender? Gender { get; }
+        byte? Gender { get; }
 
         Guid Id { get; }
     }

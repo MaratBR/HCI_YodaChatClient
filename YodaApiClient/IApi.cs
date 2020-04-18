@@ -19,7 +19,7 @@ namespace YodaApiClient
 
         public string PhoneNumber { get; set; }
 
-        public Gender? Gender { get; set; } = null;
+        public byte? Gender { get; set; } = null;
     }
 
     public class AuthenticationRequest
