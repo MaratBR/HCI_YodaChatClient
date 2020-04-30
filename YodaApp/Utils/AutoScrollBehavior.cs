@@ -1,0 +1,40 @@
+﻿using Microsoft.Xaml.Behaviors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+
+namespace YodaApp.Utils
+{
+    class AutoScrollBehavior : Behavior<ScrollViewer>
+    {
+        private bool enabled;
+
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+
+            AssociatedObject.ScrollChanged += Sv_ScrollChanged;
+            enabled = AssociatedObject.VerticalOffset == AssociatedObject.ScrollableHeight;
+        }
+
+        private void Sv_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            enabled = AssociatedObject.VerticalOffset == AssociatedObject.ScrollableHeight;
+
+            if (enabled)
+            {
+                AssociatedObject.ScrollToBottom();
+            }
+        }
+
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+
+            AssociatedObject.ScrollChanged -= Sv_ScrollChanged;
+        }
+    }
+}

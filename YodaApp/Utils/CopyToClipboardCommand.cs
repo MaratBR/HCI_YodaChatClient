@@ -10,16 +10,18 @@ namespace YodaApp.Utils
 {
     class CopyToClipboardCommand : ICommand
     {
+        public static CopyToClipboardCommand Instance = new CopyToClipboardCommand();
+
         public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {
-            return parameter != null;
+            return true;
         }
 
         public void Execute(object parameter)
         {
-            var text = parameter.ToString();
+            var text = parameter == null ? "(null)" : parameter.ToString();
 
             Clipboard.SetText(text);
         }

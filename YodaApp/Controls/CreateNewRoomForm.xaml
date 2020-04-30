@@ -5,13 +5,9 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             mc:Ignorable="d"
-
-            TextElement.Foreground="{StaticResource MaterialDesignDarkForeground}"
-            Background="{StaticResource MaterialDesignDarkBackground}"
             TextElement.FontWeight="Medium"
             TextElement.FontSize="14"
             FontFamily="{materialDesign:MaterialDesignFont}"
-
             d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
         <TextBox
@@ -28,7 +24,7 @@
             materialDesign:HintAssist.Hint="Give it some description"></TextBox>
 
         <StackPanel Margin="0,30,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="200" Margin="5" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">Cancel</Button>
+            <Button Width="200" Margin="5" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}">Cancel</Button>
             <Button Width="200" Margin="5" Command="{Binding SubmitCommand}">Create</Button>
         </StackPanel>
     </StackPanel>

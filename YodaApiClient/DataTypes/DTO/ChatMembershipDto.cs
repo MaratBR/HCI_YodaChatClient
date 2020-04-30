@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace YodaApiClient.DataTypes.DTO
 {
-    public class ChatUserDto
+    public class ChatMembershipDto
     {
-        public int Id { get; set; }
+        public User User { get; set; }
 
-        public string Name { get; set; }
-
-        public byte? Gender { get; set; }
+        public bool IsOnline { get; set; }
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:utils="clr-namespace:YodaApp.Utils"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
              xmlns:System="clr-namespace:System;assembly=mscorlib">
 
     <!-- Нам не нужен StartUpUri (или как там он назывался), см. App.xaml.cs -->
@@ -10,7 +11,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="Teal"  SecondaryColor="Cyan" />
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Teal"  SecondaryColor="Cyan" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -26,6 +27,113 @@
 
             <materialDesign:NullableToVisibilityConverter NullValue="Collapsed" NotNullValue="Visible" x:Key="NotNullConverter" />
             <materialDesign:NullableToVisibilityConverter NullValue="Visible" NotNullValue="Collapsed" x:Key="NullConverter" />
+
+            <Style TargetType="TabControl">
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+
+            <Style TargetType="TabPanel">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+
+            <Style TargetType="TabItem">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="15,10" />
+                <Setter Property="Cursor" Value="Hand" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border Margin="5" Name="Border" CornerRadius="5">
+                                <Grid Name="Panel">
+                                    <ContentPresenter
+                                        x:Name="ContentSite"
+                                        Content="{TemplateBinding Header}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="25,4"/>
+                                    <Rectangle Name="Line"
+                                       Fill="Black"
+                                       Height="2"
+                                       Width="30"
+                                       VerticalAlignment="Bottom" />
+                                </Grid>
+                            </Border>
+
+                            <!-- triggers -->
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True" SourceName="Panel">
+                                    <Setter TargetName="Border" Property="Background" Value="#11000000" />
+                                </Trigger>
+
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryHueDarkBrush}" />
+
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                From="10" To="30"
+                                                Storyboard.TargetProperty="Width"
+                                                Storyboard.TargetName="Line"
+                                                Duration="0:0:0.15"
+                                                />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                From="30" To="10"
+                                                Storyboard.TargetProperty="Width"
+                                                Storyboard.TargetName="Line"
+                                                Duration="0:0:0.15"
+                                                />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter Property="FontWeight" Value="Normal" />
+                                    <Setter Property="Opacity" Value="0.8" />
+
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                From="30" To="10"
+                                                Storyboard.TargetProperty="Width"
+                                                Storyboard.TargetName="Line"
+                                                Duration="0:0:0.15"
+                                                />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                From="10" To="30"
+                                                Storyboard.TargetProperty="Width"
+                                                Storyboard.TargetName="Line"
+                                                Duration="0:0:0.15"
+                                                />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
             <Style x:Key="HiddenIfDisabled" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                 <Style.Triggers>

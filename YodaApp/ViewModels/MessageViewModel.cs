@@ -86,9 +86,9 @@ namespace YodaApp.ViewModels
             set => Set(ref sender, nameof(Sender), value);
         }
 
-        private Guid senderId;
+        private int senderId;
 
-        public Guid SenderId
+        public int SenderId
         {
             get { return senderId; }
             set => Set(ref senderId, nameof(SenderId), value);
@@ -144,6 +144,7 @@ namespace YodaApp.ViewModels
             IsSelf = messageDto.Sender.Id == roomHandler.Client.User.Id;
             Status = MessageStatus.Received;
             Text = messageDto.Text;
+            Id = messageDto.Id;
 
             foreach (var attachment in messageDto.Attachments)
             {

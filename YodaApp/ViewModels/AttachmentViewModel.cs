@@ -80,24 +80,29 @@ namespace YodaApp.ViewModels
             Size = (int)fileInfo.Length;
         }
 
-        public Task EnsureServerSidePersistence()
+        public async Task EnsureServerSidePersistence()
         {
             if (!Id.Equals(Guid.Empty))
             {
                 if (model == null)
-                    return LoadModel();
+                    await LoadModel();
 
-                return Task.CompletedTask;
+                return;
             }
 
             if (FullPath == null)
             {
-                return Task.FromException(new InvalidOperationException("Attachment has empty GUID, hence considered to be local, but path to the local file is missing"));
+                throw new InvalidOperationException("Attachment has empty GUID, hence considered to be local, but path to the local file is missing");
             }
 
-            using (var stream = File.OpenRead(FullPath))
+            var stream = new FileStream(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
+            try
             {
-                return api.UploadFileAsync(stream, FileName);
+                await api.UploadFileAsync(stream, FileName);
+            }
+            finally
+            {
+                stream.Dispose();
             }
         }
 

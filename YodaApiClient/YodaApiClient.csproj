@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTypes\DTO\ChatAttachmentDto.cs" />
+    <Compile Include="DataTypes\DTO\ChatMembershipDto.cs" />
     <Compile Include="DataTypes\DTO\ChatMessageSenderDto.cs" />
     <Compile Include="DataTypes\DTO\ChatUserDto.cs" />
     <Compile Include="DataTypes\DTO\ChatUserDepartedDto.cs" />
@@ -163,7 +164,6 @@
     <Compile Include="DataTypes\DTO\ChatMessageAckDto.cs" />
     <Compile Include="DataTypes\Room.cs" />
     <Compile Include="DataTypes\DTO\ChatMessageRequestDto.cs" />
-    <Compile Include="DataTypes\DTO\ChatUserActionDto.cs" />
     <Compile Include="DataTypes\YODAError.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\Extensions.cs" />

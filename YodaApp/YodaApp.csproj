@@ -41,6 +41,9 @@
     <Reference Include="Autofac, Version=5.1.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.5.1.2\lib\net461\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
+    </Reference>
     <Reference Include="FluentResults, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentResults.1.4.0\lib\net45\FluentResults.dll</HintPath>
     </Reference>
@@ -95,8 +98,17 @@
     <Compile Include="Controls\CreateNewRoomForm.xaml.cs">
       <DependentUpon>CreateNewRoomForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\JoinRoomForm.xaml.cs">
+      <DependentUpon>JoinRoomForm.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MessageControl.xaml.cs">
       <DependentUpon>MessageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CreateNewRoomOptions.xaml.cs">
+      <DependentUpon>CreateNewRoomOptions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UserSmallCard.xaml.cs">
+      <DependentUpon>UserSmallCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Persistence\AppConfigStore.cs" />
     <Compile Include="Persistence\IStore.cs" />
@@ -114,13 +126,17 @@
     <Compile Include="Services\IAppUIService.cs" />
     <Compile Include="Services\ServiceAutofacModule.cs" />
     <Compile Include="Services\Implementation\WindowFactory.cs" />
+    <Compile Include="Utils\AutoScrollBehavior.cs" />
     <Compile Include="Utils\BoolToAnythingConverter.cs" />
     <Compile Include="Utils\CopyToClipboardCommand.cs" />
     <Compile Include="Utils\EnumBooleanConverter.cs" />
     <Compile Include="Utils\EnumExtension.cs" />
+    <Compile Include="ViewModels\Controls\CreateNewRoomOptionsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\JoinRoomFormViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\NewRoomViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
+    <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="Views\RegisterWindow.xaml.cs">
       <DependentUpon>RegisterWindow.xaml</DependentUpon>
     </Compile>
@@ -128,7 +144,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\JoinRoomForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\MessageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CreateNewRoomOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\UserSmallCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:utils="clr-namespace:YodaApp.Utils"
         xmlns:controls="clr-namespace:YodaApp.Controls"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -12,7 +13,7 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
-        Title="MainWindow" Height="676" Width="1086">
+        Title="MainWindow" Height="624" Width="974">
     <!-- https://stackoverflow.com/questions/43988149/i-cant-hide-the-window-in-mvvm -->
     <Window.Style>
         <Style TargetType="Window">
@@ -44,18 +45,12 @@
             <StackPanel Grid.RowSpan="2" Grid.Column="0">
                 <Border Background="#05FFFFFF">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
-                        <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.CreateRoomCommand}">
-                            <StackPanel Orientation="Horizontal">
-
-                                <Viewbox Width="24" Height="24">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                                    </Canvas>
-                                </Viewbox>
-
-                                <TextBlock VerticalAlignment="Center" Text="room" />
-
-                            </StackPanel>
+                        <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.AddRoomCommand}">
+                            <Viewbox Width="24" Height="24">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                </Canvas>
+                            </Viewbox>
                         </Button>
 
                         <Button Height="60" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.UpdateRoomsCommand}">
@@ -69,8 +64,8 @@
                 </Border>
 
                 <ListView
-                ItemsSource="{Binding Session.Rooms}"
-                SelectedItem="{Binding Session.SelectedRoom}">
+                    ItemsSource="{Binding Session.Rooms}"
+                    SelectedItem="{Binding Session.SelectedRoom}">
                     <ListView.ItemTemplate>
                         <ItemContainerTemplate>
                             <StackPanel>
@@ -83,41 +78,31 @@
                 </ListView>
             </StackPanel>
 
-            <!-- sensei splinter -->
+            <!-- sensei splittter -->
             <GridSplitter
-            ShowsPreview="True"
-            HorizontalAlignment="Center" VerticalAlignment="Stretch"
-            Grid.Column="1" Grid.RowSpan="2"
-            Width="10"/>
+                HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                Grid.Column="1" Grid.RowSpan="2"
+                Width="10"/>
 
             <!-- top panel -->
             <Grid Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Button
-                Style="{StaticResource HiddenIfDisabled}"
-                Command="{Binding Session.JoinRoomCommand}"
-                CommandParameter="{Binding Session.SelectedRoom}">Join</Button>
-                <Button
-                Style="{StaticResource HiddenIfDisabled}"
-                Command="{Binding Session.LeaveRoomCommand}"
-                CommandParameter="{Binding Session.SelectedRoom}">Left</Button>
-
-                <DockPanel Grid.Column="1">
+                <DockPanel>
                     <TextBlock VerticalAlignment="Center" FontSize="20" Margin="10,0,0,0" Text="{Binding Session.SelectedRoom.Name}" />
+
                     <Button
-                    Command="{Binding Session.CloseSelectedRoomCommand}"
-                    HorizontalAlignment="Right" Height="40" ToolTip="closes room, you will still receive messages"
-                    Style="{StaticResource MaterialDesignToolForegroundButton}">
+                        Command="{Binding Session.CloseSelectedRoomCommand}"
+                        HorizontalAlignment="Right" Height="40" ToolTip="closes room, you will still receive messages"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}">
                         <materialDesign:PackIcon Kind="Close" Width="30" Height="30" />
                     </Button>
                 </DockPanel>
 
-                <Button MinWidth="100" Grid.Column="2"
+                <Button MinWidth="100" Grid.Column="1"
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
                     Command="{Binding SwitchSessionCommand}">
@@ -156,17 +141,26 @@
                     </Image.Triggers>
                 </Image>
 
-                <Border Background="#11FFFFFF" Grid.Row="1">
+                <Border Grid.Row="1" Padding="0,15,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Color="#02000000" Offset="0" />
+                            <GradientStop Color="#11000000" Offset="0.8" />
+                        </LinearGradientBrush>
+                    </Border.Background>
 
-                    <StackPanel  Orientation="Horizontal">
+                    <StackPanel  Orientation="Horizontal" Margin="10,10,0,0">
                         <TextBlock Text='❛❛' FontSize="100" />
-                        <TextBlock Margin="10" Text="{Binding Path=Session.Quote}" VerticalAlignment="Center" />
-                        <Button
-                        Command="{Binding Session.UpdateQuoteCommand}"
-                        Style="{StaticResource MaterialDesignToolForegroundButton}"
-                        Focusable="False">
-                            <materialDesign:PackIcon Kind="Refresh" Width="25" Height="25" VerticalAlignment="Center" />
-                        </Button>
+                        <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,20">
+                            <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="600" Margin="10" Text="{Binding Path=Session.Quote}" VerticalAlignment="Center" />
+                            <Button
+                                HorizontalAlignment="Left" Margin="20,0,0,0"
+                                Command="{Binding Session.UpdateQuoteCommand}"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                Focusable="False">
+                                <materialDesign:PackIcon Kind="Refresh" Width="25" Height="25" VerticalAlignment="Center" />
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
@@ -176,7 +170,8 @@
             <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="100" MaxWidth="400" />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -185,7 +180,7 @@
                 </Grid.RowDefinitions>
 
 
-                <Grid Grid.Row="1" Grid.ColumnSpan="2"  IsEnabled="{Binding Session.SelectedRoom.IsJoined}">
+                <Grid Grid.Row="1" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
@@ -195,29 +190,27 @@
                         <ItemsControl Margin="10,0,0,0" ItemsSource="{Binding Session.SelectedRoom.Message.Attachments}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}" BorderThickness="0,0,0,1">
+                                    <Border BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="1,0,0,0" Padding="4,0,0,0">
                                         <Grid TextElement.FontSize="10">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <StackPanel VerticalAlignment="Center">
-                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
-                                                    <TextBlock Text="{Binding FileName}" />
-                                                    <TextBlock Text=" | " />
-                                                    <TextBlock Text="{Binding FileSize}" />
-                                                    <TextBlock Text=" | " />
-                                                    <TextBlock Text="{Binding Status}" />
-                                                </StackPanel>
-
-                                                <TextBlock Foreground="Red" Text="{Binding Path=Error}" Visibility="{Binding Path=Error, Converter={StaticResource NotNullConverter}}" />
+                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" Height="20">
+                                                <TextBlock VerticalAlignment="Center" Text="{Binding FileName}" />
+                                                <TextBlock VerticalAlignment="Center" Text=" | " />
+                                                <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
+                                                <TextBlock VerticalAlignment="Center" Text=" | " />
+                                                <TextBlock VerticalAlignment="Center" Text="{Binding Status}" />
                                             </StackPanel>
 
-                                            <Button Margin="10,0,0,0" Grid.Column="1" Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                                                <TextBlock Foreground="Red" Text="{Binding Path=Error}" Visibility="{Binding Path=Error, Converter={StaticResource NotNullConverter}}" />
+
+                                            <Button Height="20" Grid.Column="1" Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignFlatButton}">
                                                 <Viewbox Width="14" Height="14" VerticalAlignment="Center">
                                                     <Canvas Width="24" Height="24">
-                                                        <Path Fill="{StaticResource MaterialDesignDarkForeground}" Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                                                        <Path Fill="{StaticResource MaterialDesignLightForeground}" Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                                                     </Canvas>
                                                 </Viewbox>
                                             </Button>
@@ -227,9 +220,23 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <TextBox Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
-                         Margin="10" Background="#22ffffff" Padding="10,0,10,10" AcceptsReturn="True" TextWrapping="Wrap"
-                         Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox
+                            Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
+                            Margin="10" Background="#22ffffff"
+                            Padding="10,0,10,10"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            TextAlignment="Left"
+                            Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}" >
+
+                            <TextBox.InputBindings>
+                                <KeyBinding
+                                    Command="{Binding Session.SelectedRoom.Message.SendCommand}"
+                                    Modifiers="Ctrl"
+                                    Key="Enter" />
+                            </TextBox.InputBindings>
+
+                        </TextBox>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -254,11 +261,26 @@
                         </Button>
                     </StackPanel>
 
-                    <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}" BorderThickness="0,1,0,0" />
+                    <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="0,1,0,0" Background="#07000000" Panel.ZIndex="-10" />
+
                 </Grid>
 
+                <GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                    Grid.Column="1" Grid.RowSpan="2"
+                    Width="10" />
+
+                <ItemsControl Grid.Column="2" ItemsSource="{Binding Session.SelectedRoom.Users}" HorizontalContentAlignment="Stretch">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:UserSmallCard DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <ScrollViewer Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibilityInverted}}">
+                    <i:Interaction.Behaviors>
+                        <utils:AutoScrollBehavior />
+                    </i:Interaction.Behaviors>
                     <ItemsControl VerticalAlignment="Bottom"
                           ItemsSource="{Binding Session.SelectedRoom.RoomFeed}" />
                 </ScrollViewer>

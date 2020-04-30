@@ -10,7 +10,7 @@ namespace YodaApiClient
 {
     public interface IFileUploader
     {
-        Task<FileModel> UploadFileAsync(Stream stream, string fileName);
+        Task<FileModel> UploadFileAsync(FileStream stream, string fileName);
 
         Task<FileModel> GetFileModelAsync(Guid id);
     }

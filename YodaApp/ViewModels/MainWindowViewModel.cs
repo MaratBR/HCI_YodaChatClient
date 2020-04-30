@@ -63,7 +63,7 @@ namespace YodaApp.ViewModels
 
         #endregion
 
-        private async void Init()
+        private void Init()
         {
             var sessions = _authentication.GetSessions();
 

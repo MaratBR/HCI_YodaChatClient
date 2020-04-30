@@ -16,6 +16,7 @@ using YodaApiClient.Events;
 using YodaApp.Controls;
 using YodaApp.Services;
 using YodaApp.Utils;
+using YodaApp.ViewModels.Controls;
 
 namespace YodaApp.ViewModels
 {
@@ -55,8 +56,14 @@ namespace YodaApp.ViewModels
 			set
 			{
 				Set(ref selectedRoom, nameof(SelectedRoom), value);
-				JoinRoomCommand.RaiseCanExecuteChanged();
-				LeaveRoomCommand.RaiseCanExecuteChanged();
+				if (value != null)
+				{
+					// TODO this is not good
+					var task = Task.WhenAll(
+						value.LoadMembers(),
+						value.LoadLastMessages()
+						);
+				}
 			}
 		}
 
@@ -73,31 +80,6 @@ namespace YodaApp.ViewModels
 
 		#region Commands
 
-		private AbstractCommand _joinRoomCommand;
-
-		public AbstractCommand JoinRoomCommand => _joinRoomCommand ?? (_joinRoomCommand = new AsyncRelayCommand<RoomViewModel>(JoinRoom, room => !room.IsJoined));
-
-		private async Task JoinRoom(RoomViewModel room)
-		{
-			if (room.Status == RoomStatus.Joined)
-				return;
-			room.Status = RoomStatus.AwaitingServerReponse;
-			await handler.JoinRoomAsync(room.Id);
-		}
-
-
-		private AbstractCommand _leaveRoomCommand;
-
-		public AbstractCommand LeaveRoomCommand => _leaveRoomCommand ?? (_leaveRoomCommand = new AsyncRelayCommand<RoomViewModel>(LeaveRoom, room => !room.IsLeft));
-
-		private async Task LeaveRoom(RoomViewModel room)
-		{
-			if (room.Status == RoomStatus.Left)
-				return;
-			room.Status = RoomStatus.AwaitingServerReponse;
-			await handler.LeaveRoomAsync(room.Id);
-		}
-
 		private ICommand _updateRoomsCommand;
 
 		public ICommand UpdateRoomsCommand => _updateRoomsCommand ?? (_updateRoomsCommand = new AsyncRelayCommand(UpdateRoomsCommandHandler));
@@ -107,21 +89,21 @@ namespace YodaApp.ViewModels
 			return UpdateRooms();
 		}
 
-		private ICommand _createRoomCommand;
+		private ICommand addRoomCommand;
 
-		public ICommand CreateRoomCommand => _createRoomCommand ?? (_createRoomCommand = new AsyncRelayCommand(CreateRoomCommandHandler));
+		public ICommand AddRoomCommand => addRoomCommand ?? (addRoomCommand = new AsyncRelayCommand(AddRoomCommandHandler));
 
-		private async Task CreateRoomCommandHandler()
+		private async Task AddRoomCommandHandler()
 		{
-			var vm = componentContext.Resolve<NewRoomViewModel>();
+			var vm = componentContext.Resolve<CreateNewRoomOptionsViewModel>();
 			await DialogHost.Show(
-				new CreateNewRoomForm
+				new CreateNewRoomOptions
 				{
 					DataContext = vm
 				},
 				(object sender, DialogOpenedEventArgs e) =>
 				{
-					vm.CloseForm += (object _sender, EventArgs _e) =>
+					vm.RequestClose += delegate
 					{
 						e.Session.Close();
 					};
@@ -183,12 +165,8 @@ namespace YodaApp.ViewModels
 		public async Task UpdateRooms()
 		{
 			Guid? roomGuid = SelectedRoom?.Id;
+			var roomIds = Rooms.Select(r => r.Id).ToList();
 			SelectedRoom = null;
-
-			foreach (var room in Rooms)
-			{
-				await LeaveRoom(room);
-			}
 
 			Rooms.Clear();
 
@@ -197,19 +175,10 @@ namespace YodaApp.ViewModels
 				await AddRoom(room);
 			}
 
-			foreach (var room in Rooms)
-			{
-				await JoinRoom(room);
-				await Task.Delay(100);
-			}
-
 			if (roomGuid != null)
 			{
 				SelectedRoom = Rooms.Where(r => r.Id == roomGuid).SingleOrDefault();
 			}
-
-			JoinRoomCommand.RaiseCanExecuteChanged();
-			LeaveRoomCommand.RaiseCanExecuteChanged();
 		}
 
 		public async Task UpdateUser() => User = await Api.GetUserAsync();

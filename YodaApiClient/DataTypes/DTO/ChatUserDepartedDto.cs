@@ -10,6 +10,6 @@ namespace YodaApiClient.DataTypes.DTO
     {
         public Guid RoomId { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
     }
 }

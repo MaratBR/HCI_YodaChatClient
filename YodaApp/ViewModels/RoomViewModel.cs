@@ -56,24 +56,7 @@ namespace YodaApp.ViewModels
 
         public ObservableCollection<object> RoomFeed { get; } = new ObservableCollection<object>();
 
-        private RoomStatus status = RoomStatus.Left;
-
-        public RoomStatus Status
-        {
-            get => status;
-            set
-            {
-                Set(ref status, nameof(Status), value);
-                OnPropertyChanged(nameof(IsJoined));
-                OnPropertyChanged(nameof(IsLeft));
-                OnPropertyChanged(nameof(IsAwaitingServerResponse));
-            }
-        }
-
-        public bool IsJoined => Status == RoomStatus.Joined;
-        public bool IsAwaitingServerResponse => Status == RoomStatus.AwaitingServerReponse;
-        public bool IsLeft => Status == RoomStatus.Left;
-
+        public ObservableCollection<UserViewModel> Users { get; } = new ObservableCollection<UserViewModel>();
 
         private MessageViewModel message;
 
@@ -102,27 +85,26 @@ namespace YodaApp.ViewModels
         public RoomViewModel(IRoomHandler room)
         {
             this.room = room;
-            room.UserDeparted += Room_UserDeparted;
             room.UserJoined += Room_UserJoined;
+            room.UserDeparted += Room_UserDeparted;
 
             CreateNewMessage();
         }
 
-        private async void Room_UserJoined(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.ChatUserJoinedRoomDto> args)
+        private void Room_UserDeparted(object sender, YodaApiClient.Events.ChatEventArgs<ChatUserDepartedDto> args)
         {
-            if (args.InnerMessage.User.Id == room.Client.User.Id)
-            {
-                Status = RoomStatus.Joined;
-                await LoadLastMessages();
-            }
+            var user = Users.Where(u => u.Id == args.InnerMessage.UserId).FirstOrDefault();
+            if (user != null)
+                SetOnline(args.InnerMessage.UserId, false);
+
         }
 
-        private void Room_UserDeparted(object sender, YodaApiClient.Events.ChatEventArgs<YodaApiClient.DataTypes.DTO.ChatUserDepartedDto> args)
+        private void Room_UserJoined(object sender, YodaApiClient.Events.ChatEventArgs<ChatUserJoinedRoomDto> args)
         {
-            if (args.InnerMessage.UserId == room.Client.User.Id)
-            {
-                Status = RoomStatus.Left;
-            }
+            if (Users.Where(u => u.Id == args.InnerMessage.User.Id) == null)
+                AddUser(args.InnerMessage.User);
+            else
+                SetOnline(args.InnerMessage.User.Id, true);
         }
 
         public void CreateNewMessage()
@@ -153,6 +135,30 @@ namespace YodaApp.ViewModels
             {
                 DataContext = messageVM
             });
+        }
+
+        public async Task LoadMembers()
+        {
+            var users = await room.Client.Api.GetRoomMembersAsync(Id);
+            Users.Clear();
+            users.ForEach(AddUser);
+        }
+
+        private void AddUser(ChatUserDto user)
+        {
+            Users.Add(new UserViewModel(user));
+        }
+
+        private void AddUser(ChatMembershipDto user)
+        {
+            Users.Add(new UserViewModel(user));
+        }
+
+        private void SetOnline(int userId, bool value)
+        {
+            var user = Users.Where(u => u.Id == userId).FirstOrDefault();
+            if (user != null)
+                user.IsOnline = value;
         }
 
         private void Message_MessageSent(object sender, EventArgs e)

@@ -11,16 +11,6 @@ using YodaApiClient.Helpers;
 
 namespace YodaApiClient.Implementation
 {
-    class RoomsResponse
-    {
-        public List<Room> Rooms { get; set; }
-    }
-
-    class MembersResponse
-    {
-        public List<User> Users { get; set; }
-    }
-
     internal class Api : IApi
     {
         private SessionInfo sessionInfo;
@@ -64,6 +54,12 @@ namespace YodaApiClient.Implementation
 
             return room;
         }
+
+        class RoomsResponse
+        {
+            public List<Room> Rooms { get; set; }
+        }
+
         public async Task<List<Room>> GetRoomsAsync()
         {
             HttpResponseMessage response;
@@ -169,27 +165,28 @@ namespace YodaApiClient.Implementation
 
             return await response.GetJson<FileModel>();
         }
-        public async Task<FileModel> UploadFileAsync(Stream fileStream, string fileName)
+        public async Task<FileModel> UploadFileAsync(FileStream fileStream, string fileName)
         {
-            using (var content = new MultipartFormDataContent())
+            var multipart = new MultipartFormDataContent();
+            var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.Add("Content-Length", fileStream.Length.ToString());
+            multipart.Add(streamContent, "file", fileName);
+
+            HttpResponseMessage response;
+
+            try
             {
-                content.Add(new StreamContent(fileStream), "file", fileName);
-
-                HttpResponseMessage response;
-
-                try
-                {
-                    response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), content);
-                }
-                catch (HttpRequestException exc)
-                {
-                    throw new ServiceUnavailableException(exc.Message);
-                }
-
-                await response.ThrowErrorIfNotSuccessful();
-
-                return await response.GetJson<FileModel>();
+                response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), streamContent);
             }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+            string resp = await response.Content.ReadAsStringAsync();
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            return await response.GetJson<FileModel>();
         }
         public async Task DownloadFileAsync(Guid id, Stream fileStream)
         {
@@ -230,7 +227,12 @@ namespace YodaApiClient.Implementation
 
         }
 
-        public async Task<List<User>> GetRoomMembersAsync(Guid roomId)
+        class MembersResponse
+        {
+            public List<ChatMembershipDto> Users { get; set; }
+        }
+
+        public async Task<List<ChatMembershipDto>> GetRoomMembersAsync(Guid roomId)
         {
             HttpResponseMessage response;
 

@@ -12,7 +12,7 @@ namespace YodaApiClient
 
         public Guid RefreshToken { get; set; }
 
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         public Guid SessionId { get; set; } = Guid.NewGuid();
 

@@ -45,10 +45,16 @@ namespace YodaApp.Services.Implementation
             if (signup == null)
             {
                 signup = factory.CreateSignUpWindow();
+                signup.Closed += Signup_Closed;
             }
 
             signup.Show();
             HideMainWindow();
+        }
+
+        private void Signup_Closed(object sender, EventArgs e)
+        {
+            ShowLogInWindow();
         }
 
         public void CloseSignUpWindow()
