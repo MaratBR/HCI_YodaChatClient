@@ -176,7 +176,7 @@ namespace YodaApiClient.Implementation
 
             try
             {
-                response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), streamContent);
+                response = await httpClient.PostAsync(configuration.AppendPathToMainUrl(ApiReference.UPLOAD_ROUTE), multipart);
             }
             catch (HttpRequestException exc)
             {

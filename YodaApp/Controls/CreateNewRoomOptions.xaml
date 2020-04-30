@@ -6,7 +6,6 @@
             xmlns:local="clr-namespace:YodaApp.Controls"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
             mc:Ignorable="d"
-            xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
             TextElement.FontWeight="Medium"
             TextElement.FontSize="14"
             FontFamily="{materialDesign:MaterialDesignFont}"
@@ -19,7 +18,9 @@
         </TabControl.Resources>
 
         <TabItem Header="Join">
-            <local:JoinRoomForm DataContext="{Binding JoinRoomFormVM}" />
+            <materialDesign:TransitioningContentBase OpeningEffect="{materialDesign:TransitionEffect Kind=SlideInFromLeft}">
+                <local:JoinRoomForm DataContext="{Binding JoinRoomFormVM}" />
+            </materialDesign:TransitioningContentBase>
         </TabItem>
 
         <TabItem Header="New">

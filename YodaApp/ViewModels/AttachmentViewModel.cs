@@ -16,7 +16,9 @@ namespace YodaApp.ViewModels
     enum FileState : byte
     {
         Uploading,
-
+        Loading,
+        Error,
+        OK
     }
 
     class AttachmentViewModel : ViewModelBase
@@ -27,15 +29,45 @@ namespace YodaApp.ViewModels
 
         public string FullPath { get; set; }
 
-        public string FileName { get; set; }
+        private string fileName;
 
-        public Guid Id { get; set; }
+        public string FileName
+        {
+            get { return fileName; }
+            set => Set(ref fileName, nameof(FileName), value);
+        }
+
+
+        private Guid id;
+
+        public Guid Id
+        {
+            get { return id; }
+            set => Set(ref id, nameof(Id), value);
+        }
 
         public int Size { get; set; }
 
         public string FileSize => Size >= 1024 * 1024 ? $"{Math.Round((decimal)Size / (1024 * 1024), 1)}M" :
                 Size >= 1024 ? $"{Math.Round((decimal)Size / 1024, 1)}K" :
                 $"{Size}B";
+
+        private bool hasSpinner;
+
+        public bool HasSpinner
+        {
+            get { return hasSpinner; }
+            set => Set(ref hasSpinner, nameof(HasSpinner), value);
+        }
+
+        private bool hasError;
+
+        public bool HasError
+        {
+            get { return hasError; }
+            set => Set(ref hasError, nameof(HasError), value);
+        }
+
 
         public event EventHandler RemoveAttachment;
 
@@ -55,7 +87,21 @@ namespace YodaApp.ViewModels
             {
                 var filePath = dialog.FileName;
                 var fileStream = System.IO.File.OpenWrite(filePath);
-                await api.DownloadFileAsync(Id, fileStream);
+                HasSpinner = true;
+
+                try
+                {
+                    await api.DownloadFileAsync(Id, fileStream);
+                }
+                catch
+                {
+                    HasError = true;
+                }
+                finally
+                {
+                    HasSpinner = false;
+                }
+
             }
         }
 
@@ -96,13 +142,21 @@ namespace YodaApp.ViewModels
             }
 
             var stream = new FileStream(FullPath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
+            HasSpinner = true;
             try
             {
-                await api.UploadFileAsync(stream, FileName);
+                FileModel fm = await api.UploadFileAsync(stream, FileName);
+                Id = fm.Id;
+                FileName = fm.FileName;
+            }
+            catch
+            {
+                HasError = true;
             }
             finally
             {
                 stream.Dispose();
+                HasSpinner = false;
             }
         }
 

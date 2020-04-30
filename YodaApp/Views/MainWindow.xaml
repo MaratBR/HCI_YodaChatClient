@@ -93,6 +93,14 @@
 
                 <DockPanel>
                     <TextBlock VerticalAlignment="Center" FontSize="20" Margin="10,0,0,0" Text="{Binding Session.SelectedRoom.Name}" />
+                    <Button
+                        Command="{StaticResource CopyToClipboardCommand}"
+                        CommandParameter="{Binding Session.SelectedRoom.Id}"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        Margin="10,0,0,0">
+                        Copy ID
+                    </Button>
 
                     <Button
                         Command="{Binding Session.CloseSelectedRoomCommand}"
@@ -166,7 +174,7 @@
 
             </Grid>
 
-            <!-- messages -->
+            <!-- bottom panel -->
             <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -201,8 +209,28 @@
                                                 <TextBlock VerticalAlignment="Center" Text="{Binding FileName}" />
                                                 <TextBlock VerticalAlignment="Center" Text=" | " />
                                                 <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
-                                                <TextBlock VerticalAlignment="Center" Text=" | " />
-                                                <TextBlock VerticalAlignment="Center" Text="{Binding Status}" />
+                                                <TextBlock VerticalAlignment="Center" Text="Failed to upload file" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibility}}" />
+                                                <Viewbox Width="14" Height="14" RenderTransformOrigin="0.5,0.5" Visibility="{Binding HasSpinner, Converter={StaticResource BooleanToVisibility}}">
+                                                    <Viewbox.RenderTransform>
+                                                        <RotateTransform x:Name="noFreeze2" />
+                                                    </Viewbox.RenderTransform>
+
+                                                    <Viewbox.Triggers>
+                                                        <EventTrigger RoutedEvent="Loaded">
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="(Rectangle.RenderTransform).(RotateTransform.Angle)"
+                                                                        To="-360" Duration="0:0:0.5" RepeatBehavior="Forever" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger>
+                                                    </Viewbox.Triggers>
+
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="Black" Data="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" />
+                                                    </Canvas>
+                                                </Viewbox>
                                             </StackPanel>
 
                                                 <TextBlock Foreground="Red" Text="{Binding Path=Error}" Visibility="{Binding Path=Error, Converter={StaticResource NotNullConverter}}" />
@@ -283,6 +311,7 @@
                     </i:Interaction.Behaviors>
                     <ItemsControl VerticalAlignment="Bottom"
                           ItemsSource="{Binding Session.SelectedRoom.RoomFeed}" />
+
                 </ScrollViewer>
 
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibility}}">
