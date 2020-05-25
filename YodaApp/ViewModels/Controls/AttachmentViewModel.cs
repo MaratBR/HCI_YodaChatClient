@@ -13,14 +13,10 @@ using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
-    enum FileState : byte
-    {
-        Uploading,
-        Loading,
-        Error,
-        OK
-    }
+}
 
+namespace YodaApp.ViewModels.Controls
+{
     class AttachmentViewModel : ViewModelBase
     {
         private readonly IApi api;
@@ -86,7 +82,7 @@ namespace YodaApp.ViewModels
             if (dialog.ShowDialog() == true)
             {
                 var filePath = dialog.FileName;
-                var fileStream = System.IO.File.OpenWrite(filePath);
+                var fileStream = File.OpenWrite(filePath);
                 HasSpinner = true;
 
                 try
@@ -117,6 +113,15 @@ namespace YodaApp.ViewModels
             Size = file.Size;
             Id = file.Id;
         }
+
+        public AttachmentViewModel(IApi api, FileModel file)
+        {
+            this.api = api;
+            FileName = file.FileName;
+            Size = (int)file.Size;
+            Id = file.Id;
+        }
+
 
         public AttachmentViewModel(IApi api, FileInfo fileInfo)
         {

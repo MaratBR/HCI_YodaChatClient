@@ -11,6 +11,7 @@ using YodaApiClient;
 using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.DTO;
 using YodaApp.Utils;
+using YodaApp.ViewModels.Controls;
 
 namespace YodaApp.ViewModels
 {

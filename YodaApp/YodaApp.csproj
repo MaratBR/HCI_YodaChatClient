@@ -95,8 +95,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AttachmentView.xaml.cs">
+      <DependentUpon>AttachmentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CreateNewRoomForm.xaml.cs">
       <DependentUpon>CreateNewRoomForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FilesList.xaml.cs">
+      <DependentUpon>FilesList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\JoinRoomForm.xaml.cs">
       <DependentUpon>JoinRoomForm.xaml</DependentUpon>
@@ -132,6 +138,8 @@
     <Compile Include="Utils\EnumBooleanConverter.cs" />
     <Compile Include="Utils\EnumExtension.cs" />
     <Compile Include="ViewModels\Controls\CreateNewRoomOptionsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\FilesListViewModel.cs" />
+    <Compile Include="ViewModels\Controls\FileState.cs" />
     <Compile Include="ViewModels\Controls\JoinRoomFormViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\NewRoomViewModel.cs" />
@@ -140,7 +148,15 @@
     <Compile Include="Views\RegisterWindow.xaml.cs">
       <DependentUpon>RegisterWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\AttachmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CreateNewRoomForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FilesList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,7 +189,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\RelayCommand.cs" />
-    <Compile Include="ViewModels\AttachmentViewModel.cs" />
+    <Compile Include="ViewModels\Controls\AttachmentViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\RoomViewModel.cs" />

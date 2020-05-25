@@ -127,9 +127,20 @@ namespace YodaApp.ViewModels
 			SelectedRoom = null;
 		}
 
-		#endregion
+		private ICommand openUserFilesCommand;
 
-		public UserSessionViewModel(IApi api, IAppUIService windows, IApiProvider provider, IComponentContext componentContext)
+		public ICommand OpenUserFilesCommand => openUserFilesCommand ?? (openUserFilesCommand = new AsyncRelayCommand(OpenUserFiles));
+
+        private Task OpenUserFiles()
+        {
+			var vm = new FilesListViewModel(Api);
+			var v = new FilesList { DataContext = vm };
+			return DialogHost.Show(v);
+        }
+
+        #endregion
+
+        public UserSessionViewModel(IApi api, IAppUIService windows, IApiProvider provider, IComponentContext componentContext)
 		{
 			_windows = windows;
 			Api = api;

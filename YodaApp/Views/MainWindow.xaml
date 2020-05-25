@@ -63,6 +63,13 @@
                     </StackPanel>
                 </Border>
 
+                <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding Session.OpenUserFilesCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="File"  />
+                        <TextBlock>Files</TextBlock>
+                    </StackPanel>
+                </Button>
+
                 <ListView
                     ItemsSource="{Binding Session.Rooms}"
                     SelectedItem="{Binding Session.SelectedRoom}">
