@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using YodaApiClient.Abstract;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.Requests;
 using YodaApiClient.Helpers;
 
 namespace YodaApiClient.Implementation

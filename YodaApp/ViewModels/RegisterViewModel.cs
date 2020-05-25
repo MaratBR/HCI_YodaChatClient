@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.Requests;
 using YodaApp.Services;
 using YodaApp.Utils;
 

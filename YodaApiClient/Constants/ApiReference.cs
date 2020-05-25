@@ -30,6 +30,7 @@ namespace YodaApiClient.Constants
         public static readonly string SIGNALR_HUB_ROUTE = "chat";
         public static readonly string UPLOAD_ROUTE = "upload";
         public static readonly string GET_FILEMODEL_ROUTE = UPLOAD_ROUTE + "/{0}";
+        public static readonly string GET_FILES_ROUTE = UPLOAD_ROUTE + "/mine";
         public static readonly string DOWNLOAD_FILE_ROUTE = UPLOAD_ROUTE + "/{0}/download";
         public static readonly string PING_ROUTE = "ping";
     }

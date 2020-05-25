@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
+using YodaApiClient.DataTypes.Requests;
 using YodaApp.Services;
 using YodaApp.Utils;
 
@@ -71,7 +72,7 @@ namespace YodaApp.ViewModels
 
             try
             {
-                await session.CreateRoomAsync(new YodaApiClient.CreateRoomRequest
+                await session.CreateRoomAsync(new CreateRoomRequest
                 {
                     Name = Name,
                     Description = Description

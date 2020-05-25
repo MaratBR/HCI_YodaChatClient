@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using YodaApiClient.Constants;
 using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.DTO;
+using YodaApiClient.DataTypes.Requests;
 using YodaApiClient.Helpers;
 
 namespace YodaApiClient.Implementation
@@ -32,8 +33,6 @@ namespace YodaApiClient.Implementation
 
             return handler;
         }
-
-        #region "Raw" data
 
         public async Task<Room> CreateRoomAsync(CreateRoomRequest request)
         {
@@ -287,6 +286,29 @@ namespace YodaApiClient.Implementation
             await response.ThrowErrorIfNotSuccessful();
         }
 
-        #endregion
+        class FilesResponse
+        {
+            public List<FileModel> Files { get; set; }
+        }
+
+        public async Task<List<FileModel>> GetUserFiles()
+        {
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.GET_FILES_ROUTE));
+            }
+            catch (HttpRequestException exc)
+            {
+                throw new ServiceUnavailableException(exc.Message);
+            }
+
+            await response.ThrowErrorIfNotSuccessful();
+
+            var data = await response.GetJson<FilesResponse>();
+
+            return data.Files;
+        }
     }
 }

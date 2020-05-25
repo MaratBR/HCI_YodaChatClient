@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient;
+using YodaApiClient.Abstract;
 using YodaApp.Persistence;
 
 namespace YodaApp.Services.Implementation

@@ -91,7 +91,7 @@
                         <Style TargetType="RadioButton">
                             <Style.Triggers>
                                 <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Opacity" Value="0.5"/>
+                                    <Setter Property="Opacity" Value="0.7"/>
                                 </Trigger>
                             </Style.Triggers>
 
@@ -117,14 +117,14 @@
                                 </RadioButton.IsChecked>
 
                                 <StackPanel Margin="4">
-                                    <Border HorizontalAlignment="Center" BorderBrush="White" BorderThickness="2" CornerRadius="37.5" Cursor="Hand">
+                                    <Border HorizontalAlignment="Center" BorderBrush="Black" BorderThickness="2" CornerRadius="37.5" Cursor="Hand">
                                         <Image Source="{Binding Image}" Width="75" Height="75">
                                             <Image.Clip>
                                                 <RectangleGeometry RadiusX="37.5" RadiusY="37.5" Rect="0,0,75,75" />
                                             </Image.Clip>
                                         </Image>
                                     </Border>
-                                    <TextBlock TextAlignment="Center" TextWrapping="Wrap" Foreground="White" HorizontalAlignment="Center" Text="{Binding Caption}" />
+                                    <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" Text="{Binding Caption}" />
                                 </StackPanel>
                             </RadioButton>
                         </DataTemplate>

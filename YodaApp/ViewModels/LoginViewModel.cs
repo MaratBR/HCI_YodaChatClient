@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes;
+using YodaApiClient.DataTypes.Requests;
 using YodaApp.Persistence;
 using YodaApp.Services;
 using YodaApp.Utils;
@@ -15,7 +16,7 @@ using YodaApp.Views;
 
 namespace YodaApp.ViewModels
 {
-	class UserAuthenticatedEventArgs : EventArgs
+    class UserAuthenticatedEventArgs : EventArgs
 	{
 		public IApi Api { get; set; }
 	}
