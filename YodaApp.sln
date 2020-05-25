@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YodaApp", "YodaApp\YodaApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YodaApiClient", "YodaApiClient\YodaApiClient.csproj", "{B7F98719-1ED4-4663-AE19-5F51A7AB5114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YodaChatClientTest", "YodaChatClientTest\YodaChatClientTest.csproj", "{F7643115-799D-41E4-9AE6-C018294B3A06}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{B7F98719-1ED4-4663-AE19-5F51A7AB5114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7F98719-1ED4-4663-AE19-5F51A7AB5114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7F98719-1ED4-4663-AE19-5F51A7AB5114}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7643115-799D-41E4-9AE6-C018294B3A06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7643115-799D-41E4-9AE6-C018294B3A06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7643115-799D-41E4-9AE6-C018294B3A06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7643115-799D-41E4-9AE6-C018294B3A06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
