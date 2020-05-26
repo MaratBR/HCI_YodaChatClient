@@ -44,7 +44,7 @@ namespace YodaApiClient
 
         Task DownloadFileAsync(Guid id, Stream fileStream);
 
-        Task<List<FileModel>> GetUserFiles();
+        Task<List<FileModel>> GetUserFiles(DateTime? after = null);
 
         #endregion
 

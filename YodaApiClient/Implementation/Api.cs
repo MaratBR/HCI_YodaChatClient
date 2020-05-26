@@ -291,13 +291,16 @@ namespace YodaApiClient.Implementation
             public List<FileModel> Files { get; set; }
         }
 
-        public async Task<List<FileModel>> GetUserFiles()
+        public async Task<List<FileModel>> GetUserFiles(DateTime? after = null)
         {
             HttpResponseMessage response;
 
             try
             {
-                response = await httpClient.GetAsync(configuration.AppendPathToMainUrl(ApiReference.GET_FILES_ROUTE));
+                string url = configuration.AppendPathToMainUrl(ApiReference.GET_FILES_ROUTE);
+                if (after != null)
+                    url += "?" + after.ToString();
+                response = await httpClient.GetAsync(url);
             }
             catch (HttpRequestException exc)
             {
