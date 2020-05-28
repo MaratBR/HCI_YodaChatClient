@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using FluentResults;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,7 @@ namespace YodaApp.ViewModels
                 {
                     DataContext = vm
                 },
+                "Default",
                 (object sender, DialogOpenedEventArgs e) =>
                 {
                     vm.RequestClose += delegate
@@ -127,7 +129,7 @@ namespace YodaApp.ViewModels
         {
             var vm = new FilesListViewModel(Api);
             var v = new FilesList { DataContext = vm };
-            return DialogHost.Show(v);
+            return DialogHost.Show(v, "Default");
         }
 
         #endregion Commands
@@ -153,16 +155,37 @@ namespace YodaApp.ViewModels
         private async Task UpdateQuote()
         {
             Quote = null;
-            Quote = await provider.PingAsync();
+            try
+            {
+                Quote = await provider.PingAsync();
+            }
+            catch (Exception exc)
+            {
+                await ErrorView.Show(exc);
+            }
         }
 
         private async Task Connect()
         {
-            handler = await Api.ConnectAsync();
+            try
+            {
+                handler = await Api.ConnectAsync();
+                handler.ExceptionOccured += Handler_ExceptionOccured;
+            }
+            catch (Exception exc)
+            {
+                await ErrorView.Show(exc);
+            }
+        }
+
+        private async void Handler_ExceptionOccured(object sender, YodaApiClient.Events.ExceptionEventArgs e)
+        {
+            await ErrorView.Show(e.Exception);
         }
 
         public void Disconnect()
         {
+            handler.ExceptionOccured -= Handler_ExceptionOccured;
             handler.Disconnect();
             handler = null;
         }
@@ -175,10 +198,18 @@ namespace YodaApp.ViewModels
 
             Rooms.Clear();
 
-            foreach (var room in await Api.GetRoomsAsync())
+            try
             {
-                await AddRoom(room);
+                foreach (var room in await Api.GetRoomsAsync())
+                {
+                    await AddRoom(room);
+                }
             }
+            catch(Exception e)
+            {
+                await ErrorView.Show(e);
+            }
+
 
             if (roomGuid != null)
             {

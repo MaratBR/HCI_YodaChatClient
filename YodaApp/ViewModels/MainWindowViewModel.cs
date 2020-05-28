@@ -56,7 +56,7 @@ namespace YodaApp.ViewModels
             {
                 DataContext = vm
             };
-            return DialogHost.Show(v);
+            return DialogHost.Show(v, "Default");
         }
 
         #endregion Commands

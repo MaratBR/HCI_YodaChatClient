@@ -1,8 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Input;
 using YodaApiClient;
+using YodaApiClient.DataTypes;
+using YodaApp.Controls;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels.Controls
@@ -21,7 +26,19 @@ namespace YodaApp.ViewModels.Controls
         private async Task Refresh()
         {
             Refreshing = true;
-            var files = await api.GetUserFiles();
+            List<FileModel> files;
+
+            try
+            {
+                files = await api.GetUserFiles();
+            }
+            catch(Exception e)
+            {
+                await ErrorView.Show(e);
+                return;
+            }
+
+
             Files.Clear();
             foreach (var vm in files.Select(f => new AttachmentViewModel(api, f)))
                 Files.Add(vm);

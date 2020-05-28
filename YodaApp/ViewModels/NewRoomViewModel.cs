@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes.Requests;
+using YodaApp.Controls;
 using YodaApp.Services;
 using YodaApp.Utils;
 
@@ -75,6 +76,10 @@ namespace YodaApp.ViewModels
             catch (ApiException exc)
             {
                 Error = exc.Message;
+            }
+            catch (Exception exc)
+            {
+                await ErrorView.Show(exc);
             }
         }
 

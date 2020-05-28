@@ -101,6 +101,9 @@
     <Compile Include="Controls\CreateNewRoomForm.xaml.cs">
       <DependentUpon>CreateNewRoomForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ErrorView.xaml.cs">
+      <DependentUpon>ErrorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FilesList.xaml.cs">
       <DependentUpon>FilesList.xaml</DependentUpon>
     </Compile>
@@ -141,6 +144,7 @@
     <Compile Include="Utils\EnumBooleanConverter.cs" />
     <Compile Include="Utils\EnumExtension.cs" />
     <Compile Include="ViewModels\Controls\CreateNewRoomOptionsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ErrorViewModel.cs" />
     <Compile Include="ViewModels\Controls\FilesListViewModel.cs" />
     <Compile Include="ViewModels\Controls\FileState.cs" />
     <Compile Include="ViewModels\Controls\JoinRoomFormViewModel.cs" />
@@ -157,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CreateNewRoomForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ErrorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

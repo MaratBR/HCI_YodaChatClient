@@ -1,7 +1,10 @@
-﻿using System;
+﻿using FluentResults;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApiClient.DataTypes.DTO;
@@ -110,7 +113,16 @@ namespace YodaApp.ViewModels
 
         public async Task LoadLastMessages()
         {
-            var messages = await room.Client.Api.GetRoomMessages(Id);
+            List<ChatMessageDto> messages;
+            try
+            {
+                messages = await room.Client.Api.GetRoomMessages(Id);
+            }
+            catch(Exception e)
+            {
+                await ErrorView.Show(e);
+                return;
+            }
 
             RoomFeed.Clear();
             foreach (var message in messages)
@@ -134,7 +146,17 @@ namespace YodaApp.ViewModels
 
         public async Task LoadMembers()
         {
-            var users = await room.Client.Api.GetRoomMembersAsync(Id);
+            List<ChatMembershipDto> users;
+            
+            try
+            {
+                users = await room.Client.Api.GetRoomMembersAsync(Id);
+            }
+            catch(Exception e)
+            {
+                await ErrorView.Show(e);
+                return;
+            }
             Users.Clear();
             users.ForEach(AddUser);
         }

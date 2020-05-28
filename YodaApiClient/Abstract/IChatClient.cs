@@ -23,6 +23,8 @@ namespace YodaApiClient
 
         event ChatEventHandler<ChatMessageDto> MessageReceived;
 
+        event EventHandler<ExceptionEventArgs> ExceptionOccured;
+
         [Obsolete]
         event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
 

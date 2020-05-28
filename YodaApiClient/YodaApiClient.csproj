@@ -158,6 +158,7 @@
     <Compile Include="DataTypes\User.cs" />
     <Compile Include="Events\ChatEventArgs.cs" />
     <Compile Include="Events\ChatEventContext.cs" />
+    <Compile Include="Events\ExceptionEventArgs.cs" />
     <Compile Include="Implementation\Api.cs" />
     <Compile Include="ApiConfiguration.cs" />
     <Compile Include="Implementation\ApiProvider.cs" />

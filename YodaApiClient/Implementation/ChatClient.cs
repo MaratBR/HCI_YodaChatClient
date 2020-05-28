@@ -35,6 +35,8 @@ namespace YodaApiClient.Implementation
 
         public event ChatEventHandler<UserStatusDto> UserStatusChanged;
 
+        public event EventHandler<ExceptionEventArgs> ExceptionOccured;
+
         public IApi Api { get; }
 
         public User User { get; set; }
@@ -54,6 +56,7 @@ namespace YodaApiClient.Implementation
                 .WithAutomaticReconnect()
                 .WithUrl(configuration.AppendPathToMainUrl(ApiReference.SIGNALR_HUB_ROUTE), options => options.Headers.Add("Authorization", $"Bearer {Api.GetAccessToken()}"))
                 .Build();
+
             await connection.StartAsync();
 
             await Init();
@@ -98,11 +101,19 @@ namespace YodaApiClient.Implementation
             messagesWorkerThread.Start();
         }
 
-        private async void SenderWorkerLoop()
+        private async void SenderWorkerLoop(object _ctx)
         {
+            SynchronizationContext context = (SynchronizationContext)_ctx;
             foreach (var message in messageQueue.GetConsumingEnumerable())
             {
-                await SendMessage(message);
+                try
+                {
+                    await SendMessage(message);
+                }
+                catch
+                {
+                    context.Post(exc => ExceptionOccured?.Invoke(this, new ExceptionEventArgs((Exception)exc)), this);
+                }
                 await Task.Delay(50);
             }
         }

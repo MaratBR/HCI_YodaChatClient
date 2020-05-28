@@ -5,11 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              d:DesignHeight="450" d:DesignWidth="800">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding InitCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
     <StackPanel MinWidth="300">
         <TextBlock HorizontalAlignment="Center" Margin="20">
             <Run>You logged in as</Run>
-            <Run Text="{Binding User}" />
+            <Run FontWeight="DemiBold" Text="{Binding User.UserName}" />
         </TextBlock>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

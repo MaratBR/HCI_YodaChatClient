@@ -28,232 +28,233 @@
         </Style>
     </Window.Style>
 
-    <materialDesign:DialogHost>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+    <Grid>
+        <materialDesign:DialogHost Identifier="Default">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <!-- left column (rooms list, refresh button) -->
-            <StackPanel Grid.RowSpan="2" Grid.Column="0">
-                <Border Background="#05FFFFFF">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
-                        <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.AddRoomCommand}">
-                            <Viewbox Width="24" Height="24">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                                </Canvas>
-                            </Viewbox>
-                        </Button>
+                <!-- left column (rooms list, refresh button) -->
+                <StackPanel Grid.RowSpan="2" Grid.Column="0">
+                    <Border Background="#05FFFFFF">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
+                            <Button Height="60" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.AddRoomCommand}">
+                                <Viewbox Width="24" Height="24">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
 
-                        <Button Height="60" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.UpdateRoomsCommand}">
-                            <Viewbox Width="24" Height="24">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2 12C2 16.97 6.03 21 11 21C13.39 21 15.68 20.06 17.4 18.4L15.9 16.9C14.63 18.25 12.86 19 11 19C4.76 19 1.64 11.46 6.05 7.05C10.46 2.64 18 5.77 18 12H15L19 16H19.1L23 12H20C20 7.03 15.97 3 11 3C6.03 3 2 7.03 2 12Z" />
-                                </Canvas>
-                            </Viewbox>
-                        </Button>
-                    </StackPanel>
-                </Border>
+                            <Button Height="60" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatAccentButton}" Command="{Binding Session.UpdateRoomsCommand}">
+                                <Viewbox Width="24" Height="24">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2 12C2 16.97 6.03 21 11 21C13.39 21 15.68 20.06 17.4 18.4L15.9 16.9C14.63 18.25 12.86 19 11 19C4.76 19 1.64 11.46 6.05 7.05C10.46 2.64 18 5.77 18 12H15L19 16H19.1L23 12H20C20 7.03 15.97 3 11 3C6.03 3 2 7.03 2 12Z" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
+                        </StackPanel>
+                    </Border>
 
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding Session.OpenUserFilesCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="File" />
-                        <TextBlock>Files</TextBlock>
-                    </StackPanel>
-                </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding Session.OpenUserFilesCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="File" />
+                            <TextBlock>Files</TextBlock>
+                        </StackPanel>
+                    </Button>
 
-                <ListView
-                    ItemsSource="{Binding Session.Rooms}"
-                    SelectedItem="{Binding Session.SelectedRoom}">
-                    <ListView.ItemTemplate>
-                        <ItemContainerTemplate>
-                            <StackPanel>
+                    <ListView
+                        ItemsSource="{Binding Session.Rooms}"
+                        SelectedItem="{Binding Session.SelectedRoom}">
+                        <ListView.ItemTemplate>
+                            <ItemContainerTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" FontSize="16" />
+                                    <TextBlock Text="{Binding Description}" FontSize="11" Margin="3,0,0,0" />
+                                </StackPanel>
+                            </ItemContainerTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
 
-                                <TextBlock Text="{Binding Name}" />
-                                <TextBlock Text="{Binding Id}" />
-                            </StackPanel>
-                        </ItemContainerTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
-
-            <!-- sensei splittter -->
-            <GridSplitter
+                <!-- sensei splittter -->
+                <GridSplitter
                 HorizontalAlignment="Center" VerticalAlignment="Stretch"
                 Grid.Column="1" Grid.RowSpan="2"
                 Width="10" />
 
-            <!-- top panel -->
-            <Grid Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <DockPanel>
-                    <TextBlock VerticalAlignment="Center" FontSize="20" Margin="10,0,0,0" Text="{Binding Session.SelectedRoom.Name}" />
-                    <Button
-                        Command="{StaticResource CopyToClipboardCommand}"
-                        CommandParameter="{Binding Session.SelectedRoom.Id}"
-                        VerticalAlignment="Center"
-                        Style="{StaticResource MaterialDesignToolButton}"
-                        Margin="10,0,0,0">
-                        Copy ID
-                    </Button>
-
-                    <Button
-                        Command="{Binding Session.CloseSelectedRoomCommand}"
-                        HorizontalAlignment="Right" Height="40" ToolTip="closes room, you will still receive messages"
-                        Style="{StaticResource MaterialDesignToolForegroundButton}">
-                        <materialDesign:PackIcon Kind="Close" Width="30" Height="30" />
-                    </Button>
-                </DockPanel>
-
-                <Button MinWidth="100" Grid.Column="1"
-                    HorizontalAlignment="Right"
-                    Style="{StaticResource MaterialDesignToolForegroundButton}"
-                    Command="{Binding OpenProfileCommand}">
-                    <TextBlock Text="{Binding Session.User.UserName}" />
-                </Button>
-            </Grid>
-
-            <!-- welcome panel with cursed yoda -->
-            <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NullConverter}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Image RenderTransformOrigin="0.5,0.5" Source="{StaticResource CursedWelcome}" Width="300" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image.RenderTransform>
-                        <!-- giving the transform a name tells the framework not to freeze it -->
-                        <RotateTransform x:Name="noFreeze" />
-                    </Image.RenderTransform>
-
-                    <Image.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="PLZ STOP" Command="{Binding StopYodaCommand}" />
-                        </ContextMenu>
-                    </Image.ContextMenu>
-
-                    <Image.Triggers>
-                        <EventTrigger RoutedEvent="Loaded">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation
-                                        Storyboard.TargetProperty="(Rectangle.RenderTransform).(RotateTransform.Angle)"
-                                        To="-360" Duration="0:0:8" RepeatBehavior="Forever" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Image.Triggers>
-                </Image>
-
-                <Border Grid.Row="1" Padding="0,15,0,0">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                            <GradientStop Color="#02000000" Offset="0" />
-                            <GradientStop Color="#11000000" Offset="0.8" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-
-                    <StackPanel  Orientation="Horizontal" Margin="10,10,0,0">
-                        <TextBlock Text='❛❛' FontSize="100" />
-                        <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,20">
-                            <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="600" Margin="10" Text="{Binding Path=Session.Quote}" VerticalAlignment="Center" />
-                            <Button
-                                HorizontalAlignment="Left" Margin="20,0,0,0"
-                                Command="{Binding Session.UpdateQuoteCommand}"
-                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                Focusable="False">
-                                <materialDesign:PackIcon Kind="Refresh" Width="25" Height="25" VerticalAlignment="Center" />
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-            <!-- bottom panel -->
-            <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="100" MaxWidth="400" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" MinHeight="50" />
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                <!-- top panel -->
+                <Grid Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Margin="0,10,0,0">
-                        <ItemsControl Margin="10,0,0,0" ItemsSource="{Binding Session.SelectedRoom.Message.Attachments}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="1,0,0,0" Padding="4,0,0,0">
-                                        <Grid TextElement.FontSize="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
+                    <DockPanel>
+                        <TextBlock VerticalAlignment="Center" FontSize="20" Margin="10,0,0,0" Text="{Binding Session.SelectedRoom.Name}" />
+                        <Button
+                            Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}"
+                            Command="{StaticResource CopyToClipboardCommand}"
+                            CommandParameter="{Binding Session.SelectedRoom.Id}"
+                            VerticalAlignment="Center"
+                            Style="{StaticResource MaterialDesignToolButton}"
+                            Margin="10,0,0,0">
+                            Copy ID
+                        </Button>
 
-                                            <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" Height="20">
-                                                <TextBlock VerticalAlignment="Center" Text="{Binding FileName}" />
-                                                <TextBlock VerticalAlignment="Center" Text=" | " />
-                                                <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
-                                                <TextBlock VerticalAlignment="Center" Text="Failed to upload file" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibility}}" />
-                                                <Viewbox Width="14" Height="14" RenderTransformOrigin="0.5,0.5" Visibility="{Binding HasSpinner, Converter={StaticResource BooleanToVisibility}}">
-                                                    <Viewbox.RenderTransform>
-                                                        <RotateTransform x:Name="noFreeze2" />
-                                                    </Viewbox.RenderTransform>
+                        <Button
+                            Command="{Binding Session.CloseSelectedRoomCommand}"
+                            HorizontalAlignment="Right" Height="40" ToolTip="closes room, you will still receive messages"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}">
+                            <materialDesign:PackIcon Kind="Close" Width="30" Height="30" />
+                        </Button>
+                    </DockPanel>
 
-                                                    <Viewbox.Triggers>
-                                                        <EventTrigger RoutedEvent="Loaded">
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <DoubleAnimation
+                    <Button MinWidth="100" Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                    Command="{Binding OpenProfileCommand}">
+                        <TextBlock Text="{Binding Session.User.UserName}" />
+                    </Button>
+                </Grid>
+
+                <!-- welcome panel with cursed yoda -->
+                <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NullConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image RenderTransformOrigin="0.5,0.5" Source="{StaticResource CursedWelcome}" Width="300" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image.RenderTransform>
+                            <!-- giving the transform a name tells the framework not to freeze it -->
+                            <RotateTransform x:Name="noFreeze" />
+                        </Image.RenderTransform>
+
+                        <Image.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="PLZ STOP" Command="{Binding StopYodaCommand}" />
+                            </ContextMenu>
+                        </Image.ContextMenu>
+
+                        <Image.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                        Storyboard.TargetProperty="(Rectangle.RenderTransform).(RotateTransform.Angle)"
+                                        To="-360" Duration="0:0:8" RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Image.Triggers>
+                    </Image>
+
+                    <Border Grid.Row="1" Padding="0,15,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                <GradientStop Color="#02000000" Offset="0" />
+                                <GradientStop Color="#11000000" Offset="0.8" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+
+                        <StackPanel  Orientation="Horizontal" Margin="10,10,0,0">
+                            <TextBlock Text='❛❛' FontSize="100" />
+                            <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,20">
+                                <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="600" Margin="10" Text="{Binding Path=Session.Quote}" VerticalAlignment="Center" />
+                                <Button
+                                HorizontalAlignment="Left" Margin="20,0,0,0"
+                                Command="{Binding Session.UpdateQuoteCommand}"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                Focusable="False">
+                                    <materialDesign:PackIcon Kind="Refresh" Width="25" Height="25" VerticalAlignment="Center" />
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- bottom panel -->
+                <Grid Grid.Row="1" Grid.Column="2" Visibility="{Binding Session.SelectedRoom, Converter={StaticResource NotNullConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="100" MaxWidth="400" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" MinHeight="50" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Margin="0,10,0,0">
+                            <ItemsControl Margin="10,0,0,0" ItemsSource="{Binding Session.SelectedRoom.Message.Attachments}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="1,0,0,0" Padding="4,0,0,0">
+                                            <Grid TextElement.FontSize="10">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" Height="20">
+                                                    <TextBlock VerticalAlignment="Center" Text="{Binding FileName}" />
+                                                    <TextBlock VerticalAlignment="Center" Text=" | " />
+                                                    <TextBlock VerticalAlignment="Center" Text="{Binding FileSize}" />
+                                                    <TextBlock VerticalAlignment="Center" Text="Failed to upload file" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibility}}" />
+                                                    <Viewbox Width="14" Height="14" RenderTransformOrigin="0.5,0.5" Visibility="{Binding HasSpinner, Converter={StaticResource BooleanToVisibility}}">
+                                                        <Viewbox.RenderTransform>
+                                                            <RotateTransform x:Name="noFreeze2" />
+                                                        </Viewbox.RenderTransform>
+
+                                                        <Viewbox.Triggers>
+                                                            <EventTrigger RoutedEvent="Loaded">
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation
                                                                         Storyboard.TargetProperty="(Rectangle.RenderTransform).(RotateTransform.Angle)"
                                                                         To="-360" Duration="0:0:0.5" RepeatBehavior="Forever" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </EventTrigger>
-                                                    </Viewbox.Triggers>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </EventTrigger>
+                                                        </Viewbox.Triggers>
 
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="Black" Data="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                            </StackPanel>
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="Black" Data="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </StackPanel>
 
                                                 <TextBlock Foreground="Red" Text="{Binding Path=Error}" Visibility="{Binding Path=Error, Converter={StaticResource NotNullConverter}}" />
 
-                                            <Button Height="20" Grid.Column="1" Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignFlatButton}">
-                                                <Viewbox Width="14" Height="14" VerticalAlignment="Center">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{StaticResource MaterialDesignLightForeground}" Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                                <Button Height="20" Grid.Column="1" Command="{Binding RemoveCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <Viewbox Width="14" Height="14" VerticalAlignment="Center">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{StaticResource MaterialDesignLightForeground}" Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
-                        <TextBox
+                            <TextBox
                             Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                             Margin="10" Background="#22ffffff"
                             Padding="10,0,10,10"
@@ -262,68 +263,72 @@
                             TextAlignment="Left"
                             Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}">
 
-                            <TextBox.InputBindings>
-                                <KeyBinding
+                                <TextBox.InputBindings>
+                                    <KeyBinding
                                     Command="{Binding Session.SelectedRoom.Message.SendCommand}"
                                     Modifiers="Ctrl"
                                     Key="Enter" />
-                            </TextBox.InputBindings>
-                        </TextBox>
-                    </StackPanel>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
 
-                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                            <Button Style="{StaticResource MaterialDesignToolButton}"
                             Command="{Binding Session.SelectedRoom.Message.AddAttachmentCommand}"
                             CommandParameter="{Binding Session.SelectedRoom}">
-                            <Viewbox Width="24" Height="24">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z" />
-                                </Canvas>
-                            </Viewbox>
-                        </Button>
+                                <Viewbox Width="24" Height="24">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
 
-                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                            <Button Style="{StaticResource MaterialDesignToolButton}"
                             Command="{Binding Session.SelectedRoom.Message.SendCommand}">
-                            <Viewbox Width="24" Height="24">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
-                                </Canvas>
-                            </Viewbox>
-                        </Button>
-                    </StackPanel>
+                                <Viewbox Width="24" Height="24">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{StaticResource SecondaryHueDarkBrush}" Data="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
+                        </StackPanel>
 
-                    <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="0,1,0,0" Background="#07000000" Panel.ZIndex="-10" />
-                </Grid>
+                        <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="0,1,0,0" Background="#07000000" Panel.ZIndex="-10" />
+                    </Grid>
 
-                <GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch"
+                    <GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch"
                     Grid.Column="1" Grid.RowSpan="2"
                     Width="10" />
 
-                <ItemsControl Grid.Column="2" ItemsSource="{Binding Session.SelectedRoom.Users}" HorizontalContentAlignment="Stretch">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:UserSmallCard DataContext="{Binding}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    <ItemsControl Grid.Column="2" ItemsSource="{Binding Session.SelectedRoom.Users}" HorizontalContentAlignment="Stretch">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:UserSmallCard DataContext="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                <ScrollViewer Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibilityInverted}}">
-                    <i:Interaction.Behaviors>
-                        <utils:AutoScrollBehavior />
-                    </i:Interaction.Behaviors>
-                    <ItemsControl VerticalAlignment="Bottom"
+                    <ScrollViewer Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibilityInverted}}">
+                        <i:Interaction.Behaviors>
+                            <utils:AutoScrollBehavior />
+                        </i:Interaction.Behaviors>
+                        <ItemsControl VerticalAlignment="Bottom"
                           ItemsSource="{Binding Session.SelectedRoom.RoomFeed}" />
-                </ScrollViewer>
+                    </ScrollViewer>
 
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibility}}">
-                    <TextBlock>There's no messages in this room yet, be the first to break the silence!</TextBlock>
-                    <Button
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibility}}">
+                        <TextBlock>There's no messages in this room yet, be the first to break the silence!</TextBlock>
+                        <Button
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Margin="0,10,0,0"
                         Command="{Binding Session.SelectedRoom.FillFirstMessageCommand}">Write the first message worthy of a Jedi!</Button>
-                </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
-        </Grid>
-    </materialDesign:DialogHost>
+        </materialDesign:DialogHost>
+
+        <materialDesign:DialogHost Identifier="ErrorDialog" />
+    </Grid>
+
 </Window>

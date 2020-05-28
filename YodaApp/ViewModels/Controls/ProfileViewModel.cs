@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient.DataTypes;
+using YodaApp.Controls;
 using YodaApp.Services;
 using YodaApp.Utils;
 
@@ -21,7 +23,15 @@ namespace YodaApp.ViewModels.Controls
 
         private async Task Init()
         {
-            User = await authentication.GetCurrentSession().GetUserAsync();
+            try
+            {
+                User = await authentication.GetCurrentSession().GetUserAsync();
+                OnPropertyChanged(nameof(User));
+            }
+            catch(Exception e)
+            {
+                await ErrorView.Show(e);
+            }
         }
 
         public User User { get; set; }
