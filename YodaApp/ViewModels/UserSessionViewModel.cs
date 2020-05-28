@@ -148,7 +148,7 @@ namespace YodaApp.ViewModels
 			this.componentContext = componentContext;
 		}
 
-		public IApi Api { get; }
+        public IApi Api { get; }
 
 		public async void Update()
 		{

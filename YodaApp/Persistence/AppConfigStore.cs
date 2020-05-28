@@ -12,55 +12,15 @@ namespace YodaApp.Persistence
 {
     class AppConfigStore : IStore
     {
-        private List<SessionInfo> sessions;
-
         public AppConfigStore()
         {
-        }
-
-        public List<SessionInfo> GetSessions()
-        {
-            if (sessions == null)
-            {
-                sessions = LoadSessions();
-            }
-
-            return sessions;
-        }
-
-        private List<SessionInfo> LoadSessions()
-        {
-            if (sessions == null)
-            {
-                string value = Properties.Settings.Default.Sessions;
-                value = Encryptions.Decrypt(value);
-                List<SessionInfo> _sessions;
-                if (value == null)
-                {
-                    _sessions = new List<SessionInfo>();
-                }
-                else
-                {
-                    try
-                    {
-                        _sessions = JsonConvert.DeserializeObject<List<SessionInfo>>(value);
-                    }
-                    catch
-                    {
-                        _sessions = new List<SessionInfo>();
-                    }
-                }
-
-                sessions = _sessions;
-            }
-            return sessions;
         }
 
         public void SetSessions(List<SessionInfo> sessions)
         {
             var value = JsonConvert.SerializeObject(sessions);
             value = Encryptions.Encrypt(value);
-            Properties.Settings.Default.Sessions = value;
+            Properties.Settings.Default.SessionEnc = value;
             Properties.Settings.Default.Save();
         }
 
@@ -77,6 +37,29 @@ namespace YodaApp.Persistence
         {
             Properties.Settings.Default.ApiConfiguration = configuration;
             Properties.Settings.Default.Save();
+        }
+
+        public void SetSession(SessionInfo info)
+        {
+            var data = JsonConvert.SerializeObject(info);
+            Properties.Settings.Default.SessionEnc = Encryptions.Encrypt(data);
+            Properties.Settings.Default.Save();
+        }
+
+        public SessionInfo GetSession()
+        {
+            Properties.Settings.Default.Reload();
+            
+            try
+            {
+                var value = Encryptions.Decrypt(Properties.Settings.Default.SessionEnc);
+                var info = JsonConvert.DeserializeObject<SessionInfo>(value);
+                return info;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

@@ -113,6 +113,9 @@
     <Compile Include="Controls\CreateNewRoomOptions.xaml.cs">
       <DependentUpon>CreateNewRoomOptions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Profile.xaml.cs">
+      <DependentUpon>Profile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\UserSmallCard.xaml.cs">
       <DependentUpon>UserSmallCard.xaml</DependentUpon>
     </Compile>
@@ -141,6 +144,7 @@
     <Compile Include="ViewModels\Controls\FilesListViewModel.cs" />
     <Compile Include="ViewModels\Controls\FileState.cs" />
     <Compile Include="ViewModels\Controls\JoinRoomFormViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ProfileViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\NewRoomViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
@@ -169,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CreateNewRoomOptions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Profile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

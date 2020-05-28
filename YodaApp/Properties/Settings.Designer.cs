@@ -12,7 +12,7 @@ namespace YodaApp.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,12 +26,12 @@ namespace YodaApp.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Sessions {
+        public string SessionEnc {
             get {
-                return ((string)(this["Sessions"]));
+                return ((string)(this["SessionEnc"]));
             }
             set {
-                this["Sessions"] = value;
+                this["SessionEnc"] = value;
             }
         }
         
@@ -43,18 +43,6 @@ namespace YodaApp.Properties {
             }
             set {
                 this["ApiConfiguration"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
-        public global::System.Guid CurrentSessionID {
-            get {
-                return ((global::System.Guid)(this["CurrentSessionID"]));
-            }
-            set {
-                this["CurrentSessionID"] = value;
             }
         }
     }

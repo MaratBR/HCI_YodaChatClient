@@ -14,18 +14,16 @@ namespace YodaApp.Services
 
         IApi GetCurrentSession();
 
-        void AddSession(IApi api);
-
-        void RemoveSession(IApi api);
-
         void SetCurrentSession(IApi api);
 
-        List<IApi> GetSessions();
+        void Logout();
 
         Task Init();
 
         IApiProvider GetApiProvider();
 
         event EventHandler SessionChanged;
+        event EventHandler OnLogout;
+        event EventHandler OnLogin;
     }
 }

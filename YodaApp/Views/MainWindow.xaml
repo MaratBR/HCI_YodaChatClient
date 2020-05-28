@@ -120,7 +120,7 @@
                 <Button MinWidth="100" Grid.Column="1"
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
-                    Command="{Binding SwitchSessionCommand}">
+                    Command="{Binding OpenProfileCommand}">
                     <TextBlock Text="{Binding Session.User.UserName}" />
                 </Button>
             </Grid>

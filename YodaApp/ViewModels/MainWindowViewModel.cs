@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,9 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
+using YodaApp.Controls;
 using YodaApp.Persistence;
 using YodaApp.Services;
 using YodaApp.Utils;
+using YodaApp.ViewModels.Controls;
 using YodaApp.Views;
 
 namespace YodaApp.ViewModels
@@ -44,33 +47,30 @@ namespace YodaApp.ViewModels
             set => Set(ref session, nameof(Session), value);
         }
 
-
-        private ObservableCollection<UserSessionViewModel> userSessions = new ObservableCollection<UserSessionViewModel>();
-
-        public ObservableCollection<UserSessionViewModel> UserSessions
-        {
-            get => userSessions;
-            set => Set(ref userSessions, nameof(UserSessions), value);
-        }
-
         #endregion
 
         #region Commands
 
-        private ICommand _logInCommand;
+        private ICommand openProfileCommand;
 
-        public ICommand LogInCommand => _logInCommand ?? (_logInCommand = new RelayCommand(LogIn));
+        public ICommand OpenProfileCommand => openProfileCommand ?? (openProfileCommand = new AsyncRelayCommand(OpenProfile));
+
+        private Task OpenProfile()
+        {
+            var vm = new ProfileViewModel(_authentication);
+            var v = new Profile
+            {
+                DataContext = vm
+            };
+            return DialogHost.Show(v);
+        }
+
+
 
         #endregion
 
         private void Init()
         {
-            var sessions = _authentication.GetSessions();
-
-            UserSessions = new ObservableCollection<UserSessionViewModel>(
-                sessions.Select(CreateUserSessionViewModel)
-                );
-
             SetCurrentSession(_authentication.GetCurrentSession());
         }
 
@@ -87,21 +87,10 @@ namespace YodaApp.ViewModels
 
         private void SetCurrentSession(IApi api)
         {
-            UserSessionViewModel session = userSessions.SingleOrDefault(s => s.Api == api);
-            if (session == null)
-            {
-                session = CreateUserSessionViewModel(api);
-                UserSessions.Add(session);
-            }
-            SetCurrentSession(session);
-        }
-
-        private void SetCurrentSession(UserSessionViewModel userSession)
-        {
             if (Session != null)
                 Session.Disconnect();
 
-            Session = userSession;
+            Session = api == null ? null : CreateUserSessionViewModel(api);
 
             if (Session != null)
                 Session.Update();

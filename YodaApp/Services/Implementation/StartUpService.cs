@@ -28,7 +28,6 @@ namespace YodaApp.Services.Implementation
                     return;
                 started = true;
             }
-
             await _authentication.Init();
             if (_authentication.HasAuthenticatedSession())
             {

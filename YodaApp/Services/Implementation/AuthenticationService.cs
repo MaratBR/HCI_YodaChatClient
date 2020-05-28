@@ -13,108 +13,62 @@ namespace YodaApp.Services.Implementation
     {
         private readonly IStore _store;
         private readonly IApiProvider _apiProvider;
-        private readonly IDictionary<Guid, IApi> apis = new Dictionary<Guid, IApi>();
         private IApi currentSession;
 
         public event EventHandler SessionChanged;
+        public event EventHandler OnLogout;
+        public event EventHandler OnLogin;
 
         public AuthenticationService(IStore store, IApiProvider apiProvider)
         {
             _store = store;
             _apiProvider = apiProvider;
         }
-
-        public void AddSession(IApi api)
-        {
-            var sessions = _store.GetSessions();
-            sessions.Insert(0, api.GetSessionInfo());
-            _store.SetSessions(sessions);
-            apis[api.GetApiSessionGuid()] = api;
-        }
+        
 
         public IApi GetCurrentSession() => currentSession;
 
-        public List<IApi> GetSessions() => apis.Values.ToList();
-
         public bool HasAuthenticatedSession() => currentSession != null;
 
-        /// <summary>
-        /// Достаёт из IStore информацию о сессиях, создаёт для каждой IApi
-        /// и сохраняет в список
-        /// </summary>
-        /// <returns></returns>
         public async Task Init()
         {
-            var sessions = _store.GetSessions();
-
-            List<IApi> apis;
-
+            var sessionInfo = _store.GetSession();
+            IApi api = null;
+            if (sessionInfo != null)
             {
-                IApi[] _apis = await Task.WhenAll(
-                    sessions.Select(CreateApiOrNull)
-                    );
+                try
+                {
+                    api = await _apiProvider.CreateApi(sessionInfo);
+                }
+                catch
+                {
 
-                apis = _apis.Where(api => api != null).ToList();
+                }
             }
 
-            apis.ForEach(api =>
-            {
-                this.apis[api.GetApiSessionGuid()] = api;
-            });
-
-            if (this.apis.ContainsKey(Properties.Settings.Default.CurrentSessionID))
-            {
-                currentSession = this.apis[Properties.Settings.Default.CurrentSessionID];
-            }
-        }
-
-        private async Task<IApi> CreateApiOrNull(SessionInfo session)
-        {
-            try
-            {
-                return await _apiProvider.CreateApi(session);
-            }
-            catch (ApiException)
-            {
-                // TODO ???
-                return null;
-            }
-        }
-
-        public void RemoveSession(IApi api)
-        {
-            if (apis.ContainsKey(api.GetApiSessionGuid()))
-                apis.Remove(api.GetApiSessionGuid());
-            if (api.GetApiSessionGuid() == currentSession.GetApiSessionGuid())
-                FindSession();
+            SetCurrentSession(api);
         }
 
         public void SetCurrentSession(IApi api)
-        {
-            if (api != null)
-            {
-                Properties.Settings.Default.CurrentSessionID = api.GetApiSessionGuid();
-                if (!apis.ContainsKey(api.GetApiSessionGuid()))
-                    AddSession(api);
-            }
-
+        {;
             currentSession = api;
+            if (api != null)
+                _store.SetSession(api.GetSessionInfo());
+
+            SessionChanged?.Invoke(this, EventArgs.Empty);
+            OnLogin?.Invoke(this, EventArgs.Empty);
             SessionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void FindSession()
-        {
-            if (apis.Count == 0)
-            {
-                SetCurrentSession(null);
-            }
-            else
-            {
-                SetCurrentSession(apis.Values.First());
-            }
-
-        }
 
         public IApiProvider GetApiProvider() => _apiProvider;
+
+        public void Logout()
+        {
+            _store.SetSession(null);
+            currentSession = null;
+            OnLogout?.Invoke(this, EventArgs.Empty);
+            SessionChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

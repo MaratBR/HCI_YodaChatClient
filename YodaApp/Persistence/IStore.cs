@@ -11,13 +11,13 @@ namespace YodaApp.Persistence
 {
     public interface IStore
     {
-        List<SessionInfo> GetSessions();
+        void SetSession(SessionInfo info);
 
-        void SetSessions(List<SessionInfo> sessions);
-
-        ApiConfiguration GetConfiguration();
+        SessionInfo GetSession();
 
         void SetConfiguration(ApiConfiguration configuration);
+
+        ApiConfiguration GetConfiguration();
     }
 
     public static class Encryptions
