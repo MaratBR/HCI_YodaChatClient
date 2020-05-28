@@ -1,8 +1,4 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
@@ -12,7 +8,7 @@ using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
-    class NewRoomViewModel : ViewModelBase
+    internal class NewRoomViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
         private readonly IAppUIService _windows;
@@ -33,7 +29,6 @@ namespace YodaApp.ViewModels
             set => Set(ref name, nameof(Name), value);
         }
 
-
         private string description;
 
         public string Description
@@ -41,7 +36,6 @@ namespace YodaApp.ViewModels
             get { return description; }
             set => Set(ref description, nameof(Description), value);
         }
-
 
         private string error;
 
@@ -51,8 +45,7 @@ namespace YodaApp.ViewModels
             set => Set(ref error, nameof(Error), value);
         }
 
-
-        #endregion
+        #endregion Properties
 
         public event EventHandler CloseForm;
 
@@ -79,15 +72,12 @@ namespace YodaApp.ViewModels
                 });
                 CloseForm?.Invoke(this, EventArgs.Empty);
             }
-            catch(ApiException exc)
+            catch (ApiException exc)
             {
                 Error = exc.Message;
             }
         }
 
-
-
-
-        #endregion
+        #endregion Commands
     }
 }

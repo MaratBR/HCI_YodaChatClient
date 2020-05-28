@@ -1,23 +1,17 @@
 ﻿using Autofac;
 using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
 using YodaApp.Controls;
-using YodaApp.Persistence;
 using YodaApp.Services;
 using YodaApp.Utils;
 using YodaApp.ViewModels.Controls;
-using YodaApp.Views;
 
 namespace YodaApp.ViewModels
 {
-    class MainWindowViewModel : ViewModelBase
+    internal class MainWindowViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
         private readonly IAppUIService _windows;
@@ -47,7 +41,7 @@ namespace YodaApp.ViewModels
             set => Set(ref session, nameof(Session), value);
         }
 
-        #endregion
+        #endregion Properties
 
         #region Commands
 
@@ -65,9 +59,7 @@ namespace YodaApp.ViewModels
             return DialogHost.Show(v);
         }
 
-
-
-        #endregion
+        #endregion Commands
 
         private void Init()
         {

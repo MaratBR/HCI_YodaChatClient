@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.DTO;
@@ -9,13 +6,15 @@ using YodaApiClient.Events;
 
 namespace YodaApiClient.Implementation
 {
-    class RoomHandler : IRoomHandler
+    internal class RoomHandler : IRoomHandler
     {
         private readonly ChatClient client;
         private Room room;
 
         public event ChatEventHandler<ChatMessageDto> MessageReceived;
+
         public event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
+
         public event ChatEventHandler<ChatUserDepartedDto> UserDeparted;
 
         public Guid Id => room?.Id ?? Guid.Empty;
@@ -39,10 +38,10 @@ namespace YodaApiClient.Implementation
 
         ~RoomHandler()
         {
-
         }
 
         #region Event handlers
+
         private void Handler_UserLeft(object sender, ChatEventArgs<ChatUserDepartedDto> e)
         {
             if (e.InnerMessage.RoomId == Id)
@@ -67,7 +66,7 @@ namespace YodaApiClient.Implementation
             }
         }
 
-        #endregion
+        #endregion Event handlers
 
         public Task<MessageQueueStatus> PutToQueue(ChatMessageRequestDto message)
         {

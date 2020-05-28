@@ -12,7 +12,6 @@ namespace YodaApiClient.Abstract
         /// <returns>Instance of IApi</returns>
         Task<IApi> CreateApi(AuthenticationRequest request);
 
-
         /// <summary>
         /// Registers a new user and then call CreateApi
         /// </summary>

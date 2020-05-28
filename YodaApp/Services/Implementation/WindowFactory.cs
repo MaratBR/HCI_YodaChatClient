@@ -1,17 +1,11 @@
 ﻿using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using YodaApiClient;
 using YodaApp.ViewModels;
 using YodaApp.Views;
 
 namespace YodaApp.Services.Implementation
 {
-    class WindowFactory : IWindowFactory
+    internal class WindowFactory : IWindowFactory
     {
         private readonly IComponentContext _context;
 

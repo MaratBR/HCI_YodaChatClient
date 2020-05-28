@@ -27,7 +27,6 @@
                 <Button Margin="0,0,20,0"
                         CommandParameter="{Binding ElementName=passwordBox}"
                         Command="{Binding SubmitCommand}">Register</Button>
-
             </StackPanel>
         </Border>
 
@@ -42,7 +41,6 @@
 
                         <ColumnDefinition />
                         <ColumnDefinition />
-
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -73,8 +71,6 @@
                         materialDesign:HintAssist.Hint="E-Mail address"
                         Grid.Column="1" Grid.Row="1"
                         Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"></TextBox>
-
-
                 </Grid>
 
                 <TextBlock Margin="0,30,0,0" HorizontalAlignment="Center">You are...</TextBlock>
@@ -91,16 +87,16 @@
                         <Style TargetType="RadioButton">
                             <Style.Triggers>
                                 <Trigger Property="IsChecked" Value="False">
-                                    <Setter Property="Opacity" Value="0.7"/>
+                                    <Setter Property="Opacity" Value="0.7" />
                                 </Trigger>
                             </Style.Triggers>
 
-                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="BorderThickness" Value="2" />
 
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate>
-                                        <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -130,7 +126,6 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -1,28 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace YodaApp.Utils
 {
-    abstract class AbstractCommand : ICommand
+    internal abstract class AbstractCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
 
         public abstract bool CanExecute(object parameter);
-        public abstract void Execute(object parameter);
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 
+        public abstract void Execute(object parameter);
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    class RelayCommand : AbstractCommand
+    internal class RelayCommand : AbstractCommand
     {
         protected Func<bool> canExecute;
         protected Action action;
 
-        protected RelayCommand() { }
+        protected RelayCommand()
+        {
+        }
 
         public RelayCommand(Action action, Func<bool> canExecute = null)
         {
@@ -36,10 +36,9 @@ namespace YodaApp.Utils
         {
             action();
         }
-
     }
 
-    class RelayCommand<T> : AbstractCommand
+    internal class RelayCommand<T> : AbstractCommand
     {
         private Action<T> action;
         private Predicate<T> canExecute;
@@ -64,7 +63,7 @@ namespace YodaApp.Utils
         }
     }
 
-    abstract class AbstractAsyncCommand : AbstractCommand
+    internal abstract class AbstractAsyncCommand : AbstractCommand
     {
         private bool isBusy = false;
 
@@ -77,12 +76,10 @@ namespace YodaApp.Utils
                 RaiseCanExecuteChanged();
             }
         }
-
     }
 
-    class AsyncRelayCommand : AbstractAsyncCommand
+    internal class AsyncRelayCommand : AbstractAsyncCommand
     {
-
         protected Func<Task> action;
         protected Func<bool> canExecute;
 
@@ -107,9 +104,8 @@ namespace YodaApp.Utils
         }
     }
 
-    class AsyncRelayCommand<T>: AbstractAsyncCommand
+    internal class AsyncRelayCommand<T> : AbstractAsyncCommand
     {
-
         protected Func<T, Task> action;
         protected Predicate<T> canExecute;
 

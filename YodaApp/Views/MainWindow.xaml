@@ -19,10 +19,10 @@
         <Style TargetType="Window">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsWindowHidden, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                    <Setter Property="Visibility" Value="Visible"/>
+                    <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsWindowHidden, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -65,7 +65,7 @@
 
                 <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding Session.OpenUserFilesCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="File"  />
+                        <materialDesign:PackIcon Kind="File" />
                         <TextBlock>Files</TextBlock>
                     </StackPanel>
                 </Button>
@@ -89,7 +89,7 @@
             <GridSplitter
                 HorizontalAlignment="Center" VerticalAlignment="Stretch"
                 Grid.Column="1" Grid.RowSpan="2"
-                Width="10"/>
+                Width="10" />
 
             <!-- top panel -->
             <Grid Margin="10,0,0,0" Grid.Column="2" VerticalAlignment="Stretch">
@@ -178,7 +178,6 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-
             </Grid>
 
             <!-- bottom panel -->
@@ -193,7 +192,6 @@
                     <RowDefinition />
                     <RowDefinition Height="Auto" MinHeight="50" />
                 </Grid.RowDefinitions>
-
 
                 <Grid Grid.Row="1" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
@@ -262,7 +260,7 @@
                             AcceptsReturn="True"
                             TextWrapping="Wrap"
                             TextAlignment="Left"
-                            Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}" >
+                            Text="{Binding Session.SelectedRoom.Message.Text, UpdateSourceTrigger=PropertyChanged}">
 
                             <TextBox.InputBindings>
                                 <KeyBinding
@@ -270,7 +268,6 @@
                                     Modifiers="Ctrl"
                                     Key="Enter" />
                             </TextBox.InputBindings>
-
                         </TextBox>
                     </StackPanel>
 
@@ -297,7 +294,6 @@
                     </StackPanel>
 
                     <Border Grid.ColumnSpan="2" BorderBrush="{StaticResource MaterialDesignDarkSeparatorBackground}" BorderThickness="0,1,0,0" Background="#07000000" Panel.ZIndex="-10" />
-
                 </Grid>
 
                 <GridSplitter HorizontalAlignment="Center" VerticalAlignment="Stretch"
@@ -318,7 +314,6 @@
                     </i:Interaction.Behaviors>
                     <ItemsControl VerticalAlignment="Bottom"
                           ItemsSource="{Binding Session.SelectedRoom.RoomFeed}" />
-
                 </ScrollViewer>
 
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding Session.SelectedRoom.HasNoMessages, Converter={StaticResource BooleanToVisibility}}">
@@ -330,6 +325,5 @@
                 </StackPanel>
             </Grid>
         </Grid>
-
     </materialDesign:DialogHost>
 </Window>

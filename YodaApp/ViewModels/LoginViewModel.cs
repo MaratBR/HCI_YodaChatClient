@@ -1,123 +1,114 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using YodaApiClient;
-using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.Requests;
-using YodaApp.Persistence;
 using YodaApp.Services;
 using YodaApp.Utils;
-using YodaApp.Views;
 
 namespace YodaApp.ViewModels
 {
-    class UserAuthenticatedEventArgs : EventArgs
-	{
-		public IApi Api { get; set; }
-	}
+    internal class UserAuthenticatedEventArgs : EventArgs
+    {
+        public IApi Api { get; set; }
+    }
 
-    class LoginViewModel : ViewModelBase
-	{
-		private readonly IAuthenticationService _authentication;
-		private readonly IAppUIService _windows;
+    internal class LoginViewModel : ViewModelBase
+    {
+        private readonly IAuthenticationService _authentication;
+        private readonly IAppUIService _windows;
 
         #region Properties
 
         private string login;
 
-		public string Login
-		{
-			get { return login; }
-			set { Set(ref login, nameof(Login), value); }
-		}
+        public string Login
+        {
+            get { return login; }
+            set { Set(ref login, nameof(Login), value); }
+        }
 
-		private bool loading;
+        private bool loading;
 
-		public bool Loading
-		{
-			get { return loading; }
-			set { Set(ref loading, nameof(Loading), value); }
-		}
+        public bool Loading
+        {
+            get { return loading; }
+            set { Set(ref loading, nameof(Loading), value); }
+        }
 
-		private string error;
+        private string error;
 
-		public string Error
-		{
-			get { return error; }
-			set { Set(ref error, nameof(Error), value); }
-		}
+        public string Error
+        {
+            get { return error; }
+            set { Set(ref error, nameof(Error), value); }
+        }
 
-		private bool hasError;
+        private bool hasError;
 
-		public bool HasError
-		{
-			get { return hasError; }
-			set { Set(ref hasError, nameof(HasError), value); }
-		}
+        public bool HasError
+        {
+            get { return hasError; }
+            set { Set(ref hasError, nameof(HasError), value); }
+        }
 
-		#endregion
+        #endregion Properties
 
+        public LoginViewModel(IAuthenticationService authentication, IAppUIService windows)
+        {
+            _authentication = authentication;
+            _windows = windows;
+        }
 
-		public LoginViewModel(IAuthenticationService authentication, IAppUIService windows)
-		{
-			_authentication = authentication;
-			_windows = windows;
-		}
+        #region Commands
 
-		#region Commands
+        private ICommand loginCommand;
 
-		private ICommand loginCommand;
+        public ICommand LoginCommand => loginCommand ?? (loginCommand = new AsyncRelayCommand<PasswordBox>(LoginCommandHandler));
 
-		public ICommand LoginCommand => loginCommand ?? (loginCommand = new AsyncRelayCommand<PasswordBox>(LoginCommandHandler));
+        public async Task LoginCommandHandler(PasswordBox passwordBox)
+        {
+            var pwd = passwordBox.Password;
 
-		public async Task LoginCommandHandler(PasswordBox passwordBox)
-		{
-			var pwd = passwordBox.Password;
+            await PerformLogin(Login, pwd);
+        }
 
-			await PerformLogin(Login, pwd);
-		}
+        private ICommand signUpCommand;
 
-		private ICommand signUpCommand;
+        public ICommand SignUpCommand => signUpCommand ?? (signUpCommand = new RelayCommand(SignUp));
 
-		public ICommand SignUpCommand => signUpCommand ?? (signUpCommand = new RelayCommand(SignUp));
+        private void SignUp()
+        {
+            _windows.ShowSignUpWindow();
+            _windows.CloseLogInWindow();
+        }
 
-		private void SignUp()
-		{
-			_windows.ShowSignUpWindow();
-			_windows.CloseLogInWindow();
-		}
+        #endregion Commands
 
-		#endregion
+        public async Task PerformLogin(string login, string password)
+        {
+            Loading = true;
 
-		public async Task PerformLogin(string login, string password)
-		{
-			Loading = true;
+            IApi api;
 
-			IApi api;
+            try
+            {
+                api = await _authentication.GetApiProvider().CreateApi(new AuthenticationRequest { Login = login, Password = password });
+            }
+            catch (ApiException exc)
+            {
+                HasError = true;
+                Error = exc.Message;
+                Loading = false;
+                return;
+            }
 
-			try
-			{
-				api = await _authentication.GetApiProvider().CreateApi(new AuthenticationRequest { Login = login, Password = password });
-			}
-			catch (ApiException exc)
-			{
-				HasError = true;
-				Error = exc.Message;
-				Loading = false;
-				return;
-			}
+            Loading = false;
 
-			Loading = false;
-
-
-			_authentication.SetCurrentSession(api);
-			_windows.ShowMainWindow();
-			_windows.CloseLogInWindow();
-		}
-	}
+            _authentication.SetCurrentSession(api);
+            _windows.ShowMainWindow();
+            _windows.CloseLogInWindow();
+        }
+    }
 }

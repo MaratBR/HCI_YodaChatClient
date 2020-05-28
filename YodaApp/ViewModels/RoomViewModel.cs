@@ -1,28 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
-using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.DTO;
 using YodaApp.Controls;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
-
-    enum RoomStatus
+    internal enum RoomStatus
     {
         Joined,
         Left,
         AwaitingServerReponse
     }
 
-    class RoomViewModel : ViewModelBase
+    internal class RoomViewModel : ViewModelBase
     {
         private readonly IRoomHandler room;
 
@@ -38,6 +33,7 @@ namespace YodaApp.ViewModels
             "asdfg",
             "FIRST!!!1!"
         };
+
         private static Random rnd = new Random();
 
         #region Properties
@@ -66,7 +62,7 @@ namespace YodaApp.ViewModels
             set => Set(ref message, nameof(Message), value);
         }
 
-        #endregion
+        #endregion Properties
 
         #region Commands
 
@@ -80,7 +76,7 @@ namespace YodaApp.ViewModels
                 Message.Text = WORTHY_FIRST_MESSAGES[rnd.Next(0, WORTHY_FIRST_MESSAGES.Length - 1)];
         }
 
-        #endregion
+        #endregion Commands
 
         public RoomViewModel(IRoomHandler room)
         {
@@ -96,7 +92,6 @@ namespace YodaApp.ViewModels
             var user = Users.Where(u => u.Id == args.InnerMessage.UserId).FirstOrDefault();
             if (user != null)
                 SetOnline(args.InnerMessage.UserId, false);
-
         }
 
         private void Room_UserJoined(object sender, YodaApiClient.Events.ChatEventArgs<ChatUserJoinedRoomDto> args)

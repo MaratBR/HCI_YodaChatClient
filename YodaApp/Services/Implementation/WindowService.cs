@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace YodaApp.Services.Implementation
 {
-    class WindowService : IAppUIService
+    internal class WindowService : IAppUIService
     {
         private readonly IWindowFactory factory;
         private Window main, login, signup;
@@ -34,7 +30,6 @@ namespace YodaApp.Services.Implementation
             {
                 main = factory.CreateMainWindow();
             }
-
 
             mainIsShown = true;
             main.Show();

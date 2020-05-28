@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
-using YodaApiClient.DataTypes;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels.Controls
 {
-    class FilesListViewModel : ViewModelBase
+    internal class FilesListViewModel : ViewModelBase
     {
         private readonly IApi api;
 
@@ -36,7 +32,6 @@ namespace YodaApp.ViewModels.Controls
 
         public ICommand RefreshCommand => refreshCommand ?? (refreshCommand = new AsyncRelayCommand(Refresh));
 
-
         private bool refreshing;
 
         public bool Refreshing
@@ -44,6 +39,5 @@ namespace YodaApp.ViewModels.Controls
             get { return refreshing; }
             set => Set(ref refreshing, nameof(Refreshing), value);
         }
-
     }
 }

@@ -1,21 +1,18 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
-using YodaApiClient.DataTypes;
 using YodaApiClient.DataTypes.DTO;
 using YodaApp.Utils;
 using YodaApp.ViewModels.Controls;
 
 namespace YodaApp.ViewModels
 {
-    enum MessageStatus
+    internal enum MessageStatus
     {
         Draft,
         Sending,
@@ -24,7 +21,7 @@ namespace YodaApp.ViewModels
         Received
     }
 
-    class MessageViewModel : ViewModelBase
+    internal class MessageViewModel : ViewModelBase
     {
         private readonly IRoomHandler roomHandler;
 
@@ -40,7 +37,6 @@ namespace YodaApp.ViewModels
             set => Set(ref id, nameof(Id), value);
         }
 
-
         private string error;
 
         public string Error
@@ -48,7 +44,6 @@ namespace YodaApp.ViewModels
             get { return error; }
             set => Set(ref error, nameof(Error), value);
         }
-
 
         private string text;
 
@@ -73,7 +68,6 @@ namespace YodaApp.ViewModels
                 OnPropertyChanged(nameof(DisplayedText));
             }
         }
-
 
         public string DisplayedText => DisplayAll || !HasMoreButton ? Text : (Text.Substring(0, 300) + "...");
 
@@ -124,7 +118,7 @@ namespace YodaApp.ViewModels
 
         public bool IsSending => Status == MessageStatus.Sending;
 
-        #endregion
+        #endregion Properties
 
         public MessageViewModel(IRoomHandler roomHandler)
         {
@@ -211,7 +205,6 @@ namespace YodaApp.ViewModels
 
         public ICommand SendCommand => _sendCommand ?? (_sendCommand = new AsyncRelayCommand(Send));
 
-
         private ICommand _addAttachmentCommand;
 
         public ICommand AddAttachmentCommand => _addAttachmentCommand ?? (_addAttachmentCommand = new RelayCommand(AddAttachmentCommandHandler));
@@ -237,6 +230,6 @@ namespace YodaApp.ViewModels
             DisplayAll = !DisplayAll;
         }
 
-        #endregion
+        #endregion Commands
     }
 }

@@ -1,18 +1,10 @@
 ﻿using Autofac;
-using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using YodaApp.Controls;
 using YodaApp.Services;
-using YodaApp.Utils;
 
 namespace YodaApp.ViewModels.Controls
 {
-    class CreateNewRoomOptionsViewModel
+    internal class CreateNewRoomOptionsViewModel
     {
         private IComponentContext context;
 

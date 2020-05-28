@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YodaApiClient.Constants;
@@ -29,8 +28,11 @@ namespace YodaApiClient.Implementation
         private Dictionary<Guid, MessageQueueEntry> awaitingAckMessages = new Dictionary<Guid, MessageQueueEntry>();
 
         public event ChatEventHandler<ChatMessageDto> MessageReceived;
+
         public event ChatEventHandler<ChatUserJoinedRoomDto> UserJoined;
+
         public event ChatEventHandler<ChatUserDepartedDto> UserLeft;
+
         public event ChatEventHandler<UserStatusDto> UserStatusChanged;
 
         public IApi Api { get; }
@@ -81,7 +83,7 @@ namespace YodaApiClient.Implementation
         {
             List<Room> rooms = await Api.GetRoomsAsync();
 
-            foreach(var room in rooms)
+            foreach (var room in rooms)
             {
                 savedRooms[room.Id] = new RoomHandler(room, this);
             }
@@ -112,7 +114,7 @@ namespace YodaApiClient.Implementation
             await connection.SendAsync("Send", entry.Message);
         }
 
-        #endregion
+        #endregion Background sender worker
 
         #region Handling SignalR events
 
@@ -153,7 +155,7 @@ namespace YodaApiClient.Implementation
                 );
         }
 
-        #endregion
+        #endregion Handling SignalR events
 
         #region IChatApiHandler implementation
 
@@ -174,7 +176,7 @@ namespace YodaApiClient.Implementation
             return new RoomHandler(room, this);
         }
 
-        #endregion
+        #endregion IChatApiHandler implementation
 
         #region IMessageQueue implementation
 
@@ -185,6 +187,6 @@ namespace YodaApiClient.Implementation
             return promise.Task;
         }
 
-        #endregion
+        #endregion IMessageQueue implementation
     }
 }

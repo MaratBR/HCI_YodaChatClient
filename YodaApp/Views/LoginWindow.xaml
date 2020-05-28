@@ -40,8 +40,6 @@
                     CommandParameter="{Binding ElementName=PasswordBox}">
                     Sign Up
                 </Button>
-
-
             </StackPanel>
         </Border>
     </Grid>

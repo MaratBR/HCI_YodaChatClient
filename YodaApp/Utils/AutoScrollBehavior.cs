@@ -1,14 +1,9 @@
 ﻿using Microsoft.Xaml.Behaviors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace YodaApp.Utils
 {
-    class AutoScrollBehavior : Behavior<ScrollViewer>
+    internal class AutoScrollBehavior : Behavior<ScrollViewer>
     {
         private bool enabled;
 

@@ -52,7 +52,7 @@
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Center"
                                         ContentSource="Header"
-                                        Margin="25,4"/>
+                                        Margin="25,4" />
                                     <Rectangle Name="Line"
                                        Fill="Black"
                                        Height="2"
@@ -79,8 +79,7 @@
                                                 From="10" To="30"
                                                 Storyboard.TargetProperty="Width"
                                                 Storyboard.TargetName="Line"
-                                                Duration="0:0:0.15"
-                                                />
+                                                Duration="0:0:0.15" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
@@ -92,8 +91,7 @@
                                                 From="30" To="10"
                                                 Storyboard.TargetProperty="Width"
                                                 Storyboard.TargetName="Line"
-                                                Duration="0:0:0.15"
-                                                />
+                                                Duration="0:0:0.15" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>
@@ -110,8 +108,7 @@
                                                 From="30" To="10"
                                                 Storyboard.TargetProperty="Width"
                                                 Storyboard.TargetName="Line"
-                                                Duration="0:0:0.15"
-                                                />
+                                                Duration="0:0:0.15" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.EnterActions>
@@ -123,8 +120,7 @@
                                                 From="10" To="30"
                                                 Storyboard.TargetProperty="Width"
                                                 Storyboard.TargetName="Line"
-                                                Duration="0:0:0.15"
-                                                />
+                                                Duration="0:0:0.15" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </Trigger.ExitActions>
@@ -156,9 +152,8 @@
                 <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
             </Style>
 
-
             <!-- Some converters -->
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
             <utils:BoolToAnythingConverter x:Key="BooleanToVisibilityInverted">
                 <utils:BoolToAnythingConverter.TrueValue>
                     <Visibility>Collapsed</Visibility>

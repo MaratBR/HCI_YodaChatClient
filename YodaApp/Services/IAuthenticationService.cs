@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient;
 using YodaApiClient.Abstract;
 
 namespace YodaApp.Services
 {
-    interface IAuthenticationService
+    internal interface IAuthenticationService
     {
         bool HasAuthenticatedSession();
 
@@ -23,7 +20,9 @@ namespace YodaApp.Services
         IApiProvider GetApiProvider();
 
         event EventHandler SessionChanged;
+
         event EventHandler OnLogout;
+
         event EventHandler OnLogin;
     }
 }

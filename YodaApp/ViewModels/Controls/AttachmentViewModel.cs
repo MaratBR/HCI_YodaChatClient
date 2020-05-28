@@ -1,9 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using YodaApiClient;
@@ -17,11 +14,10 @@ namespace YodaApp.ViewModels
 
 namespace YodaApp.ViewModels.Controls
 {
-    class AttachmentViewModel : ViewModelBase
+    internal class AttachmentViewModel : ViewModelBase
     {
         private readonly IApi api;
         private FileModel model;
-
 
         public string FullPath { get; set; }
 
@@ -32,7 +28,6 @@ namespace YodaApp.ViewModels.Controls
             get { return fileName; }
             set => Set(ref fileName, nameof(FileName), value);
         }
-
 
         private Guid id;
 
@@ -63,7 +58,6 @@ namespace YodaApp.ViewModels.Controls
             get { return hasError; }
             set => Set(ref hasError, nameof(HasError), value);
         }
-
 
         public event EventHandler RemoveAttachment;
 
@@ -97,7 +91,6 @@ namespace YodaApp.ViewModels.Controls
                 {
                     HasSpinner = false;
                 }
-
             }
         }
 
@@ -121,7 +114,6 @@ namespace YodaApp.ViewModels.Controls
             Size = (int)file.Size;
             Id = file.Id;
         }
-
 
         public AttachmentViewModel(IApi api, FileInfo fileInfo)
         {

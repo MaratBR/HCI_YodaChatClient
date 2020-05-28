@@ -13,7 +13,7 @@
     <TabControl Width="500" Height="300" TextBlock.FontSize="17">
         <TabControl.Resources>
             <Style TargetType="TabPanel">
-                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center" />
             </Style>
         </TabControl.Resources>
 

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient.Abstract;
 using YodaApiClient.Constants;
@@ -12,7 +9,7 @@ using YodaApiClient.Helpers;
 
 namespace YodaApiClient.Implementation
 {
-    class AuthenticationResponse
+    internal class AuthenticationResponse
     {
         public string AccessToken { get; set; }
 
@@ -23,7 +20,7 @@ namespace YodaApiClient.Implementation
         public int UserId { get; set; }
     }
 
-    class RegistrationResponse
+    internal class RegistrationResponse
     {
         public User User { get; set; }
     }
@@ -43,7 +40,6 @@ namespace YodaApiClient.Implementation
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-
         public async Task<IApi> CreateApi(AuthenticationRequest request)
         {
             var httpClient = new HttpClient();
@@ -58,7 +54,7 @@ namespace YodaApiClient.Implementation
                     request
                     );
             }
-            catch(HttpRequestException exc)
+            catch (HttpRequestException exc)
             {
                 throw new ServiceUnavailableException(exc.Message);
             }
@@ -67,16 +63,16 @@ namespace YodaApiClient.Implementation
 
             var data = await response.GetJson<AuthenticationResponse>();
 
-             return new Api(
-                 new SessionInfo
-                 {
-                     Token = data.AccessToken,
-                     RefreshToken = data.RefreshToken,
-                     ExpiresAt = data.ExpiresAt,
-                     UserId = data.UserId
-                 },
-                 configuration
-                 );
+            return new Api(
+                new SessionInfo
+                {
+                    Token = data.AccessToken,
+                    RefreshToken = data.RefreshToken,
+                    ExpiresAt = data.ExpiresAt,
+                    UserId = data.UserId
+                },
+                configuration
+                );
         }
 
         public async Task<IApi> CreateApi(SessionInfo session)

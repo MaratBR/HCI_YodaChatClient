@@ -1,11 +1,4 @@
 ﻿using Autofac;
-using Autofac.Core;
-using Autofac.Core.Registration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YodaApiClient.Abstract;
 using YodaApiClient.Implementation;
 using YodaApp.Persistence;
@@ -13,7 +6,7 @@ using YodaApp.Services.Implementation;
 
 namespace YodaApp.Services
 {
-    class ServiceAutofacModule : Module
+    internal class ServiceAutofacModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

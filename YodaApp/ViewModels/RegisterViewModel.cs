@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +11,7 @@ using YodaApp.Utils;
 
 namespace YodaApp.ViewModels
 {
-    class RegisterViewModel : ViewModelBase
+    internal class RegisterViewModel : ViewModelBase
     {
         private readonly IAuthenticationService _authentication;
         private readonly IAppUIService _windows;
@@ -41,7 +38,6 @@ namespace YodaApp.ViewModels
             }
         }
 
-
         private string userName;
 
         public string UserName
@@ -66,7 +62,6 @@ namespace YodaApp.ViewModels
             }
         }
 
-
         private string phone;
 
         public string Phone
@@ -90,11 +85,13 @@ namespace YodaApp.ViewModels
         internal class GenderDeclaration
         {
             public BitmapImage Image { get; set; }
+
             public byte
-                Gender { get; set; }
+                Gender
+            { get; set; }
+
             public string Caption { get; set; }
         }
-
 
         private readonly GenderDeclaration alien = new GenderDeclaration
         {
@@ -121,7 +118,7 @@ namespace YodaApp.ViewModels
 
         public bool IsValid => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(EMail) && !string.IsNullOrWhiteSpace(Phone) && Terms;
 
-        #endregion
+        #endregion Properties
 
         #region Commands
 
@@ -145,7 +142,7 @@ namespace YodaApp.ViewModels
             {
                 await _authentication.GetApiProvider().RegisterUserAndCreateApi(request);
             }
-            catch(ApiException exception)
+            catch (ApiException exception)
             {
                 MessageBox.Show(exception.Message);
                 return;
@@ -155,6 +152,6 @@ namespace YodaApp.ViewModels
             _windows.CloseSignUpWindow();
         }
 
-        #endregion
+        #endregion Commands
     }
 }

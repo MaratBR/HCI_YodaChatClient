@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-
-namespace YodaApp.Services.Implementation
+﻿namespace YodaApp.Services.Implementation
 {
-    class StartUpService : IStartUpService
+    internal class StartUpService : IStartUpService
     {
         private readonly IAppUIService _windows;
         private readonly IAuthenticationService _authentication;
@@ -22,7 +15,7 @@ namespace YodaApp.Services.Implementation
 
         public async void Start()
         {
-            lock(_lock)
+            lock (_lock)
             {
                 if (started)
                     return;

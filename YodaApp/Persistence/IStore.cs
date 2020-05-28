@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using YodaApiClient;
 
 namespace YodaApp.Persistence
@@ -40,17 +36,16 @@ namespace YodaApp.Persistence
             {
                 data = Convert.FromBase64String(value);
             }
-            catch(FormatException)
+            catch (FormatException)
             {
                 return null;
             }
-
 
             try
             {
                 ProtectedMemory.Unprotect(data, MemoryProtectionScope.SameLogon);
             }
-            catch(CryptographicException)
+            catch (CryptographicException)
             {
                 return null;
             }

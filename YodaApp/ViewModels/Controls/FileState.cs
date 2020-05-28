@@ -1,6 +1,6 @@
 ﻿namespace YodaApp.ViewModels.Controls
 {
-    enum FileState : byte
+    internal enum FileState : byte
     {
         Uploading,
         Loading,

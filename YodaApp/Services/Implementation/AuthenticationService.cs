@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YodaApiClient;
 using YodaApiClient.Abstract;
@@ -9,14 +6,16 @@ using YodaApp.Persistence;
 
 namespace YodaApp.Services.Implementation
 {
-    class AuthenticationService : IAuthenticationService
+    internal class AuthenticationService : IAuthenticationService
     {
         private readonly IStore _store;
         private readonly IApiProvider _apiProvider;
         private IApi currentSession;
 
         public event EventHandler SessionChanged;
+
         public event EventHandler OnLogout;
+
         public event EventHandler OnLogin;
 
         public AuthenticationService(IStore store, IApiProvider apiProvider)
@@ -24,7 +23,6 @@ namespace YodaApp.Services.Implementation
             _store = store;
             _apiProvider = apiProvider;
         }
-        
 
         public IApi GetCurrentSession() => currentSession;
 
@@ -42,7 +40,6 @@ namespace YodaApp.Services.Implementation
                 }
                 catch
                 {
-
                 }
             }
 
@@ -50,7 +47,8 @@ namespace YodaApp.Services.Implementation
         }
 
         public void SetCurrentSession(IApi api)
-        {;
+        {
+            ;
             currentSession = api;
             if (api != null)
                 _store.SetSession(api.GetSessionInfo());
@@ -59,7 +57,6 @@ namespace YodaApp.Services.Implementation
             OnLogin?.Invoke(this, EventArgs.Empty);
             SessionChanged?.Invoke(this, EventArgs.Empty);
         }
-
 
         public IApiProvider GetApiProvider() => _apiProvider;
 

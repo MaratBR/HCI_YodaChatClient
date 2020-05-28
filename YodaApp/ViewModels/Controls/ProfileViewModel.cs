@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
-using YodaApiClient;
 using YodaApiClient.DataTypes;
 using YodaApp.Services;
 using YodaApp.Utils;
 
 namespace YodaApp.ViewModels.Controls
 {
-    class ProfileViewModel : ViewModelBase
+    internal class ProfileViewModel : ViewModelBase
     {
         private readonly IAuthenticationService authentication;
 

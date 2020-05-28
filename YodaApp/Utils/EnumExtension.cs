@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace YodaApp.Utils
 {
-    static class EnumExtension
+    internal static class EnumExtension
     {
         /// <summary>
         /// https://stackoverflow.com/questions/1415140/can-my-enums-have-friendly-names

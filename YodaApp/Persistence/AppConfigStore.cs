@@ -1,16 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YodaApiClient;
 
 namespace YodaApp.Persistence
 {
-    class AppConfigStore : IStore
+    internal class AppConfigStore : IStore
     {
         public AppConfigStore()
         {
@@ -49,7 +43,7 @@ namespace YodaApp.Persistence
         public SessionInfo GetSession()
         {
             Properties.Settings.Default.Reload();
-            
+
             try
             {
                 var value = Encryptions.Decrypt(Properties.Settings.Default.SessionEnc);
